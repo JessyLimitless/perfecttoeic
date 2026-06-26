@@ -1,0 +1,194 @@
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --font-sans: "Pretendard Variable", Pretendard, -apple-system,
+    BlinkMacSystemFont, system-ui, "Segoe UI", Roboto, "Malgun Gothic",
+    sans-serif;
+  --bg: #f6f6fb;
+  --brand: #6366f1;
+  --brand-strong: #4f46e5;
+  --brand-2: #7c3aed;
+  --accent: #d946ef;
+  --hairline: rgba(16, 24, 40, 0.06);
+}
+
+html,
+body {
+  background-color: var(--bg);
+}
+
+body {
+  @apply text-neutral-700;
+  font-family: var(--font-sans);
+  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  /* 모바일 주소창 대응: dvh */
+  min-height: 100dvh;
+  /* 프리미엄 앰비언트 — 인디고/바이올렛/푸시아가 옅게 겹쳐 깊이감 */
+  background-image:
+    radial-gradient(56rem 30rem at 50% -10rem, rgba(99, 102, 241, 0.12), transparent 60%),
+    radial-gradient(40rem 26rem at 90% 2rem, rgba(217, 70, 239, 0.08), transparent 55%),
+    radial-gradient(46rem 30rem at 6% 18rem, rgba(124, 58, 237, 0.06), transparent 60%);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+}
+
+@layer components {
+  /* 넓은 프레임 — 데스크탑에서 화면을 충분히 활용, 모바일에선 안전 여백 */
+  .container-app {
+    @apply mx-auto w-full max-w-5xl px-4 sm:px-6 lg:px-8;
+  }
+  .container-narrow {
+    @apply mx-auto w-full max-w-2xl px-4 sm:px-6;
+  }
+  /* 시험지 프레임 — 인게임에서 화면을 넓게(실제 시험 책자처럼) */
+  .container-exam {
+    @apply mx-auto w-full max-w-6xl px-3 sm:px-6 lg:px-10;
+  }
+
+  /* 시험 용지 한 장 — 지문+문항을 담는 통합 표면 */
+  .sheet {
+    @apply rounded-[1.5rem] bg-white ring-1 ring-neutral-900/[0.06]
+      shadow-[0_2px_4px_rgba(16,24,40,0.04),0_30px_64px_-32px_rgba(16,24,40,0.22)];
+  }
+
+  /* 테두리 최소화 · 부드러운 그림자 중심 + 헤어라인 링으로 또렷하게 */
+  .card {
+    @apply rounded-3xl bg-white/90 ring-1 ring-neutral-900/[0.05] backdrop-blur-sm
+      shadow-[0_1px_2px_rgba(16,24,40,0.04),0_20px_48px_-24px_rgba(16,24,40,0.18)];
+  }
+  /* 더 깊은 프리미엄 표면 — 히어로/주요 패널용 */
+  .card-elevated {
+    @apply rounded-[1.75rem] bg-white/95 ring-1 ring-neutral-900/[0.06] backdrop-blur
+      shadow-[0_2px_4px_rgba(16,24,40,0.04),0_32px_64px_-28px_rgba(16,24,40,0.28)];
+  }
+  /* 어두운 프리미엄 표면 — 대결/긴박 연출용 */
+  .surface-dark {
+    @apply rounded-[1.75rem] text-white ring-1 ring-white/10
+      shadow-[0_30px_70px_-30px_rgba(8,8,24,0.7)];
+    background-image: radial-gradient(120% 120% at 0% 0%, #1e1b4b 0%, #0b1020 55%, #07060f 100%);
+  }
+
+  .btn-primary {
+    @apply relative rounded-2xl px-6 py-3.5 text-[15px] font-semibold text-white transition
+      active:scale-[0.99];
+    background-image: linear-gradient(135deg, #6366f1 0%, #7c3aed 100%);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.18) inset,
+      0 10px 28px -10px rgba(99, 102, 241, 0.6);
+  }
+  .btn-primary:hover {
+    background-image: linear-gradient(135deg, #4f46e5 0%, #6d28d9 100%);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.18) inset,
+      0 14px 32px -10px rgba(99, 102, 241, 0.7);
+  }
+
+  /* 대결 CTA — 어둡고 강렬한 프리미엄 버튼 */
+  .btn-dark {
+    @apply relative rounded-2xl px-6 py-3.5 text-[15px] font-bold text-white transition
+      active:scale-[0.99];
+    background-image: linear-gradient(135deg, #18181b 0%, #312e81 100%);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.1) inset,
+      0 12px 30px -12px rgba(49, 46, 129, 0.8);
+  }
+  .btn-dark:hover {
+    background-image: linear-gradient(135deg, #27272a 0%, #4338ca 100%);
+  }
+
+  .btn-ghost {
+    @apply rounded-2xl px-5 py-3 text-[14px] font-semibold text-neutral-600
+      ring-1 ring-neutral-200 transition hover:bg-white hover:ring-neutral-300 active:scale-[0.99];
+  }
+
+  .label {
+    @apply text-[11px] font-semibold uppercase tracking-[0.12em] text-neutral-400;
+  }
+
+  /* 작은 강조 칩 */
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full bg-white/70 px-3 py-1
+      text-[11px] font-semibold uppercase tracking-[0.12em] backdrop-blur-sm;
+  }
+
+  /* 강조용 그라데이션 텍스트 */
+  .text-gradient {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(120deg, #4f46e5 0%, #7c3aed 60%, #9333ea 100%);
+  }
+  .text-gradient-rose {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(120deg, #db2777 0%, #c026d3 55%, #7c3aed 100%);
+  }
+  /* 어두운 배경 위 밝은 그라데이션 텍스트 */
+  .text-gradient-light {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(120deg, #c7d2fe 0%, #f0abfc 60%, #e9d5ff 100%);
+  }
+
+  /* 로딩/탐색 스켈레톤 — 시머 흐름 */
+  .skeleton {
+    @apply relative overflow-hidden bg-neutral-200/70;
+    background-image: linear-gradient(
+      100deg,
+      rgba(255, 255, 255, 0) 30%,
+      rgba(255, 255, 255, 0.65) 50%,
+      rgba(255, 255, 255, 0) 70%
+    );
+    background-size: 200% 100%;
+    background-repeat: no-repeat;
+    animation: shimmer 1.4s ease-in-out infinite;
+  }
+  /* 어두운 배경용 스켈레톤 (상대 탐색 슬롯) */
+  .skeleton-dark {
+    @apply relative overflow-hidden;
+    background-color: rgba(255, 255, 255, 0.06);
+    background-image: linear-gradient(
+      100deg,
+      rgba(255, 255, 255, 0) 30%,
+      rgba(255, 255, 255, 0.18) 50%,
+      rgba(255, 255, 255, 0) 70%
+    );
+    background-size: 200% 100%;
+    background-repeat: no-repeat;
+    animation: shimmer 1.3s ease-in-out infinite;
+  }
+}
+
+@layer utilities {
+  .tabnum {
+    font-variant-numeric: tabular-nums;
+  }
+  /* 모바일 하단 안전영역 (홈 인디케이터) */
+  .pb-safe {
+    padding-bottom: max(env(safe-area-inset-bottom), 1rem);
+  }
+  .min-h-dvh {
+    min-height: 100dvh;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 180% 0;
+  }
+  100% {
+    background-position: -80% 0;
+  }
+}
