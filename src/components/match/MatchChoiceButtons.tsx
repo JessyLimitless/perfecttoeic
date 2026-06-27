@@ -7,8 +7,10 @@ import type { ChoiceIndex, PassageQuestion } from "@/game/types";
 
 const LETTERS = ["A", "B", "C", "D"] as const;
 
-/** 정/오 플래시 노출 시간(ms) — 끝나면 자동으로 다음 문항 (속도전 박진감 유지) */
-const FLASH_MS = 600;
+/** 정/오 플래시 노출 시간(ms) — 끝나면 자동으로 다음 문항.
+ *  정답은 짧게, 오답/시간초과는 정답 위치를 잠깐 더 보여주도록 길게. */
+const FLASH_MS_CORRECT = 1100;
+const FLASH_MS_WRONG = 1700;
 
 /** 대결 전용 보기 버튼 (A·B·C·D) — 연습 스토어가 아닌 useMatchStore에 바인딩 */
 export default function MatchChoiceButtons({
@@ -29,9 +31,10 @@ export default function MatchChoiceButtons({
   // 해설(explanation)은 인게임에서 절대 표시하지 않는다 — 결과 화면 REVIEW 전용.
   useEffect(() => {
     if (!answered) return;
-    const t = setTimeout(() => next(), FLASH_MS);
+    const delay = isCorrectAnswer ? FLASH_MS_CORRECT : FLASH_MS_WRONG;
+    const t = setTimeout(() => next(), delay);
     return () => clearTimeout(t);
-  }, [answered, next]);
+  }, [answered, isCorrectAnswer, next]);
 
   return (
     <div className="flex flex-col gap-3">

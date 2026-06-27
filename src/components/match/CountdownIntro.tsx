@@ -42,9 +42,21 @@ export default function CountdownIntro({ onDone }: { onDone: () => void }) {
       </motion.span>
 
       <div className="relative z-10 flex h-44 w-44 items-center justify-center">
-        {/* 맥동 링 */}
+        {/* 맥동 링 — 숫자 단계마다 퍼져나가는 이중 링 */}
         {!isStart && (
-          <span className="absolute h-32 w-32 rounded-full ring-2 ring-fuchsia-400/20 animate-ping-slow" />
+          <>
+            <span className="absolute h-32 w-32 rounded-full ring-2 ring-fuchsia-400/25 animate-ping-slow" />
+            <span className="absolute h-24 w-24 rounded-full bg-fuchsia-500/10 blur-xl" />
+          </>
+        )}
+        {/* START 폭발 링 */}
+        {isStart && (
+          <motion.span
+            initial={{ scale: 0.3, opacity: 0.7 }}
+            animate={{ scale: 2.2, opacity: 0 }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+            className="absolute h-28 w-28 rounded-full ring-2 ring-emerald-300/60"
+          />
         )}
         <AnimatePresence mode="wait">
           <motion.div
@@ -52,9 +64,11 @@ export default function CountdownIntro({ onDone }: { onDone: () => void }) {
             initial={{ scale: 0.4, opacity: 0, rotate: isStart ? -8 : 0 }}
             animate={{ scale: 1, opacity: 1, rotate: 0 }}
             exit={{ scale: 1.6, opacity: 0 }}
-            transition={{ duration: 0.4, ease: "easeOut" }}
-            className={`bg-gradient-to-br from-indigo-200 via-fuchsia-200 to-fuchsia-300 bg-clip-text font-black leading-none text-transparent drop-shadow ${
-              isStart ? "text-6xl tracking-tight sm:text-7xl" : "text-[7rem] sm:text-[9rem]"
+            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+            className={`bg-gradient-to-br bg-clip-text font-black leading-none text-transparent drop-shadow ${
+              isStart
+                ? "from-emerald-200 via-teal-200 to-cyan-200 text-6xl tracking-tight sm:text-7xl"
+                : "from-indigo-200 via-fuchsia-200 to-fuchsia-300 text-[7rem] sm:text-[9rem]"
             }`}
           >
             {current}

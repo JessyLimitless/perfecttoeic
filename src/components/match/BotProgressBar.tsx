@@ -24,9 +24,14 @@ export default function BotProgressBar() {
           AI
         </motion.div>
         {solved && (
-          <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500 text-[9px] font-bold text-white ring-2 ring-white">
+          <motion.span
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: "spring", stiffness: 500, damping: 18 }}
+            className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500 text-[9px] font-bold text-white ring-2 ring-white"
+          >
             ✓
-          </span>
+          </motion.span>
         )}
       </div>
 

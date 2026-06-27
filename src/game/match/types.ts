@@ -16,12 +16,12 @@ import type {
 /** 1판 문항 수 */
 export const MATCH_LENGTH = 10;
 /** 문항당 제한시간(초) — 로비/기본값. 실제 인게임은 파트별 값을 쓴다. */
-export const PER_QUESTION_SECONDS = 20;
+export const PER_QUESTION_SECONDS = 30;
 /** 파트별 문항 제한시간(초) — 독해량에 비례해 차등 (Part 5 단문 < Part 6 < Part 7 독해) */
 export const PER_QUESTION_SECONDS_BY_PART: Record<Part, number> = {
-  5: 20,
-  6: 35,
-  7: 50,
+  5: 30,
+  6: 50,
+  7: 75,
 };
 /** 해당 파트의 문항 제한시간(초) */
 export function secondsForPart(part: Part): number {
@@ -47,9 +47,9 @@ export interface BotProfile {
   speed: [number, number];
 }
 export const BOT_PROFILE: Record<Difficulty, BotProfile> = {
-  EASY: { accuracy: 0.5, speed: [5.0, 8.0] },
-  MEDIUM: { accuracy: 0.7, speed: [3.5, 6.0] },
-  HARD: { accuracy: 0.85, speed: [2.0, 4.0] },
+  EASY: { accuracy: 0.5, speed: [8.0, 12.0] },
+  MEDIUM: { accuracy: 0.7, speed: [6.0, 9.0] },
+  HARD: { accuracy: 0.85, speed: [4.0, 6.5] },
 };
 
 // ─────────────────────────── 데이터 모델 ───────────────────────────

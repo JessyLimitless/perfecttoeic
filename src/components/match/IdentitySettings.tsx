@@ -90,9 +90,9 @@ export default function IdentitySettings({
               onClick={() => setAvatarId(p.id)}
               aria-label={p.label}
               aria-pressed={active}
-              className={`rounded-2xl p-0.5 transition ${
+              className={`rounded-2xl p-0.5 transition active:scale-95 ${
                 active
-                  ? "ring-2 ring-indigo-500"
+                  ? "ring-2 ring-indigo-500 ring-offset-1"
                   : "ring-1 ring-neutral-200 hover:ring-indigo-300"
               }`}
             >
@@ -105,9 +105,20 @@ export default function IdentitySettings({
       <button
         type="button"
         onClick={handleSave}
-        className="mt-4 w-full rounded-2xl bg-neutral-900 px-4 py-2.5 text-[13px] font-bold text-white transition hover:bg-neutral-800 active:scale-[0.98]"
+        className={
+          "mt-4 flex min-h-[44px] w-full items-center justify-center gap-1.5 rounded-2xl px-4 py-2.5 text-[13px] font-bold text-white transition active:scale-[0.98] " +
+          (saved
+            ? "bg-emerald-600 hover:bg-emerald-600"
+            : "bg-neutral-900 hover:bg-neutral-800")
+        }
       >
-        {saved ? "저장됨 ✓" : "프로필 저장"}
+        {saved ? (
+          <>
+            저장됨 <span aria-hidden>✓</span>
+          </>
+        ) : (
+          "프로필 저장"
+        )}
       </button>
     </motion.div>
   );

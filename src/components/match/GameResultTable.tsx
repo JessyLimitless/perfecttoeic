@@ -103,7 +103,8 @@ export default function GameResultTable({
 
   return (
     <div className="overflow-hidden rounded-2xl bg-white/95 ring-1 ring-teal-900/10 shadow-sm">
-      <h2 className="bg-gradient-to-r from-teal-50/80 to-transparent py-2.5 text-center text-sm font-extrabold tracking-[0.18em] text-teal-800">
+      <h2 className="flex items-center justify-center gap-2 bg-gradient-to-r from-teal-50 via-teal-50/50 to-transparent py-2.5 text-center text-sm font-extrabold tracking-[0.18em] text-teal-800">
+        <span className="h-1.5 w-1.5 rounded-full bg-teal-500" aria-hidden />
         GAME RESULT
       </h2>
 
@@ -126,11 +127,16 @@ export default function GameResultTable({
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.35, delay: 0.08 * i }}
             className={
-              "grid grid-cols-[1.6fr_repeat(5,_1fr)] items-center gap-1 px-2 py-3 text-center " +
+              "relative grid grid-cols-[1.6fr_repeat(5,_1fr)] items-center gap-1 px-2 py-3 text-center " +
               (i === 0 ? "border-b border-neutral-100 " : "") +
-              (isWinner ? "bg-amber-50/70" : "")
+              (isWinner
+                ? "bg-gradient-to-r from-amber-50 to-amber-50/30"
+                : "")
             }
           >
+            {isWinner && (
+              <span className="absolute inset-y-0 left-0 w-1 rounded-r bg-gradient-to-b from-amber-400 to-amber-500" />
+            )}
             {/* 게임참가자 */}
             <div className="flex items-center gap-2 pl-1 text-left">
               <Avatar player={player} />
@@ -153,12 +159,13 @@ export default function GameResultTable({
             <div className="flex justify-center">
               <span
                 className={
-                  "inline-flex h-7 min-w-[2.2rem] items-center justify-center rounded-full px-2 text-[12px] font-extrabold " +
+                  "inline-flex h-7 min-w-[2.4rem] items-center justify-center gap-0.5 rounded-full px-2 text-[12px] font-extrabold " +
                   (isWinner
-                    ? "bg-amber-400 text-amber-900 shadow-sm"
+                    ? "bg-gradient-to-br from-amber-300 to-amber-500 text-amber-950 shadow-[0_4px_10px_-4px_rgba(245,158,11,0.8)]"
                     : "bg-neutral-100 text-neutral-500")
                 }
               >
+                {isWinner && <span aria-hidden>👑</span>}
                 {player.rank ?? "—"}위
               </span>
             </div>

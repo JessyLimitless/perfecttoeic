@@ -24,35 +24,54 @@ export default function ResultBanner({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, delay: 0.12 }}
       className={
-        "relative flex flex-col gap-2 overflow-hidden rounded-2xl bg-white/95 p-4 ring-1 shadow-sm " +
-        (isWin ? "ring-emerald-400/30" : "ring-teal-900/10")
+        "relative flex flex-col gap-2.5 overflow-hidden rounded-2xl bg-white/95 p-4 ring-1 shadow-sm " +
+        (isWin
+          ? "ring-emerald-400/40 shadow-[0_18px_40px_-24px_rgba(16,185,129,0.55)]"
+          : "ring-rose-300/30 shadow-[0_18px_40px_-24px_rgba(244,63,94,0.35)]")
       }
     >
       <span
         className={
-          "absolute inset-x-0 top-0 h-1 " +
+          "absolute inset-x-0 top-0 h-1.5 " +
           (isWin
-            ? "bg-gradient-to-r from-emerald-400 to-teal-400"
-            : "bg-gradient-to-r from-rose-400 to-orange-300")
+            ? "bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400"
+            : "bg-gradient-to-r from-rose-400 via-orange-300 to-amber-300")
         }
       />
-      <div className="flex items-center justify-between gap-3 pt-1">
-        <p className="text-[14px] leading-relaxed text-neutral-700">
-          <span className="font-extrabold text-neutral-900">{name}</span> 님은{" "}
-          <span className="font-extrabold text-teal-700">{rank ?? "—"}등</span>
-          으로{" "}
-          <span
+      <div className="flex items-center justify-between gap-3 pt-1.5">
+        <div className="min-w-0">
+          <p
             className={
-              "font-extrabold " + (isWin ? "text-emerald-600" : "text-rose-500")
+              "text-[11px] font-extrabold uppercase tracking-[0.16em] " +
+              (isWin ? "text-emerald-600" : "text-rose-500")
             }
           >
-            &lsquo;{isWin ? "승리" : "패배"}&rsquo;
-          </span>{" "}
-          하셨습니다.
-        </p>
-        <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-teal-600 px-3 py-1 text-[13px] font-extrabold text-white shadow-[0_8px_18px_-10px_rgba(13,148,136,0.9)]">
-          💲{earnedCredits}
-        </span>
+            {isWin ? "VICTORY" : "DEFEAT"}
+          </p>
+          <p className="mt-0.5 text-[14px] leading-relaxed text-neutral-700">
+            <span className="font-extrabold text-neutral-900">{name}</span> 님은{" "}
+            <span className="font-extrabold text-teal-700">{rank ?? "—"}등</span>
+            으로{" "}
+            <span
+              className={
+                "font-extrabold " +
+                (isWin ? "text-emerald-600" : "text-rose-500")
+              }
+            >
+              &lsquo;{isWin ? "승리" : "패배"}&rsquo;
+            </span>{" "}
+            하셨습니다.
+          </p>
+        </div>
+        <div className="flex shrink-0 flex-col items-end gap-0.5">
+          <span className="text-[9px] font-bold uppercase tracking-[0.14em] text-neutral-400">
+            CREDIT
+          </span>
+          <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-br from-teal-500 to-emerald-600 px-3 py-1 text-[14px] font-extrabold text-white shadow-[0_8px_18px_-8px_rgba(13,148,136,0.95)]">
+            <span aria-hidden>💲</span>
+            <span className="tabnum">{earnedCredits}</span>
+          </span>
+        </div>
       </div>
 
       {hasMission && (

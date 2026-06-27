@@ -27,7 +27,7 @@ export default function PlayerAvatar({
   if (preset.emoji) {
     return (
       <span
-        className={`flex shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br ${preset.gradient} shadow-[0_6px_16px_-6px_rgba(56,189,248,0.7)]`}
+        className={`flex shrink-0 select-none items-center justify-center rounded-2xl bg-gradient-to-br ${preset.gradient} leading-none ring-1 ring-white/25 shadow-[0_6px_16px_-6px_rgba(56,189,248,0.7)]`}
         style={{ width: size, height: size, fontSize: size * 0.52 }}
         aria-label={name}
       >
@@ -40,7 +40,7 @@ export default function PlayerAvatar({
   if (broken) {
     return (
       <span
-        className={`flex shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br ${preset.gradient} font-extrabold text-white shadow-[0_6px_16px_-6px_rgba(56,189,248,0.7)]`}
+        className={`flex shrink-0 select-none items-center justify-center rounded-2xl bg-gradient-to-br ${preset.gradient} font-extrabold leading-none text-white ring-1 ring-white/25 shadow-[0_6px_16px_-6px_rgba(56,189,248,0.7)]`}
         style={{ width: size, height: size, fontSize: size * 0.42 }}
         aria-label={name}
       >

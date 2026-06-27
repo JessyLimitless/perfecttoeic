@@ -118,7 +118,7 @@ export default function MatchResultPage() {
                 <button
                   type="button"
                   onClick={handleReview}
-                  className="flex items-center justify-center gap-1.5 rounded-2xl bg-white px-4 py-3 text-[13px] font-bold text-teal-700 ring-1 ring-teal-900/10 shadow-sm transition hover:bg-teal-50 active:scale-[0.98]"
+                  className="flex min-h-[48px] items-center justify-center gap-1.5 rounded-2xl bg-white px-4 py-3 text-[13px] font-bold text-teal-700 ring-1 ring-teal-900/10 shadow-sm transition hover:-translate-y-px hover:bg-teal-50 hover:shadow active:translate-y-0 active:scale-[0.98]"
                 >
                   틀린문제 REVIEW <span aria-hidden>📝</span>
                 </button>
@@ -126,14 +126,20 @@ export default function MatchResultPage() {
                   type="button"
                   onClick={handleRematch}
                   disabled={expired || busy}
-                  className="rounded-2xl bg-teal-600 px-4 py-3 text-[13px] font-bold text-white shadow-sm transition hover:bg-teal-700 active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-neutral-300 disabled:text-neutral-500"
+                  className="flex min-h-[48px] items-center justify-center gap-1.5 rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-600 px-4 py-3 text-[13px] font-extrabold text-white shadow-[0_10px_24px_-10px_rgba(13,148,136,0.9)] transition hover:-translate-y-px hover:shadow-[0_14px_28px_-10px_rgba(13,148,136,0.95)] active:translate-y-0 active:scale-[0.98] disabled:translate-y-0 disabled:cursor-not-allowed disabled:bg-neutral-300 disabled:from-neutral-300 disabled:to-neutral-300 disabled:text-neutral-500 disabled:shadow-none"
                 >
-                  {busy ? "준비 중…" : "REMATCH"}
+                  {busy ? (
+                    "준비 중…"
+                  ) : (
+                    <>
+                      <span aria-hidden>🔁</span> REMATCH
+                    </>
+                  )}
                 </button>
                 <button
                   type="button"
                   onClick={handleNewRoom}
-                  className="rounded-2xl bg-white px-4 py-3 text-[13px] font-bold text-neutral-700 ring-1 ring-neutral-900/10 shadow-sm transition hover:bg-neutral-50 active:scale-[0.98]"
+                  className="flex min-h-[48px] items-center justify-center rounded-2xl bg-white px-4 py-3 text-[13px] font-bold text-neutral-700 ring-1 ring-neutral-900/10 shadow-sm transition hover:-translate-y-px hover:bg-neutral-50 hover:shadow active:translate-y-0 active:scale-[0.98]"
                 >
                   방개설
                 </button>
@@ -184,28 +190,41 @@ export default function MatchResultPage() {
                   return (
                     <li
                       key={q.id ?? i}
-                      className="rounded-xl bg-neutral-50 p-3 ring-1 ring-neutral-900/[0.06]"
+                      className="overflow-hidden rounded-xl bg-neutral-50 ring-1 ring-neutral-900/[0.06]"
                     >
-                      <p className="text-[13px] font-bold text-neutral-900">
-                        {q.prompt}
-                      </p>
-                      {q.promptKo && (
-                        <p className="mt-0.5 text-[12px] text-neutral-500">
-                          {q.promptKo}
+                      <div className="flex items-start gap-2 p-3">
+                        <span className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-rose-500 text-[11px] font-extrabold text-white">
+                          {i + 1}
+                        </span>
+                        <div className="min-w-0">
+                          <p className="text-[13px] font-bold leading-snug text-neutral-900">
+                            {q.prompt}
+                          </p>
+                          {q.promptKo && (
+                            <p className="mt-0.5 text-[12px] text-neutral-500">
+                              {q.promptKo}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                      <div className="space-y-1.5 px-3 pb-1 text-[12px]">
+                        <p className="flex items-start gap-1.5 rounded-lg bg-emerald-50 px-2.5 py-1.5 ring-1 ring-emerald-200/60">
+                          <span className="font-extrabold text-emerald-700">
+                            정답
+                          </span>
+                          <span className="text-emerald-700">{correct}</span>
                         </p>
-                      )}
-                      <div className="mt-2 space-y-1 text-[12px]">
-                        <p className="text-emerald-600">
-                          <span className="font-bold">정답</span> ·{" "}
-                          {correct}
-                        </p>
-                        <p className="text-rose-500">
-                          <span className="font-bold">내 선택</span> ·{" "}
-                          {picked ?? "(시간초과 · 미응답)"}
+                        <p className="flex items-start gap-1.5 rounded-lg bg-rose-50 px-2.5 py-1.5 ring-1 ring-rose-200/60">
+                          <span className="font-extrabold text-rose-600">
+                            내 선택
+                          </span>
+                          <span className="text-rose-600">
+                            {picked ?? "(시간초과 · 미응답)"}
+                          </span>
                         </p>
                       </div>
                       {q.explanation && (
-                        <p className="mt-2 rounded-lg bg-white px-2.5 py-2 text-[12px] leading-relaxed text-neutral-600 ring-1 ring-neutral-900/[0.05]">
+                        <p className="m-3 mt-2 rounded-lg bg-white px-2.5 py-2 text-[12px] leading-relaxed text-neutral-600 ring-1 ring-neutral-900/[0.05]">
                           {q.explanation}
                         </p>
                       )}

@@ -164,12 +164,17 @@ export default function Matchmaking({
                   key="revealed-slot"
                   initial={{ opacity: 0, scale: 0.92 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  transition={{ type: "spring", stiffness: 320, damping: 18 }}
-                  className="animate-pop flex h-full flex-col items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-br from-fuchsia-500/15 to-indigo-600/10 p-4 ring-1 ring-fuchsia-400/30"
+                  transition={{ type: "spring", stiffness: 340, damping: 17 }}
+                  className="animate-pop flex h-full flex-col items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-br from-fuchsia-500/15 to-indigo-600/10 p-4 ring-1 ring-fuchsia-400/30 shadow-[0_18px_44px_-22px_rgba(124,58,237,0.6)]"
                 >
-                  <span className="flex h-[72px] w-[72px] items-center justify-center rounded-2xl bg-gradient-to-br from-fuchsia-500 to-indigo-600 text-3xl shadow-[0_10px_28px_-8px_rgba(124,58,237,0.8)]">
+                  <motion.span
+                    initial={{ rotate: -12, scale: 0.7 }}
+                    animate={{ rotate: 0, scale: 1 }}
+                    transition={{ type: "spring", stiffness: 360, damping: 14 }}
+                    className="flex h-[72px] w-[72px] items-center justify-center rounded-2xl bg-gradient-to-br from-fuchsia-500 to-indigo-600 text-3xl shadow-[0_10px_28px_-8px_rgba(124,58,237,0.8)]"
+                  >
                     🤖
-                  </span>
+                  </motion.span>
                   <div className="space-y-0.5 text-center">
                     <p className="text-[13px] font-extrabold uppercase tracking-[0.08em] text-white">
                       AI CHALLENGER

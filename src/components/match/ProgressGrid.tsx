@@ -18,12 +18,12 @@ function Tiles({ results }: { results: boolean[] }) {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.25, delay: 0.02 * i }}
             className={
-              "flex h-6 w-6 items-center justify-center rounded-md text-[11px] font-extrabold sm:h-7 sm:w-7 " +
+              "flex h-6 w-6 items-center justify-center rounded-lg text-[11px] font-extrabold sm:h-7 sm:w-7 " +
               (correct
-                ? "bg-emerald-500 text-white shadow-sm"
+                ? "bg-gradient-to-br from-emerald-400 to-emerald-600 text-white shadow-[0_4px_10px_-4px_rgba(16,185,129,0.7)]"
                 : wrong
-                  ? "bg-rose-500 text-white shadow-sm"
-                  : "bg-neutral-100 text-neutral-300")
+                  ? "bg-gradient-to-br from-rose-400 to-rose-600 text-white shadow-[0_4px_10px_-4px_rgba(244,63,94,0.6)]"
+                  : "bg-neutral-100 text-neutral-300 ring-1 ring-neutral-900/[0.04]")
             }
             title={`${i + 1}번 문항`}
           >
@@ -51,12 +51,19 @@ export default function ProgressGrid({
       <div className="flex flex-col gap-3">
         {[user, ai].map((p) => {
           const got = p.results.filter(Boolean).length;
+          const isWinner = p.rank === 1;
           return (
             <div key={p.kind} className="flex flex-col gap-1.5">
               <span className="flex items-baseline justify-between text-[11px] font-bold text-neutral-500">
-                <span className="truncate">{p.name}</span>
-                <span className="shrink-0 tabnum text-teal-600">
-                  {got}/{MATCH_LENGTH}
+                <span className="flex min-w-0 items-center gap-1 truncate">
+                  {isWinner && <span aria-hidden>👑</span>}
+                  <span className="truncate">{p.name}</span>
+                </span>
+                <span className="shrink-0 tabnum font-extrabold text-teal-600">
+                  {got}
+                  <span className="font-semibold text-neutral-400">
+                    /{MATCH_LENGTH}
+                  </span>
                 </span>
               </span>
               <Tiles results={p.results} />

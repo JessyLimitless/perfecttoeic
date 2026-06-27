@@ -33,14 +33,16 @@ export default function PassagePanel({
       </div>
 
       <div
-        className={`overflow-y-auto overscroll-contain px-6 py-5 sm:px-8 sm:py-6 ${
+        className={
           flat
-            ? "max-h-[40vh] lg:max-h-[calc(100dvh-13.5rem)] lg:px-9"
-            : "max-h-[42vh] lg:max-h-[calc(100dvh-12rem)]"
-        }`}
+            ? // 대결 인게임: 내부 스크롤 제거 → 지문이 전부 펼쳐지고 페이지와 함께 스크롤됨
+              "px-6 py-6 sm:px-8 sm:py-7 lg:px-9"
+            : // 연습 모드: 자체 스크롤 박스 유지 (회귀 방지). 높이만 넉넉히.
+              "overflow-y-auto overscroll-contain px-6 py-5 sm:px-8 sm:py-6 max-h-[46vh] lg:max-h-[calc(100dvh-11rem)]"
+        }
       >
         <motion.div
-          className="space-y-4"
+          className={flat ? "space-y-5" : "space-y-4"}
           variants={{
             hidden: {},
             show: { transition: { staggerChildren: 0.03, delayChildren: 0.04 } },

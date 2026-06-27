@@ -91,20 +91,20 @@ export default function MatchHud() {
         </div>
 
         {/* ── 우측 상단: 심플 타이머 ── */}
-        <div className="flex shrink-0 items-center gap-1.5">
-          <span className="hidden text-[11px] font-semibold text-neutral-400 sm:inline">
-            문항 {Math.min(qIndex + 1, MATCH_LENGTH)}/{MATCH_LENGTH}
+        <div className="flex shrink-0 items-center gap-2.5">
+          <span className="hidden text-[11px] font-semibold tabnum text-neutral-400 sm:inline">
+            문항 {Math.min(qIndex + 1, MATCH_LENGTH)}<span className="text-neutral-300">/{MATCH_LENGTH}</span>
           </span>
           <motion.span
-            animate={danger ? { scale: [1, 1.08, 1] } : { scale: 1 }}
+            animate={danger ? { scale: [1, 1.07, 1] } : { scale: 1 }}
             transition={{ duration: 0.6, repeat: danger ? Infinity : 0 }}
-            className={`tabnum inline-flex items-center gap-1 rounded-xl px-2.5 py-1 text-[17px] font-extrabold tracking-tight sm:text-[19px] ${
+            className={`tabnum inline-flex items-center gap-1.5 rounded-xl px-3 py-1 text-[17px] font-extrabold tracking-tight sm:text-[19px] ${
               danger
-                ? "bg-rose-50 text-rose-600 ring-1 ring-rose-200"
-                : "bg-neutral-900 text-white"
+                ? "bg-rose-50 text-rose-600 ring-1 ring-rose-300 shadow-[0_4px_14px_-6px_rgba(244,63,94,0.55)]"
+                : "bg-neutral-900 text-white shadow-[0_4px_14px_-8px_rgba(16,24,40,0.6)]"
             }`}
           >
-            <span className={`text-[11px] ${danger ? "" : "text-white/60"}`}>⏱</span>
+            <span className={`text-[11px] ${danger ? "text-rose-400" : "text-white/55"}`}>⏱</span>
             {clock}
           </motion.span>
         </div>
