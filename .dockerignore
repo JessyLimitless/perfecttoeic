@@ -1,8 +1,0 @@
-node_modules
-.next
-.git
-.bridge/inbox
-.bridge/outbox
-*.png
-.shot_*.png
-npm-debug.log*
