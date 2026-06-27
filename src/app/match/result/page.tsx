@@ -48,14 +48,8 @@ export default function MatchResultPage() {
     if (status !== "result") router.replace("/match");
   }, [status, router]);
 
-  if (status !== "result") return null;
-
-  const wrongItems = userHistory.filter((r) => !r.isCorrect);
-
-  // 틀린문제 REVIEW: 진입 = 자동 퇴실(개념). 결과 액션을 숨기고 인라인 복습 노출.
-  const handleReview = () => setReviewing(true);
-
   // REMATCH: 같은 조건 재대결 (기한 내). /api/sets 재로딩 후 인게임으로.
+  // ⚠️ 훅은 조기 리턴 위에서 무조건 호출되어야 함 (rules-of-hooks).
   const handleRematch = useCallback(async () => {
     if (expired || isRematchExpired(rematchDeadline) || busy) return;
     setBusy(true);
@@ -63,6 +57,13 @@ export default function MatchResultPage() {
     rematch(sets);
     router.push("/match");
   }, [expired, rematchDeadline, busy, rematch, router]);
+
+  if (status !== "result") return null;
+
+  const wrongItems = userHistory.filter((r) => !r.isCorrect);
+
+  // 틀린문제 REVIEW: 진입 = 자동 퇴실(개념). 결과 액션을 숨기고 인라인 복습 노출.
+  const handleReview = () => setReviewing(true);
 
   // 방개설: 방 나가고 로비로
   const handleNewRoom = () => {
