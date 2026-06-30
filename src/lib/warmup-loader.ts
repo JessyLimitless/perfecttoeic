@@ -30,6 +30,7 @@ export interface WarmupDeck {
 const BOOK_META: Record<number, { id: string; titleEn: string; titleKo: string }> = {
   1: { id: "wmc", titleEn: "Who Moved My Cheese?", titleKo: "누가 내 치즈를 옮겼을까?" },
   2: { id: "ootm", titleEn: "Out of the Maze", titleKo: "내 치즈는 어디로 갔을까?" },
+  3: { id: "present", titleEn: "The Present", titleKo: "선물" },
 };
 
 /** "## 📕 Book 1: Who Moved My Cheese? (누가 내 치즈를 옮겼을까?)" → {bookNo, titleEn, titleKo} */

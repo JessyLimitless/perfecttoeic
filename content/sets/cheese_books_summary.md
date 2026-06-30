@@ -545,3 +545,277 @@
 ---
 
 *Spencer Johnson의 치즈 시리즈 완결 — Book 1: Who Moved My Cheese? (1998) · Book 2: Out of the Maze (2018)*
+
+---
+
+## 📘 Book 3: The Present (선물)
+
+### 1. English Summary
+
+#### The Young Man Meets the Old Man
+
+1. Once there was a young man who was unhappy with his work and his life.
+2. He was often distracted, thinking about regrets from the past or worries about the future.
+3. He heard about a wise old man in a nearby town who possessed a great gift.
+4. People said that whoever received this gift became extraordinarily happy and successful.
+5. Curious and hopeful, the young man decided to visit the old man and ask about the gift.
+6. When he arrived, the old man welcomed him warmly and invited him to sit down.
+7. The young man asked directly, "What is this great gift that people say you have?"
+8. The old man smiled and replied, "The greatest gift you will ever receive is the Present."
+9. The young man looked around, expecting something physical, but saw nothing extraordinary.
+10. The old man laughed gently and said, "The Present is not a wrapped package—it is where you are right now."
+
+#### The Search for the Present
+
+11. The young man was puzzled and left the old man's house feeling uncertain.
+12. He returned to his work but found himself still distracted and unhappy.
+13. He tried to stay focused on the present moment, but it was harder than he expected.
+14. Weeks passed, and the young man returned to the old man with more questions.
+15. "I tried to be present, but my mind kept drifting," he admitted with frustration.
+16. The old man nodded and said, "That is the challenge—and also the path."
+17. He explained that being present meant giving your full attention to what you are doing right now.
+18. "When you are with a person, be truly with that person," the old man advised.
+19. "When you are working, give that work your complete and undivided attention," he added.
+20. The young man began to understand that the Present was a practice, not a destination.
+
+#### Being Fully Present
+
+21. The young man started practicing full presence during his meetings at work.
+22. Instead of thinking about his next task, he listened carefully to what others were saying.
+23. He noticed that people appreciated his attention and responded with greater openness.
+24. His productivity increased because he was not wasting mental energy on irrelevant thoughts.
+25. He realized that being present was not about doing less—it was about doing one thing well.
+26. The old man taught him that full presence created a kind of "flow state" of peak performance.
+27. "When you are completely here," the old man said, "you experience more and you perform better."
+28. The young man noticed that his anxiety decreased when he focused only on what was in front of him.
+29. He stopped checking messages during conversations and started making true eye contact.
+30. Over time, he found that each present moment became richer and more satisfying.
+
+#### Learning from the Past
+
+31. One day the young man asked the old man about the role of the past in a happy life.
+32. "Should I simply forget the past and focus only on the present?" he asked.
+33. The old man shook his head and said, "The past is a teacher, not a prison."
+34. He explained that learning from the past was one of the three keys to having the Present.
+35. The first key was to be present in the present moment, giving it your full attention.
+36. The second key was to learn from the past by honestly reflecting on what went wrong and why.
+37. "The point of looking back," the old man said, "is to get useful information and then move forward."
+38. He warned that spending too long in the past would rob you of the present moment.
+39. The young man reflected on a failed project at work and asked what lesson he should draw.
+40. "Ask yourself: What happened? What can I learn? What would I do differently?" the old man replied.
+
+#### Reflecting Honestly on the Past
+
+41. The young man thought carefully about the past failure the old man had prompted him to examine.
+42. He realized he had ignored early warning signs because he was afraid of conflict.
+43. He saw that his avoidance had made the problem grow much larger than it needed to be.
+44. Instead of feeling shame or blame, he chose to treat this as useful data for the future.
+45. He wrote down three clear lessons from the experience in a small notebook.
+46. He noticed that once he had extracted the lesson, the memory no longer troubled him as much.
+47. The old man told him, "Guilt is the past controlling the present—learning sets you free."
+48. He learned to say to himself: "That is done. I have learned from it. Now I move on."
+49. This simple practice helped him stop replaying painful memories in his mind.
+50. He felt lighter, and his focus on the present moment became noticeably stronger.
+
+#### Planning for the Future
+
+51. The young man then asked about worry—should he not think about the future at all?
+52. The old man smiled and said, "There is a big difference between worrying and planning."
+53. "Worry is living in an imagined future full of fear," he explained patiently.
+54. "Planning," he said, "is deciding what you want to happen and taking steps to make it real."
+55. The third key to having the Present was to plan for the future with clear intention.
+56. "Think about what outcome you want," the old man advised, "and then take one step today."
+57. Planning rooted in the present was powerful because it was grounded in current reality.
+58. The young man learned to write down his future goals and then return his focus to today.
+59. He realized that once you have a plan, you can stop worrying and start acting.
+60. The old man told him, "A plan is a gift you give your future self."
+
+#### Balancing Past, Present, and Future
+
+61. The young man now understood the three elements: present focus, learning from the past, and future planning.
+62. He asked the old man how to balance all three in daily life without feeling overwhelmed.
+63. The old man replied, "The present is always home base—start and end there."
+64. He explained that you visit the past briefly to learn, then return to the present.
+65. You visit the future briefly to plan, then return to the present once more.
+66. "The Present is not about ignoring time," he said. "It is about using all of time wisely."
+67. The young man wrote this down: "Learn from the past. Plan for the future. Live in the present."
+68. He began each morning by reviewing one lesson from the past and setting one intention for the day.
+69. Each evening he spent five minutes reflecting on what went well and writing one plan for tomorrow.
+70. He found that this simple rhythm made him both grounded and purposeful at the same time.
+
+#### Applying the Gift at Work
+
+71. The young man applied these principles to his most challenging project at work.
+72. He began each meeting by setting a clear intention and then giving the discussion his full attention.
+73. When conflicts arose, he asked himself, "What can I learn here?" rather than reacting defensively.
+74. He listened to feedback without immediately judging or dismissing it.
+75. He looked for the lesson in every setback instead of assigning blame to others.
+76. His team noticed the change and began to trust him more as a leader.
+77. He planned his team's quarterly goals clearly and then focused on daily execution.
+78. He no longer spent hours worrying about potential problems that had not yet occurred.
+79. Instead, he identified the two or three most likely risks and made simple contingency plans.
+80. His work improved dramatically, and he began to find genuine joy in each working day.
+
+#### The Young Man's Transformation
+
+81. Months later, the young man returned to the old man with a wide and grateful smile.
+82. He reported that his relationships had deepened because he was truly present with the people he loved.
+83. He told the old man that his work performance had improved beyond what he had imagined.
+84. "I stopped chasing the past and dreading the future," he said. "I am living now."
+85. The old man listened carefully and asked, "And what do you notice about this moment right now?"
+86. The young man paused, looked around, and said, "I feel completely here. I feel alive."
+87. The old man smiled and said, "That is the gift. You have always had it. You just needed to open it."
+88. The young man felt a deep sense of gratitude for the simple yet powerful lesson he had learned.
+89. He realized that the Present was not something to be found elsewhere—it was always available to him.
+90. He thanked the old man sincerely and promised to share this gift with everyone he met.
+
+#### Living the Gift
+
+91. From that day on, the young man made the Present the foundation of how he worked and lived.
+92. He noticed that when he was present, he made better decisions and experienced less stress.
+93. When he drifted into the past, he gently asked himself: "What is the lesson here?"
+94. When he drifted into the future, he asked: "What is my plan, and what can I do right now?"
+95. These two questions always guided him back to the Present with clarity and purpose.
+96. He shared the three keys with his colleagues: be present, learn from the past, plan for the future.
+97. He wrote the words "THE PRESENT" on a card and kept it on his desk as a daily reminder.
+98. He understood that the gift of the Present was not a one-time discovery but a daily practice.
+99. He knew that living in the Present did not mean life would become perfect or easy.
+100. It meant that wherever he was and whatever he faced, he would always have the one true gift: right now.
+
+---
+
+### 2. 한글 번역
+
+#### 소년과 노인의 만남
+
+101. 한 젊은이가 있었는데, 그는 자신의 일과 삶에 좀처럼 만족하지 못했습니다.
+102. 그는 늘 과거의 후회나 미래에 대한 걱정에 사로잡혀 집중하지 못하는 날들을 보냈습니다.
+103. 그는 근처 마을에 위대한 선물을 지닌 현명한 노인이 살고 있다는 이야기를 들었습니다.
+104. 사람들은 그 선물을 받은 사람은 누구나 놀랍도록 행복하고 성공적인 삶을 살게 된다고 말했습니다.
+105. 호기심과 기대를 품은 젊은이는 노인을 찾아가 그 선물에 대해 물어보기로 결심했습니다.
+106. 젊은이가 도착하자 노인은 따뜻하게 맞이하며 그에게 자리에 앉으라고 권했습니다.
+107. 젊은이는 단도직입적으로 물었습니다. "당신이 가지고 있다는 그 위대한 선물이 무엇입니까?"
+108. 노인은 빙그레 웃으며 대답했습니다. "당신이 받을 수 있는 가장 위대한 선물은 바로 '현재(Present)'입니다."
+109. 젊은이는 주변을 두리번거리며 특별한 무언가를 기대했지만, 눈에 띄는 것은 아무것도 없었습니다.
+110. 노인은 부드럽게 웃으며 말했습니다. "현재는 포장된 선물이 아니라, 바로 지금 당신이 있는 이 자리입니다."
+
+#### 선물을 찾아서
+
+111. 젊은이는 노인의 말이 이해되지 않아 어리둥절한 채로 집으로 돌아갔습니다.
+112. 그는 다시 일터로 돌아갔지만, 여전히 집중하지 못하고 불만스러운 날들이 계속되었습니다.
+113. 그는 현재 순간에 집중하려고 노력했지만, 생각보다 훨씬 어렵다는 것을 금방 깨달았습니다.
+114. 몇 주가 지난 후, 젊은이는 더 많은 질문을 가지고 다시 노인을 찾아갔습니다.
+115. "현재에 있으려고 했지만 자꾸 딴생각이 들었습니다." 그는 답답함을 토로했습니다.
+116. 노인은 고개를 끄덕이며 말했습니다. "그것이 바로 도전이자, 동시에 길이기도 합니다."
+117. 그는 현재에 있다는 것이 지금 하고 있는 일에 온전한 주의를 기울이는 것임을 설명했습니다.
+118. "누군가와 함께 있을 때는 진정으로 그 사람과 함께 있으십시오." 노인이 조언했습니다.
+119. "일을 할 때는 그 일에 완전하고 온전한 집중력을 쏟으십시오." 그가 덧붙였습니다.
+120. 젊은이는 현재란 목적지가 아니라 꾸준히 연습해야 할 습관임을 이해하기 시작했습니다.
+
+#### 완전히 현재에 존재하기
+
+121. 젊은이는 직장에서 회의를 하는 동안 완전히 존재하는 연습을 시작했습니다.
+122. 다음 할 일을 생각하는 대신, 그는 다른 사람들이 말하는 것을 주의 깊게 경청했습니다.
+123. 그는 사람들이 자신의 집중적인 태도를 고마워하고 더 열린 마음으로 반응한다는 것을 알아차렸습니다.
+124. 관계없는 생각에 정신 에너지를 낭비하지 않게 되자 그의 업무 효율도 크게 향상되었습니다.
+125. 그는 현재에 집중한다는 것이 덜 하는 것이 아니라 한 가지를 잘 하는 것임을 깨달았습니다.
+126. 노인은 완전한 현재감이 최고의 성과를 내는 '몰입(flow)' 상태를 만들어낸다고 가르쳐 주었습니다.
+127. "지금 이 순간 완전히 여기 있을 때," 노인이 말했습니다, "당신은 더 많이 경험하고 더 잘할 수 있습니다."
+128. 젊은이는 눈앞에 있는 것에만 집중할 때 불안감이 줄어든다는 것을 실감했습니다.
+129. 그는 대화 중에 메시지 확인을 멈추고 진정한 눈 맞춤을 시작했습니다.
+130. 시간이 지나면서 그는 각각의 현재 순간이 더욱 풍요롭고 만족스럽게 느껴진다는 것을 발견했습니다.
+
+#### 과거에서 배우기
+
+131. 어느 날 젊은이는 행복한 삶에서 과거의 역할에 대해 노인에게 물었습니다.
+132. "과거를 그냥 잊고 현재에만 집중해야 할까요?" 그가 물었습니다.
+133. 노인은 고개를 저으며 말했습니다. "과거는 감옥이 아니라 스승입니다."
+134. 그는 과거에서 배우는 것이 현재를 소유하는 세 가지 핵심 열쇠 중 하나라고 설명했습니다.
+135. 첫 번째 열쇠는 현재 순간에 온전히 존재하며 완전한 주의를 기울이는 것이었습니다.
+136. 두 번째 열쇠는 무엇이 잘못되었는지, 그리고 왜 그랬는지를 솔직하게 되돌아보며 과거에서 배우는 것이었습니다.
+137. "과거를 돌아보는 이유는," 노인이 말했습니다, "유용한 정보를 얻고 앞으로 나아가기 위해서입니다."
+138. 그는 과거에 너무 오래 머물러 있으면 현재 순간을 빼앗기게 된다고 경고했습니다.
+139. 젊은이는 직장에서 실패했던 프로젝트를 떠올리며 어떤 교훈을 얻어야 하는지 물었습니다.
+140. "스스로에게 물어보십시오. 무슨 일이 있었나? 무엇을 배울 수 있나? 다음에는 어떻게 하겠나?" 노인이 답했습니다.
+
+#### 과거를 올바르게 돌아보기
+
+141. 젊은이는 노인이 점검하도록 이끈 과거의 실패에 대해 신중하게 생각해 보았습니다.
+142. 그는 갈등이 두려워 초기 경고 신호들을 무시해 왔다는 사실을 깨달았습니다.
+143. 그는 자신의 회피가 문제를 필요 이상으로 훨씬 크게 키웠다는 것을 알게 되었습니다.
+144. 수치심이나 자책 대신, 그는 이것을 미래를 위한 유용한 데이터로 받아들이기로 했습니다.
+145. 그는 작은 노트에 그 경험에서 얻은 세 가지 명확한 교훈을 적어 내려갔습니다.
+146. 교훈을 끌어낸 뒤에는 그 기억이 더 이상 예전만큼 그를 괴롭히지 않는다는 것을 알아차렸습니다.
+147. 노인은 그에게 말했습니다. "죄책감은 과거가 현재를 지배하는 것이며, 배움은 당신을 자유롭게 합니다."
+148. 그는 스스로에게 이렇게 말하는 법을 배웠습니다. "그것은 끝났다. 나는 배웠다. 이제 앞으로 나아간다."
+149. 이 단순한 연습은 고통스러운 기억을 계속해서 되새기는 것을 멈추는 데 큰 도움이 되었습니다.
+150. 그는 마음이 가벼워졌고, 현재 순간에 대한 집중력도 눈에 띄게 강해졌습니다.
+
+#### 미래를 계획하기
+
+151. 젊은이는 그다음으로 걱정에 대해 물었습니다. "미래에 대한 생각은 아예 하지 말아야 하는 건가요?"
+152. 노인은 미소를 지으며 말했습니다. "걱정하는 것과 계획하는 것 사이에는 큰 차이가 있습니다."
+153. "걱정은 두려움으로 가득 찬 상상의 미래 속에 사는 것입니다." 그가 차분하게 설명했습니다.
+154. "계획은," 그가 말했습니다, "무슨 일이 일어나기를 원하는지 결정하고 그것을 실현하기 위한 조치를 취하는 것입니다."
+155. 현재를 소유하는 세 번째 열쇠는 명확한 의도를 가지고 미래를 계획하는 것이었습니다.
+156. "원하는 결과를 생각하고," 노인이 조언했습니다, "그런 다음 오늘 한 걸음을 내딛으십시오."
+157. 현재에 뿌리를 둔 계획은 현실에 기반을 두기 때문에 강력한 힘을 발휘했습니다.
+158. 젊은이는 미래의 목표를 적어두고 나서 다시 오늘에 집중하는 법을 배웠습니다.
+159. 그는 계획이 생기면 걱정을 멈추고 행동을 시작할 수 있다는 것을 깨달았습니다.
+160. 노인은 그에게 말했습니다. "계획은 미래의 당신 자신에게 주는 선물입니다."
+
+#### 과거·현재·미래의 균형 잡기
+
+161. 젊은이는 이제 세 가지 요소—현재 집중, 과거에서 배우기, 미래 계획하기—를 이해했습니다.
+162. 그는 노인에게 일상 속에서 이 세 가지를 압도당하지 않고 어떻게 균형을 잡는지 물었습니다.
+163. 노인은 대답했습니다. "현재는 항상 근거지입니다. 항상 그곳에서 시작하고 그곳으로 돌아오십시오."
+164. 그는 과거를 배우기 위해 잠깐 방문하고, 그런 다음 현재로 돌아온다고 설명했습니다.
+165. 미래도 계획하기 위해 잠깐 방문하고, 그런 다음 다시 현재로 돌아오는 것이었습니다.
+166. "현재는 시간을 무시하는 것이 아닙니다." 그가 말했습니다. "모든 시간을 현명하게 활용하는 것입니다."
+167. 젊은이는 이것을 적었습니다. "과거에서 배워라. 미래를 계획하라. 현재를 살아라."
+168. 그는 매일 아침 과거의 교훈 하나를 되새기고 그날 하루의 의도를 하나 설정하며 시작했습니다.
+169. 매일 저녁에는 잘 된 것을 5분간 돌아보고 내일을 위한 계획 하나를 적었습니다.
+170. 이 단순한 리듬이 그를 동시에 안정되고 목적 있는 사람으로 만들어 준다는 것을 깨달았습니다.
+
+#### 직장에서 선물 활용하기
+
+171. 젊은이는 직장에서 가장 힘들었던 프로젝트에 이 원칙들을 적용했습니다.
+172. 그는 매 회의를 명확한 의도로 시작하고 나서 토의에 온전한 주의를 기울였습니다.
+173. 갈등이 생겼을 때, 그는 방어적으로 반응하는 대신 "여기서 무엇을 배울 수 있을까?"라고 물었습니다.
+174. 그는 피드백을 즉각 판단하거나 무시하지 않고 귀 기울여 들었습니다.
+175. 남을 탓하는 대신 모든 좌절에서 교훈을 찾았습니다.
+176. 팀원들은 변화를 알아차리고 그를 리더로서 더 신뢰하기 시작했습니다.
+177. 그는 팀의 분기 목표를 명확하게 계획한 후 일상적인 실행에 집중했습니다.
+178. 그는 더 이상 아직 일어나지도 않은 잠재적 문제들을 수시간 동안 걱정하지 않았습니다.
+179. 대신 가장 가능성 높은 두세 가지 위험을 파악하고 간단한 대비책을 마련했습니다.
+180. 그의 업무는 눈부시게 향상되었고, 그는 매일의 일과에서 진정한 기쁨을 찾기 시작했습니다.
+
+#### 소년의 변화
+
+181. 몇 달 후, 젊은이는 활짝 웃으며 감사한 마음으로 다시 노인을 찾아왔습니다.
+182. 그는 사랑하는 사람들과 함께할 때 진정으로 함께함으로써 관계가 깊어졌다고 전했습니다.
+183. 그는 상상했던 것 이상으로 업무 성과가 향상되었다고 노인에게 말했습니다.
+184. "과거를 쫓고 미래를 두려워하는 것을 멈췄습니다." 그가 말했습니다. "저는 지금 살고 있습니다."
+185. 노인은 주의 깊게 듣고 물었습니다. "그렇다면 지금 이 순간에 무엇을 느끼십니까?"
+186. 젊은이는 잠시 멈추고 주위를 둘러본 후 말했습니다. "완전히 여기에 있는 것 같습니다. 살아있음을 느낍니다."
+187. 노인이 웃으며 말했습니다. "그것이 바로 선물입니다. 당신은 항상 그것을 가지고 있었습니다. 다만 열지 않았을 뿐입니다."
+188. 젊은이는 자신이 배운 단순하면서도 강력한 교훈에 깊은 감사함을 느꼈습니다.
+189. 그는 현재란 다른 곳에서 찾아야 할 무언가가 아니라, 언제나 자신에게 주어진 것임을 깨달았습니다.
+190. 그는 노인에게 진심으로 감사하며, 자신이 만나는 모든 사람과 이 선물을 나누겠다고 약속했습니다.
+
+#### 선물로 살아가기
+
+191. 그날부터 젊은이는 현재를 자신이 일하고 살아가는 방식의 토대로 삼았습니다.
+192. 그는 현재에 있을 때 더 나은 결정을 내리고 스트레스도 훨씬 줄어든다는 것을 알아차렸습니다.
+193. 과거로 빠져들 때면 자신에게 부드럽게 물었습니다. "여기서 얻을 교훈은 무엇인가?"
+194. 미래로 빠져들 때면 물었습니다. "나의 계획은 무엇이며, 지금 당장 할 수 있는 일은 무엇인가?"
+195. 이 두 가지 질문은 항상 그를 명확함과 목적의식을 가지고 현재로 돌아오게 이끌었습니다.
+196. 그는 동료들에게 세 가지 열쇠를 나누었습니다. 현재에 있어라, 과거에서 배워라, 미래를 계획하라.
+197. 그는 '현재(THE PRESENT)'라는 단어를 카드에 써서 매일 바라볼 수 있도록 책상 위에 올려두었습니다.
+198. 그는 현재의 선물이 한 번의 발견으로 끝나는 것이 아니라 매일의 실천임을 이해했습니다.
+199. 그는 현재를 사는 것이 삶을 완벽하거나 쉽게 만들어 주지 않는다는 것을 알았습니다.
+200. 그것은 어디에 있든, 무엇을 마주하든, 항상 단 하나의 진정한 선물—바로 지금—을 갖게 된다는 의미였습니다.
+
+---
+
+*Spencer Johnson의 세 번째 이야기 — Book 3: The Present (선물) (2003)*
