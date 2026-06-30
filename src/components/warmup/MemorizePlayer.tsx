@@ -8,6 +8,7 @@ import {
   buildCloze,
   deckSr,
   loadMemorize,
+  normalizeAnswer,
   rateCard,
   resetMemorizeDeck,
   sentenceKey,
@@ -87,19 +88,53 @@ function highlightAnswers(en: string, answers: string[]) {
   });
 }
 
-/** ____ 자리에 빈칸 pill 을 넣어 표시 */
-function renderCloze(display: string) {
+/**
+ * display 문자열의 ____ 자리마다 <input>을 삽입해 반환한다.
+ * onChange(idx, val) — 입력값 변경
+ * onEnterAt(idx)    — Enter: 마지막 빈칸이면 제출, 아니면 다음 input으로 포커스
+ * refs              — input DOM 참조
+ */
+function renderClozeWithInputs(
+  display: string,
+  inputs: string[],
+  onChange: (idx: number, val: string) => void,
+  onEnterAt: (idx: number) => void,
+  refs: React.MutableRefObject<(HTMLInputElement | null)[]>,
+) {
   const parts = display.split("____");
-  return parts.map((seg, i) => (
-    <span key={i}>
-      {seg}
-      {i < parts.length - 1 && (
-        <span className="mx-0.5 inline-block min-w-[3.2em] -translate-y-[1px] border-b-2 border-dashed border-amber-400/80 align-middle text-transparent">
-          {" "}
-        </span>
-      )}
-    </span>
-  ));
+  let blankIdx = 0;
+  const nodes: React.ReactNode[] = [];
+  parts.forEach((seg, i) => {
+    nodes.push(<span key={`s${i}`}>{seg}</span>);
+    if (i < parts.length - 1) {
+      const idx = blankIdx++;
+      nodes.push(
+        <input
+          key={`inp${idx}`}
+          ref={(el) => {
+            refs.current[idx] = el;
+          }}
+          type="text"
+          value={inputs[idx] ?? ""}
+          // autoFocus works because AnimatePresence remounts the card on each cur.key change
+          autoFocus={idx === 0}
+          autoComplete="off"
+          autoCorrect="off"
+          autoCapitalize="off"
+          spellCheck={false}
+          onChange={(e) => onChange(idx, e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              onEnterAt(idx);
+            }
+          }}
+          className="mx-1 inline-block w-24 rounded-lg border-0 border-b-2 border-amber-400 bg-amber-50/80 px-2 py-0.5 text-center align-baseline text-[0.85em] font-bold text-amber-900 outline-none transition focus:border-amber-500 focus:bg-amber-50 focus:ring-2 focus:ring-amber-400/40 sm:w-28"
+        />,
+      );
+    }
+  });
+  return nodes;
 }
 
 export default function MemorizePlayer({ deck }: { deck: WarmupDeck }) {
@@ -108,10 +143,19 @@ export default function MemorizePlayer({ deck }: { deck: WarmupDeck }) {
 
   const [queue, setQueue] = useState<QueueItem[]>([]);
   const [sessionTotal, setSessionTotal] = useState(0);
+  // recall 단계 전용
   const [revealed, setRevealed] = useState(false);
   const [done, setDone] = useState(false);
   const [ready, setReady] = useState(false);
   const [emptyDue, setEmptyDue] = useState(false);
+
+  // ── Cloze 입력 상태 ──────────────────────────────────────
+  const [inputs, setInputs] = useState<string[]>([]);
+  /** null=입력 대기, {ok:true}=정답, {ok:false}=오답/패스 */
+  const [clozePending, setClozePending] = useState<{ ok: boolean } | null>(null);
+  /** 정답 자동 전진 guard (타임아웃·키보드 이중 호출 방지) */
+  const clozeAdvancedRef = useRef(false);
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   const doneKeys = useRef<Set<string>>(new Set());
   const firstSeen = useRef<Set<string>>(new Set());
@@ -126,6 +170,9 @@ export default function MemorizePlayer({ deck }: { deck: WarmupDeck }) {
       stats.current = { firstTryOk: 0, again: 0 };
       setRevealed(false);
       setDone(false);
+      setInputs([]);
+      setClozePending(null);
+      clozeAdvancedRef.current = false;
       if (q.length === 0) {
         setEmptyDue(true);
         setQueue([]);
@@ -145,6 +192,16 @@ export default function MemorizePlayer({ deck }: { deck: WarmupDeck }) {
   }, [startSession]);
 
   const cur = queue[0];
+
+  // 카드 전환 시 입력 상태 초기화
+  useEffect(() => {
+    if (!cur) return;
+    const blanks = cur.step === "cloze" ? (cur.cloze?.answers.length ?? 1) : 0;
+    setInputs(Array(blanks).fill(""));
+    setClozePending(null);
+    clozeAdvancedRef.current = false;
+    inputRefs.current = [];
+  }, [cur?.key]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const rate = useCallback(
     (ok: boolean) => {
@@ -172,25 +229,64 @@ export default function MemorizePlayer({ deck }: { deck: WarmupDeck }) {
     [cur, deck.id],
   );
 
+  // Cloze 제출: 입력 정규화 후 answers 와 비교
+  const submitCloze = useCallback(() => {
+    if (!cur?.cloze || clozePending) return;
+    const ok = cur.cloze.answers.every(
+      (ans, i) => normalizeAnswer(inputs[i] ?? "") === ans.toLowerCase(),
+    );
+    clozeAdvancedRef.current = false;
+    setClozePending({ ok });
+  }, [cur, inputs, clozePending]);
+
+  // 정답 자동 전진 (800ms 후 rate(true))
+  useEffect(() => {
+    if (!clozePending?.ok) return;
+    const t = setTimeout(() => {
+      if (!clozeAdvancedRef.current) {
+        clozeAdvancedRef.current = true;
+        setClozePending(null);
+        rate(true);
+      }
+    }, 800);
+    return () => clearTimeout(t);
+  }, [clozePending, rate]);
+
+  // 키보드 단축키
   useEffect(() => {
     if (done || !cur) return;
     const onKey = (e: KeyboardEvent) => {
-      if (!revealed && (e.key === " " || e.key === "Enter")) {
-        e.preventDefault();
-        setRevealed(true);
-      } else if (revealed) {
-        if (e.key === "1") {
+      if (cur.step === "cloze") {
+        // 피드백 상태에서만 Enter/Space 로 전진 (입력 중엔 input 의 자체 핸들러 사용)
+        if (!clozePending) return;
+        if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
-          rate(false);
-        } else if (e.key === "2" || e.key === " " || e.key === "Enter") {
+          if (!clozeAdvancedRef.current) {
+            clozeAdvancedRef.current = true;
+            const ok = clozePending.ok;
+            setClozePending(null);
+            rate(ok);
+          }
+        }
+      } else {
+        // Recall: 기존 동작 그대로
+        if (!revealed && (e.key === " " || e.key === "Enter")) {
           e.preventDefault();
-          rate(true);
+          setRevealed(true);
+        } else if (revealed) {
+          if (e.key === "1") {
+            e.preventDefault();
+            rate(false);
+          } else if (e.key === "2" || e.key === " " || e.key === "Enter") {
+            e.preventDefault();
+            rate(true);
+          }
         }
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [done, cur, revealed, rate]);
+  }, [done, cur, revealed, rate, clozePending]);
 
   const ease = [0.22, 1, 0.36, 1] as const;
   const doneCount = doneKeys.current.size;
@@ -300,6 +396,7 @@ export default function MemorizePlayer({ deck }: { deck: WarmupDeck }) {
   }
 
   const isCloze = cur.step === "cloze";
+  const totalBlanks = cur.cloze?.answers.length ?? 1;
 
   // ── 카드 화면 ──────────────────────────────────────
   return (
@@ -313,6 +410,7 @@ export default function MemorizePlayer({ deck }: { deck: WarmupDeck }) {
             : "bg-gradient-to-br from-violet-400/30 via-fuchsia-400/25 to-purple-400/20"
         }`}
       />
+
       {/* 상단 */}
       <div className="flex items-center justify-between gap-3">
         <button
@@ -344,7 +442,7 @@ export default function MemorizePlayer({ deck }: { deck: WarmupDeck }) {
       <div className="flex flex-1 flex-col justify-center py-6">
         <AnimatePresence mode="wait">
           <motion.div
-            key={cur.key + (revealed ? "-r" : "")}
+            key={cur.key + (!isCloze && revealed ? "-r" : "")}
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
@@ -361,7 +459,7 @@ export default function MemorizePlayer({ deck }: { deck: WarmupDeck }) {
               }`}
             />
 
-            {/* 단계 배지 + 섹션 */}
+            {/* 단계 배지 + No. */}
             <div className="flex items-center justify-between">
               <span
                 className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-bold ${
@@ -382,78 +480,165 @@ export default function MemorizePlayer({ deck }: { deck: WarmupDeck }) {
               </span>
             </div>
 
-            {/* 문제 — 번호를 문장 앞에 (1~100 순서 암기) */}
+            {/* ── Cloze 단계 ── */}
             {isCloze ? (
-              <p className="mt-6 text-[20px] font-semibold leading-[1.6] tracking-[-0.01em] text-neutral-900 sm:text-[25px]">
-                <span className="text-gradient mr-2 font-extrabold tabnum">{cur.no}.</span>
-                {renderCloze(cur.cloze?.display ?? cur.en)}
-              </p>
-            ) : (
-              <p className="mt-6 text-[18px] font-semibold leading-relaxed text-neutral-800 sm:text-[21px]">
-                <span className="text-gradient mr-2 font-extrabold tabnum">{cur.no}.</span>
-                {cur.ko}
-              </p>
-            )}
+              <>
+                {/* 문장 (피드백 전=입력 필드, 피드백 후=하이라이트) */}
+                <div className="mt-6 text-[20px] font-semibold leading-[1.7] tracking-[-0.01em] text-neutral-900 sm:text-[24px]">
+                  <span className="text-gradient mr-2 font-extrabold tabnum">{cur.no}.</span>
+                  {clozePending
+                    ? highlightAnswers(cur.en, cur.cloze?.answers ?? [])
+                    : renderClozeWithInputs(
+                        cur.cloze?.display ?? cur.en,
+                        inputs,
+                        (idx, val) =>
+                          setInputs((prev) => {
+                            const next = [...prev];
+                            next[idx] = val;
+                            return next;
+                          }),
+                        (idx) => {
+                          if (idx === totalBlanks - 1) submitCloze();
+                          else inputRefs.current[idx + 1]?.focus();
+                        },
+                        inputRefs,
+                      )}
+                </div>
 
-            {/* 정답 영역 */}
-            <div
-              className={`mt-7 rounded-2xl px-4 py-4 ring-1 ${
-                isCloze
-                  ? "bg-amber-50/70 ring-amber-500/15"
-                  : "bg-violet-50/60 ring-violet-500/15"
-              }`}
-            >
-              {revealed ? (
-                <motion.div
-                  initial={{ opacity: 0, y: 6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.28 }}
+                {/* 피드백 박스 */}
+                <div
+                  className={`mt-6 rounded-2xl px-4 py-4 ring-1 transition-colors ${
+                    clozePending?.ok
+                      ? "bg-emerald-50/80 ring-emerald-500/20"
+                      : clozePending
+                        ? "bg-rose-50/70 ring-rose-500/20"
+                        : "bg-amber-50/60 ring-amber-500/15"
+                  }`}
                 >
-                  <p
-                    className={`mb-2 text-[11px] font-semibold ${
-                      isCloze ? "text-amber-500" : "text-violet-500"
-                    }`}
-                  >
-                    정답
-                  </p>
-                  <p className="text-[18px] font-semibold leading-[1.55] text-neutral-900 sm:text-[21px]">
-                    <span className="text-gradient mr-2 font-extrabold tabnum">{cur.no}.</span>
-                    {isCloze && cur.cloze
-                      ? highlightAnswers(cur.en, cur.cloze.answers)
-                      : cur.en}
-                  </p>
-                  {!isCloze && (
-                    <p className="mt-3 text-[14px] leading-relaxed text-neutral-400">{cur.ko}</p>
+                  {clozePending ? (
+                    <motion.div
+                      initial={{ opacity: 0, y: 4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.22 }}
+                    >
+                      <p
+                        className={`mb-1.5 text-[11px] font-bold ${
+                          clozePending.ok ? "text-emerald-600" : "text-rose-500"
+                        }`}
+                      >
+                        {clozePending.ok ? "✓ 정답!" : "✗ 오답 — 정답 확인 후 다음으로"}
+                      </p>
+                      {!clozePending.ok && (
+                        <p className="text-[12px] text-neutral-400">
+                          Enter 또는 아래 버튼으로 다음 문장으로 이동하세요.
+                        </p>
+                      )}
+                      {clozePending.ok && (
+                        <p className="text-[12px] text-emerald-500">
+                          잠시 후 자동으로 넘어갑니다.
+                        </p>
+                      )}
+                    </motion.div>
+                  ) : (
+                    <p className="text-[13px] text-neutral-400">
+                      빈칸에 단어를 입력하고{" "}
+                      <strong className="font-semibold text-amber-600">Enter</strong>로 제출하세요.
+                      모르면 아래 「모르겠어요」를 누르세요.
+                    </p>
                   )}
-                </motion.div>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => setRevealed(true)}
-                  className="group flex w-full items-center justify-between rounded-xl bg-white/70 px-4 py-3.5 text-left ring-1 ring-white/60 transition-colors hover:bg-white"
-                >
-                  <span className="text-[13px] text-neutral-500">
-                    {isCloze
-                      ? "빈칸의 단어를 떠올린 뒤 확인하세요"
-                      : "머릿속으로 끝까지 말한 뒤 확인하세요"}
-                  </span>
-                  <span
-                    className={`text-[13px] font-semibold ${
-                      isCloze ? "text-amber-600" : "text-violet-600"
-                    }`}
-                  >
-                    정답 보기
-                  </span>
-                </button>
-              )}
-            </div>
+                </div>
+              </>
+            ) : (
+              /* ── Recall 단계 (기존 자가채점 그대로) ── */
+              <>
+                <p className="mt-6 text-[18px] font-semibold leading-relaxed text-neutral-800 sm:text-[21px]">
+                  <span className="text-gradient mr-2 font-extrabold tabnum">{cur.no}.</span>
+                  {cur.ko}
+                </p>
+
+                <div className="mt-7 rounded-2xl bg-violet-50/60 px-4 py-4 ring-1 ring-violet-500/15">
+                  {revealed ? (
+                    <motion.div
+                      initial={{ opacity: 0, y: 6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.28 }}
+                    >
+                      <p className="mb-2 text-[11px] font-semibold text-violet-500">정답</p>
+                      <p className="text-[18px] font-semibold leading-[1.55] text-neutral-900 sm:text-[21px]">
+                        <span className="text-gradient mr-2 font-extrabold tabnum">{cur.no}.</span>
+                        {cur.en}
+                      </p>
+                      <p className="mt-3 text-[14px] leading-relaxed text-neutral-400">{cur.ko}</p>
+                    </motion.div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setRevealed(true)}
+                      className="group flex w-full items-center justify-between rounded-xl bg-white/70 px-4 py-3.5 text-left ring-1 ring-white/60 transition-colors hover:bg-white"
+                    >
+                      <span className="text-[13px] text-neutral-500">
+                        머릿속으로 끝까지 말한 뒤 확인하세요
+                      </span>
+                      <span className="text-[13px] font-semibold text-violet-600">정답 보기</span>
+                    </button>
+                  )}
+                </div>
+              </>
+            )}
           </motion.div>
         </AnimatePresence>
       </div>
 
       {/* 하단 컨트롤 */}
       <div>
-        {revealed ? (
+        {isCloze ? (
+          clozePending ? (
+            /* 피드백 후: 정답이면 자동 전진 + 수동 버튼, 오답이면 다음 버튼 */
+            <motion.button
+              type="button"
+              onClick={() => {
+                if (!clozeAdvancedRef.current) {
+                  clozeAdvancedRef.current = true;
+                  const ok = clozePending.ok;
+                  setClozePending(null);
+                  rate(ok);
+                }
+              }}
+              whileTap={{ scale: 0.98 }}
+              className={`min-h-[52px] w-full rounded-2xl text-[15px] font-bold transition ${
+                clozePending.ok
+                  ? "btn-primary"
+                  : "bg-rose-50 text-rose-600 ring-1 ring-rose-500/25 hover:bg-rose-100"
+              }`}
+            >
+              {clozePending.ok ? "다음 ✓" : "다음 문장으로 →"}
+            </motion.button>
+          ) : (
+            /* 입력 중: 모르겠어요 + 확인 */
+            <div className="flex items-center gap-2.5">
+              <motion.button
+                type="button"
+                onClick={() => {
+                  clozeAdvancedRef.current = false;
+                  setClozePending({ ok: false });
+                }}
+                whileTap={{ scale: 0.98 }}
+                className="min-h-[52px] flex-[0_0_auto] rounded-2xl px-5 text-[14px] font-semibold text-neutral-400 ring-1 ring-neutral-900/10 transition hover:bg-neutral-50 active:scale-[0.99]"
+              >
+                모르겠어요
+              </motion.button>
+              <motion.button
+                type="button"
+                onClick={submitCloze}
+                whileTap={{ scale: 0.98 }}
+                className="btn-primary min-h-[52px] flex-1 text-[15px]"
+              >
+                확인 →
+              </motion.button>
+            </div>
+          )
+        ) : revealed ? (
+          /* Recall 채점 */
           <div className="flex items-center gap-2.5">
             <motion.button
               type="button"
@@ -484,16 +669,36 @@ export default function MemorizePlayer({ deck }: { deck: WarmupDeck }) {
         )}
       </div>
 
+      {/* 키보드 힌트 (데스크탑) */}
       <div className="mt-3 hidden items-center justify-center gap-2.5 text-[11px] text-neutral-400 sm:flex">
-        <span className="inline-flex items-center gap-1">
-          <Kbd>Space</Kbd> 정답 보기
-        </span>
-        <span className="inline-flex items-center gap-1">
-          <Kbd>1</Kbd> 다시
-        </span>
-        <span className="inline-flex items-center gap-1">
-          <Kbd>2</Kbd> 알았어요
-        </span>
+        {isCloze ? (
+          clozePending ? (
+            <span className="inline-flex items-center gap-1">
+              <Kbd>Enter</Kbd> 다음으로
+            </span>
+          ) : (
+            <>
+              <span className="inline-flex items-center gap-1">
+                <Kbd>Enter</Kbd> 제출 / 다음 빈칸
+              </span>
+              <span className="inline-flex items-center gap-1">
+                <Kbd>Tab</Kbd> 빈칸 이동
+              </span>
+            </>
+          )
+        ) : (
+          <>
+            <span className="inline-flex items-center gap-1">
+              <Kbd>Space</Kbd> 정답 보기
+            </span>
+            <span className="inline-flex items-center gap-1">
+              <Kbd>1</Kbd> 다시
+            </span>
+            <span className="inline-flex items-center gap-1">
+              <Kbd>2</Kbd> 알았어요
+            </span>
+          </>
+        )}
       </div>
 
       <div className="mt-3 flex justify-center">

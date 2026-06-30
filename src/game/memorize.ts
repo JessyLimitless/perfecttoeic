@@ -100,6 +100,17 @@ export function dueCount(dk: DeckSr, now = Date.now()): number {
   return Object.values(dk).filter((c) => c.seen > 0 && c.due <= now).length;
 }
 
+/**
+ * 사용자 입력값 정규화: 소문자화 + 앞뒤 공백 제거 + 양끝 구두점 제거.
+ * buildCloze 의 answers 는 core() 결과(소문자·알파벳+') 이므로 동일 형태로 맞춰 비교.
+ */
+export function normalizeAnswer(s: string): string {
+  return s
+    .toLowerCase()
+    .trim()
+    .replace(/^[.,!?"';:()]+|[.,!?"';:()]+$/g, "");
+}
+
 // ── Cloze 생성 ────────────────────────────────────────────
 const STOP = new Set([
   "the", "and", "for", "are", "was", "were", "been", "have", "has", "had",
