@@ -122,8 +122,9 @@ export default function HomePage() {
           </h1>
 
           <p className="mt-5 max-w-md text-[15px] leading-relaxed text-neutral-500 sm:text-base">
-            Part 5·6·7 실전 유형을 골라 집중 연습하고, 끝나면 약한 유형을
-            짚어 드려요. AI 챌린저와의 속도전으로 실전 감각까지.
+            스토리 리딩으로 가볍게 몸을 풀고, Part 5·6·7 실전 유형을 골라 집중
+            연습하세요. 끝나면 약한 유형을 짚어 드리고, AI 챌린저와의 속도전으로
+            실전 감각까지.
           </p>
 
           {/* 신뢰 지표 */}
@@ -139,6 +140,7 @@ export default function HomePage() {
               loading={loading}
               onStart={handleStart}
               onMatch={() => router.push("/match")}
+              onWarmup={() => router.push("/warmup")}
             />
           </div>
         </motion.section>
@@ -214,6 +216,7 @@ export default function HomePage() {
               loading={loading}
               onStart={handleStart}
               onMatch={() => router.push("/match")}
+              onWarmup={() => router.push("/warmup")}
             />
           </div>
         </motion.section>
@@ -239,10 +242,12 @@ function CtaButtons({
   loading,
   onStart,
   onMatch,
+  onWarmup,
 }: {
   loading: boolean;
   onStart: () => void;
   onMatch: () => void;
+  onWarmup: () => void;
 }) {
   return (
     <>
@@ -278,6 +283,24 @@ function CtaButtons({
           AI 대결 시작
           <span className="rounded-full bg-white/15 px-2 py-0.5 text-[11px] font-semibold tracking-wide">
             속도전
+          </span>
+        </span>
+      </motion.button>
+
+      <motion.button
+        type="button"
+        onClick={onWarmup}
+        whileHover={{ scale: 1.015 }}
+        whileTap={{ scale: 0.985 }}
+        className="btn-ghost group min-h-[52px] w-full"
+      >
+        <span className="inline-flex items-center justify-center gap-2 text-[15px]">
+          <span className="text-[17px] transition-transform group-hover:scale-110">
+            📖
+          </span>
+          몸풀기 · 스토리 리딩
+          <span className="rounded-full bg-indigo-500/10 px-2 py-0.5 text-[11px] font-semibold tracking-wide text-indigo-500">
+            워밍업
           </span>
         </span>
       </motion.button>
