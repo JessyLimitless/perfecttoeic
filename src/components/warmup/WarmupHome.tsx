@@ -23,6 +23,8 @@ import {
   loadOrder,
   deckOrder,
   clearedCount,
+  bestChunkMs,
+  formatOrderTime,
   resetOrderDeck,
   type OrderStore,
 } from "@/game/order";
@@ -359,13 +361,21 @@ function OrderCardBody({
   const pct = total > 0 ? Math.round((cleared / total) * 100) : 0;
   const started = cleared > 0;
   const allDone = cleared >= total;
+  const best = bestChunkMs(d); // 최단 청크 기록(ms)
 
   return (
     <>
       <div className="px-5 sm:px-6">
         <div className="flex items-center justify-between text-[12px] text-neutral-500">
-          <span>
-            청크 <span className="font-semibold text-fuchsia-600">{cleared}</span>/{total}
+          <span className="inline-flex items-center gap-2">
+            <span>
+              청크 <span className="font-semibold text-fuchsia-600">{cleared}</span>/{total}
+            </span>
+            {best !== undefined && (
+              <span className="inline-flex items-center gap-0.5 rounded-full bg-fuchsia-500/10 px-1.5 py-0.5 text-[10.5px] font-semibold text-fuchsia-600 ring-1 ring-fuchsia-500/20">
+                ⏱ 최고 {formatOrderTime(best)}
+              </span>
+            )}
           </span>
           {allDone ? (
             <span className="font-semibold text-fuchsia-600">전체 완성 ✓</span>

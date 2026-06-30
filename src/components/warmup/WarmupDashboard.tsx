@@ -10,7 +10,13 @@ import {
   dueCount,
   type MemorizeStore,
 } from "@/game/memorize";
-import { deckOrder, clearedCount, type OrderStore } from "@/game/order";
+import {
+  deckOrder,
+  clearedCount,
+  bestChunkMs,
+  formatOrderTime,
+  type OrderStore,
+} from "@/game/order";
 
 interface Props {
   decks: WarmupDeck[];
@@ -80,6 +86,15 @@ export default function WarmupDashboard({ decks, progress, memo, order }: Props)
   );
   const orderPct =
     totalChunks > 0 ? Math.round((totalCleared / totalChunks) * 100) : 0;
+
+  // 순서 최고 기록 — 전 덱 통틀어 가장 빠른 청크 클리어 시간
+  let bestOrderMs: number | undefined;
+  for (const d of decks) {
+    const b = bestChunkMs(deckOrder(order, d.id));
+    if (b !== undefined && (bestOrderMs === undefined || b < bestOrderMs)) {
+      bestOrderMs = b;
+    }
+  }
 
   // 전체 종합 (3모드 평균)
   const overallPct = Math.round((readPct + memoPct + orderPct) / 3);
@@ -162,6 +177,9 @@ export default function WarmupDashboard({ decks, progress, memo, order }: Props)
                 ? { text: `${orderPct}%`, variant: "normal" }
                 : { text: "시작 전", variant: "muted" }
           }
+          note={
+            bestOrderMs !== undefined ? `⏱ 최고 ${formatOrderTime(bestOrderMs)}` : undefined
+          }
         />
       </div>
     </motion.div>
@@ -177,6 +195,7 @@ function ModeStatBlock({
   primaryDen,
   primaryUnit,
   badge,
+  note,
 }: {
   icon: string;
   label: string;
@@ -186,6 +205,7 @@ function ModeStatBlock({
   primaryDen: number;
   primaryUnit: string;
   badge: { text: string; variant: BadgeVariant };
+  note?: string;
 }) {
   const c = ACCENT[tone];
 
@@ -226,11 +246,18 @@ function ModeStatBlock({
       </div>
 
       {/* 상태 뱃지 */}
-      <span
-        className={`self-start rounded-full px-2 py-0.5 text-[10px] font-semibold sm:text-[10.5px] ${badgeCls}`}
-      >
-        {badge.text}
-      </span>
+      <div className="flex flex-wrap items-center gap-1.5">
+        <span
+          className={`rounded-full px-2 py-0.5 text-[10px] font-semibold sm:text-[10.5px] ${badgeCls}`}
+        >
+          {badge.text}
+        </span>
+        {note && (
+          <span className={`text-[10px] font-semibold sm:text-[10.5px] ${c.text}`}>
+            {note}
+          </span>
+        )}
+      </div>
     </div>
   );
 }
