@@ -27,6 +27,7 @@ import {
   type OrderStore,
 } from "@/game/order";
 import ResetButton from "./ResetButton";
+import WarmupDashboard from "./WarmupDashboard";
 
 type Mode = "read" | "memorize" | "order";
 
@@ -94,6 +95,9 @@ export default function WarmupHome({ decks }: { decks: WarmupDeck[] }) {
               : "10문장씩 끊어 순서를 맞추는 게임이에요. ‘다음 문장’을 차례로 골라 이야기를 완성하면, 문장 사이의 연결을 자연스럽게 익힙니다. (총 10개 청크)"}
         </p>
       </motion.div>
+
+      {/* 통합 진도 대시보드 — 진도 있을 때만 표시 */}
+      <WarmupDashboard decks={decks} progress={progress} memo={memo} order={order} />
 
       {/* 모드 토글 — 슬라이딩 세그먼트 */}
       <div className="mt-7 inline-flex rounded-2xl bg-neutral-900/[0.05] p-1 ring-1 ring-neutral-900/[0.04]">
