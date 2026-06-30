@@ -12,6 +12,18 @@ import {
   resetOrderDeck,
 } from "@/game/order";
 
+/** 초 → mm:ss 문자열 */
+function formatTime(sec: number): string {
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+}
+
+/** ms → mm:ss 문자열 */
+function formatTimeMs(ms: number): string {
+  return formatTime(Math.floor(ms / 1000));
+}
+
 interface PoolItem {
   /** 청크 내 정답 위치 0~9 */
   pos: number;
@@ -47,6 +59,16 @@ export default function OrderingGame({ deck }: { deck: WarmupDeck }) {
   const mistakesRef = useRef(0);
   const shakeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // ── 타이머 ──────────────────────────────────────────
+  const timerIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const startTimeRef = useRef<number>(Date.now());
+  const [elapsedSec, setElapsedSec] = useState(0);
+  /** 클리어 순간 실제 경과 ms */
+  const [clearTimeMs, setClearTimeMs] = useState<number | null>(null);
+  /** 클리어 직전 저장된 이전 베스트 ms */
+  const [prevBestMs, setPrevBestMs] = useState<number | undefined>(undefined);
+  const [isNewRecord, setIsNewRecord] = useState(false);
+
   const initChunk = useCallback(
     (idx: number) => {
       const sec = chunks[idx];
@@ -62,6 +84,17 @@ export default function OrderingGame({ deck }: { deck: WarmupDeck }) {
       setWrongCount(0);
       setCleared(false);
       mistakesRef.current = 0;
+
+      // 타이머 초기화 + 시작
+      if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
+      startTimeRef.current = Date.now();
+      setElapsedSec(0);
+      setClearTimeMs(null);
+      setPrevBestMs(undefined);
+      setIsNewRecord(false);
+      timerIntervalRef.current = setInterval(() => {
+        setElapsedSec(Math.floor((Date.now() - startTimeRef.current) / 1000));
+      }, 1000);
     },
     [chunks],
   );
@@ -87,8 +120,20 @@ export default function OrderingGame({ deck }: { deck: WarmupDeck }) {
         setWrongCount(0);
         setWrongPos(null);
         if (expectedNext + 1 >= chunks[chunkIdx].sentences.length) {
+          // 타이머 정지 + 기록 비교
+          if (timerIntervalRef.current) {
+            clearInterval(timerIntervalRef.current);
+            timerIntervalRef.current = null;
+          }
+          const elapsed = Date.now() - startTimeRef.current;
+          const prevD = deckOrder(loadOrder(), deck.id);
+          const oldBest = prevD.chunks[chunkIdx]?.bestTimeMs;
+          const newRecord = oldBest === undefined || elapsed < oldBest;
+          setClearTimeMs(elapsed);
+          setPrevBestMs(oldBest);
+          setIsNewRecord(newRecord);
           setCleared(true);
-          recordChunk(deck.id, chunkIdx, mistakesRef.current);
+          recordChunk(deck.id, chunkIdx, mistakesRef.current, elapsed);
         }
       } else {
         // 오답 — 흔들림 + 실수 카운트
@@ -127,6 +172,7 @@ export default function OrderingGame({ deck }: { deck: WarmupDeck }) {
   useEffect(() => {
     return () => {
       if (shakeTimer.current) clearTimeout(shakeTimer.current);
+      if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
     };
   }, []);
 
@@ -220,23 +266,29 @@ export default function OrderingGame({ deck }: { deck: WarmupDeck }) {
         />
       </div>
 
-      {/* 테마 + 뜻 토글 */}
+      {/* 테마 + 타이머 + 뜻 토글 */}
       <div className="mt-4 flex items-center justify-between gap-3">
         <span className="inline-flex items-center gap-1.5 rounded-full bg-fuchsia-500/10 px-2.5 py-1 text-[12px] font-bold text-fuchsia-600 ring-1 ring-fuchsia-500/15">
           <span className="h-1.5 w-1.5 animate-glow-pulse rounded-full bg-fuchsia-500" />
           {chunks[chunkIdx].titleKo}
         </span>
-        <button
-          type="button"
-          onClick={() => setShowKo((v) => !v)}
-          className={`rounded-full px-3 py-1 text-[12px] font-semibold transition ${
-            showKo
-              ? "bg-fuchsia-500/10 text-fuchsia-600 ring-1 ring-fuchsia-500/20"
-              : "text-neutral-400 ring-1 ring-neutral-200 hover:text-neutral-600"
-          }`}
-        >
-          뜻 {showKo ? "끄기" : "보기"}
-        </button>
+        <div className="flex items-center gap-2">
+          {/* 타이머 배지 */}
+          <span className="tabnum inline-flex items-center gap-1 rounded-full bg-fuchsia-500/10 px-2.5 py-1 text-[12px] font-bold text-fuchsia-700 ring-1 ring-fuchsia-500/20">
+            ⏱ {formatTime(elapsedSec)}
+          </span>
+          <button
+            type="button"
+            onClick={() => setShowKo((v) => !v)}
+            className={`rounded-full px-3 py-1 text-[12px] font-semibold transition ${
+              showKo
+                ? "bg-fuchsia-500/10 text-fuchsia-600 ring-1 ring-fuchsia-500/20"
+                : "text-neutral-400 ring-1 ring-neutral-200 hover:text-neutral-600"
+            }`}
+          >
+            뜻 {showKo ? "끄기" : "보기"}
+          </button>
+        </div>
       </div>
 
       {cleared ? (
@@ -256,6 +308,33 @@ export default function OrderingGame({ deck }: { deck: WarmupDeck }) {
           <p className="mt-1.5 text-[13px] text-neutral-500">
             {chunks[chunkIdx].titleKo} · 실수 {mistakesRef.current}회
           </p>
+
+          {/* 시간 기록 */}
+          {clearTimeMs !== null && (
+            <div className="mt-3 flex flex-col items-center gap-1">
+              <div className="flex items-center gap-2">
+                <span className="tabnum inline-flex items-center gap-1 rounded-full bg-fuchsia-500/10 px-3 py-1 text-[14px] font-bold text-fuchsia-700 ring-1 ring-fuchsia-500/20">
+                  ⏱ {formatTimeMs(clearTimeMs)}
+                </span>
+                {isNewRecord && (
+                  <motion.span
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: 0.25, type: "spring", stiffness: 200, damping: 12 }}
+                    className="rounded-full bg-gradient-to-r from-fuchsia-500 to-pink-500 px-2.5 py-1 text-[11px] font-extrabold text-white"
+                  >
+                    🏆 신기록!
+                  </motion.span>
+                )}
+              </div>
+              {isNewRecord && prevBestMs !== undefined && (
+                <p className="text-[11px] text-neutral-400">이전 베스트 {formatTimeMs(prevBestMs)}</p>
+              )}
+              {!isNewRecord && prevBestMs !== undefined && (
+                <p className="text-[11px] text-neutral-400">베스트 {formatTimeMs(prevBestMs)}</p>
+              )}
+            </div>
+          )}
 
           {/* 완성된 순서 미리보기 */}
           <div className="mt-5 w-full space-y-1.5 text-left">

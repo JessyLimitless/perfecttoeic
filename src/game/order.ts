@@ -7,6 +7,8 @@ export interface ChunkResult {
   cleared: boolean;
   /** 최소 실수 횟수(베스트) */
   bestMistakes: number;
+  /** 최단 클리어 시간(ms) — 선택적, 없으면 undefined */
+  bestTimeMs?: number;
 }
 
 export interface DeckOrder {
@@ -60,14 +62,26 @@ export function firstUnclearedChunk(d: DeckOrder, chunkCount: number): number {
   return 0;
 }
 
-/** 청크 클리어 기록(실수 최소치 유지) */
-export function recordChunk(deckId: string, chunkIdx: number, mistakes: number): OrderStore {
+/** 청크 클리어 기록(실수 최소치 유지, 최단 시간 갱신) */
+export function recordChunk(
+  deckId: string,
+  chunkIdx: number,
+  mistakes: number,
+  timeMs?: number,
+): OrderStore {
   const store = loadOrder();
   const d = store[deckId] ?? { chunks: {} };
   const prev = d.chunks[chunkIdx];
+  const newBestTimeMs =
+    timeMs !== undefined
+      ? prev?.bestTimeMs !== undefined
+        ? Math.min(prev.bestTimeMs, timeMs)
+        : timeMs
+      : prev?.bestTimeMs;
   d.chunks[chunkIdx] = {
     cleared: true,
     bestMistakes: prev ? Math.min(prev.bestMistakes, mistakes) : mistakes,
+    bestTimeMs: newBestTimeMs,
   };
   store[deckId] = d;
   save(store);
