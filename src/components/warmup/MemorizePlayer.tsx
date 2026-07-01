@@ -149,6 +149,10 @@ export default function MemorizePlayer({ deck }: { deck: WarmupDeck }) {
   const [ready, setReady] = useState(false);
   const [emptyDue, setEmptyDue] = useState(false);
 
+  // ── 원어민 음원 (읽기 모드와 동일: /public/audio/warmup/<deck>/NNN.mp3) ──
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [hasAudio, setHasAudio] = useState(false);
+
   // ── Cloze 입력 상태 ──────────────────────────────────────
   const [inputs, setInputs] = useState<string[]>([]);
   /** null=입력 대기, {ok:true}=정답, {ok:false}=오답/패스 */
@@ -191,17 +195,48 @@ export default function MemorizePlayer({ deck }: { deck: WarmupDeck }) {
     startSession(false);
   }, [startSession]);
 
-  const cur = queue[0];
+  // 이 덱에 음원이 있는지 매니페스트로 확인 (없으면 재생 UI 숨김)
+  useEffect(() => {
+    let alive = true;
+    setHasAudio(false);
+    fetch(`/audio/warmup/${deck.id}/manifest.json`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((m) => {
+        if (alive && m && typeof m.total === "number" && m.total > 0) setHasAudio(true);
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, [deck.id]);
 
-  // 카드 전환 시 입력 상태 초기화
+  const cur = queue[0];
+  const audioSrc = cur ? `/audio/warmup/${deck.id}/${String(cur.no).padStart(3, "0")}.mp3` : "";
+
+  const playAudio = useCallback(() => {
+    const el = audioRef.current;
+    if (!el) return;
+    el.currentTime = 0;
+    el.play().catch(() => {});
+  }, []);
+
+  // 카드 전환 시 입력 상태 초기화 + 재생 중이던 음원 정지
   useEffect(() => {
     if (!cur) return;
+    audioRef.current?.pause();
     const blanks = cur.step === "cloze" ? (cur.cloze?.answers.length ?? 1) : 0;
     setInputs(Array(blanks).fill(""));
     setClozePending(null);
     clozeAdvancedRef.current = false;
     inputRefs.current = [];
   }, [cur?.key]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // 정답 공개 시 원어민 발음 자동재생 (Recall 공개 · Cloze 오답 확인)
+  // 정답 Cloze는 800ms 자동전진이라 자동재생 생략 — 대신 수동 버튼 제공
+  const autoPlayReveal = cur?.step === "cloze" ? !!clozePending && !clozePending.ok : revealed;
+  useEffect(() => {
+    if (hasAudio && autoPlayReveal) playAudio();
+  }, [autoPlayReveal, cur?.key, hasAudio, playAudio]);
 
   const rate = useCallback(
     (ok: boolean) => {
@@ -438,6 +473,9 @@ export default function MemorizePlayer({ deck }: { deck: WarmupDeck }) {
         />
       </div>
 
+      {/* 원어민 음원 (카드와 무관하게 main 레벨에 고정 — ref 유지) */}
+      {hasAudio && <audio ref={audioRef} src={audioSrc} preload="none" />}
+
       {/* 카드 */}
       <div className="flex flex-1 flex-col justify-center py-6">
         <AnimatePresence mode="wait">
@@ -521,13 +559,21 @@ export default function MemorizePlayer({ deck }: { deck: WarmupDeck }) {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.22 }}
                     >
-                      <p
-                        className={`mb-1.5 text-[11px] font-bold ${
-                          clozePending.ok ? "text-emerald-600" : "text-rose-500"
-                        }`}
-                      >
-                        {clozePending.ok ? "✓ 정답!" : "✗ 오답 — 정답 확인 후 다음으로"}
-                      </p>
+                      <div className="mb-1.5 flex items-center justify-between">
+                        <p
+                          className={`text-[11px] font-bold ${
+                            clozePending.ok ? "text-emerald-600" : "text-rose-500"
+                          }`}
+                        >
+                          {clozePending.ok ? "✓ 정답!" : "✗ 오답 — 정답 확인 후 다음으로"}
+                        </p>
+                        {hasAudio && (
+                          <SpeakButton
+                            onClick={playAudio}
+                            tone={clozePending.ok ? "emerald" : "rose"}
+                          />
+                        )}
+                      </div>
                       {!clozePending.ok && (
                         <p className="text-[12px] text-neutral-400">
                           Enter 또는 아래 버튼으로 다음 문장으로 이동하세요.
@@ -563,7 +609,10 @@ export default function MemorizePlayer({ deck }: { deck: WarmupDeck }) {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.28 }}
                     >
-                      <p className="mb-2 text-[11px] font-semibold text-violet-500">정답</p>
+                      <div className="mb-2 flex items-center justify-between">
+                        <p className="text-[11px] font-semibold text-violet-500">정답</p>
+                        {hasAudio && <SpeakButton onClick={playAudio} tone="violet" />}
+                      </div>
                       <p className="text-[18px] font-semibold leading-[1.55] text-neutral-900 sm:text-[21px]">
                         <span className="text-gradient mr-2 font-extrabold tabnum">{cur.no}.</span>
                         {cur.en}
@@ -714,6 +763,31 @@ export default function MemorizePlayer({ deck }: { deck: WarmupDeck }) {
         />
       </div>
     </main>
+  );
+}
+
+function SpeakButton({
+  onClick,
+  tone,
+}: {
+  onClick: () => void;
+  tone: "violet" | "emerald" | "rose";
+}) {
+  const ring =
+    tone === "violet"
+      ? "text-violet-600 ring-violet-500/25 hover:bg-violet-50"
+      : tone === "emerald"
+        ? "text-emerald-600 ring-emerald-500/25 hover:bg-emerald-50"
+        : "text-rose-500 ring-rose-500/25 hover:bg-rose-50";
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`inline-flex items-center gap-1 rounded-full bg-white/80 px-2.5 py-1 text-[11px] font-semibold ring-1 transition ${ring}`}
+      aria-label="원어민 발음 다시 듣기"
+    >
+      🔊 발음
+    </button>
   );
 }
 
