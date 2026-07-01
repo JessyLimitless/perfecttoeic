@@ -53,6 +53,7 @@ export default function WarmupPlayer({ deck }: { deck: WarmupDeck }) {
   const [hasAudio, setHasAudio] = useState(false);
   const [playing, setPlaying] = useState(false);
   const [autoPlay, setAutoPlay] = useState(false);
+  const [slow, setSlow] = useState(false); // 느리게 듣기(0.75x) — 리스닝 대비
   const audioSrc = `/audio/warmup/${deck.id}/${String(index + 1).padStart(3, "0")}.mp3`;
 
   useEffect(() => {
@@ -81,9 +82,10 @@ export default function WarmupPlayer({ deck }: { deck: WarmupDeck }) {
   const playAudio = useCallback(() => {
     const el = audioRef.current;
     if (!el) return;
+    el.playbackRate = slow ? 0.75 : 1;
     el.currentTime = 0;
     el.play().catch(() => setPlaying(false));
-  }, []);
+  }, [slow]);
 
   const toggleAudio = useCallback(() => {
     const el = audioRef.current;
@@ -94,6 +96,11 @@ export default function WarmupPlayer({ deck }: { deck: WarmupDeck }) {
       playAudio();
     }
   }, [playing, playAudio]);
+
+  // 속도 변경을 재생 중에도 즉시 반영
+  useEffect(() => {
+    if (audioRef.current) audioRef.current.playbackRate = slow ? 0.75 : 1;
+  }, [slow]);
 
   // 문장이 바뀌면 자동재생 옵션에 따라 재생
   useEffect(() => {
@@ -304,6 +311,18 @@ export default function WarmupPlayer({ deck }: { deck: WarmupDeck }) {
                   <span className="text-[15px]">{playing ? "⏸" : "🔊"}</span>
                   {playing ? "재생 중…" : "원어민 발음"}
                 </motion.button>
+                <button
+                  type="button"
+                  onClick={() => setSlow((s) => !s)}
+                  className={`inline-flex items-center gap-1 rounded-full px-3 py-2 text-[12px] font-semibold ring-1 transition ${
+                    slow
+                      ? "bg-indigo-500/15 text-indigo-600 ring-indigo-500/25"
+                      : "bg-white/70 text-neutral-400 ring-neutral-900/[0.06] hover:text-neutral-600"
+                  }`}
+                  aria-pressed={slow}
+                >
+                  🐢 {slow ? "0.75x" : "느리게"}
+                </button>
                 <span className="hidden text-[11px] text-neutral-400 sm:inline">
                   <Kbd>P</Kbd> 듣기
                 </span>

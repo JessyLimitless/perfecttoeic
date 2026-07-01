@@ -31,6 +31,8 @@ interface Props {
   order: OrderStore;
   /** 바깥 여백 (기본 mt-8) — 로비 카드 스택에선 "" 로 상쇄 */
   className?: string;
+  /** 있으면 카드 전체가 클릭 가능해지고 헤더에 "이어하기 →" 노출 (로비용) */
+  onOpen?: () => void;
 }
 
 const ease = [0.22, 1, 0.36, 1] as const;
@@ -65,6 +67,7 @@ export default function WarmupDashboard({
   memo,
   order,
   className = "mt-8",
+  onOpen,
 }: Props) {
   const totalSentences = decks.reduce((s, d) => s + d.total, 0);
 
@@ -122,12 +125,18 @@ export default function WarmupDashboard({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease }}
-      className={`${className} overflow-hidden rounded-2xl bg-white/75 ring-1 ring-neutral-900/[0.06] backdrop-blur-sm`}
+      onClick={onOpen}
+      role={onOpen ? "button" : undefined}
+      tabIndex={onOpen ? 0 : undefined}
+      onKeyDown={onOpen ? (e) => (e.key === "Enter" || e.key === " ") && onOpen() : undefined}
+      className={`${className} overflow-hidden rounded-2xl bg-white/75 ring-1 ring-neutral-900/[0.06] backdrop-blur-sm ${
+        onOpen ? "cursor-pointer transition hover:ring-indigo-500/25 hover:bg-white/90" : ""
+      }`}
     >
       {/* 전체 진도 헤더 */}
       <div className="flex items-center gap-3 border-b border-neutral-900/[0.05] px-5 py-3 sm:px-6">
         <span className="shrink-0 text-[11px] font-bold uppercase tracking-[0.1em] text-neutral-400">
-          전체 진도
+          {onOpen ? "📖 몸풀기" : "전체 진도"}
         </span>
         <div className="h-1.5 min-w-0 flex-1 overflow-hidden rounded-full bg-neutral-900/[0.06]">
           <motion.div
@@ -140,6 +149,9 @@ export default function WarmupDashboard({
         <span className="shrink-0 rounded-full bg-neutral-900/[0.05] px-2 py-0.5 text-[11px] font-semibold text-neutral-500">
           {overallPct}%
         </span>
+        {onOpen && (
+          <span className="shrink-0 text-[11px] font-semibold text-indigo-500">이어하기 →</span>
+        )}
       </div>
 
       {/* 3열 통계 */}

@@ -189,6 +189,7 @@ export default function HomePage() {
               memo={warmMemo}
               order={warmOrder}
               className=""
+              onOpen={() => router.push("/warmup")}
             />
           )}
 
