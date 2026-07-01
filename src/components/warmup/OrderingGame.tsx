@@ -41,6 +41,19 @@ function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
+function SpeakDot({ onClick }: { onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[13px] text-fuchsia-500 ring-1 ring-fuchsia-500/20 transition hover:bg-fuchsia-50"
+      aria-label="이 문장 발음 듣기"
+    >
+      🔊
+    </button>
+  );
+}
+
 export default function OrderingGame({ deck }: { deck: WarmupDeck }) {
   const router = useRouter();
   const chunks = deck.sections; // 각 섹션 = 10문장 청크
@@ -68,6 +81,46 @@ export default function OrderingGame({ deck }: { deck: WarmupDeck }) {
   /** 클리어 직전 저장된 이전 베스트 ms */
   const [prevBestMs, setPrevBestMs] = useState<number | undefined>(undefined);
   const [isNewRecord, setIsNewRecord] = useState(false);
+
+  // ── 원어민 음원 (읽기/암기 모드와 동일 소스, no 기준 재생) ──
+  const [hasAudio, setHasAudio] = useState(false);
+  const [autoPlay, setAutoPlay] = useState(false);
+  const autoPlayRef = useRef(false);
+  const audioElRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    autoPlayRef.current = autoPlay;
+  }, [autoPlay]);
+
+  useEffect(() => {
+    let alive = true;
+    setHasAudio(false);
+    fetch(`/audio/warmup/${deck.id}/manifest.json`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((m) => {
+        if (alive && m && typeof m.total === "number" && m.total > 0) setHasAudio(true);
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, [deck.id]);
+
+  const playNo = useCallback(
+    (no: number) => {
+      if (!hasAudio) return;
+      let el = audioElRef.current;
+      if (!el) {
+        el = new Audio();
+        audioElRef.current = el;
+      }
+      el.pause();
+      el.src = `/audio/warmup/${deck.id}/${String(no).padStart(3, "0")}.mp3`;
+      el.currentTime = 0;
+      el.play().catch(() => {});
+    },
+    [hasAudio, deck.id],
+  );
 
   const initChunk = useCallback(
     (idx: number) => {
@@ -119,6 +172,7 @@ export default function OrderingGame({ deck }: { deck: WarmupDeck }) {
         setPool((p) => p.filter((x) => x.pos !== item.pos));
         setWrongCount(0);
         setWrongPos(null);
+        if (autoPlayRef.current) playNo(item.no);
         if (expectedNext + 1 >= chunks[chunkIdx].sentences.length) {
           // 타이머 정지 + 기록 비교
           if (timerIntervalRef.current) {
@@ -144,7 +198,7 @@ export default function OrderingGame({ deck }: { deck: WarmupDeck }) {
         shakeTimer.current = setTimeout(() => setWrongPos(null), 500);
       }
     },
-    [cleared, expectedNext, chunkIdx, chunks, deck.id],
+    [cleared, expectedNext, chunkIdx, chunks, deck.id, playNo],
   );
 
   // 2회 이상 틀리면 정답 카드 힌트
@@ -173,6 +227,7 @@ export default function OrderingGame({ deck }: { deck: WarmupDeck }) {
     return () => {
       if (shakeTimer.current) clearTimeout(shakeTimer.current);
       if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
+      audioElRef.current?.pause();
     };
   }, []);
 
@@ -277,6 +332,20 @@ export default function OrderingGame({ deck }: { deck: WarmupDeck }) {
           <span className="tabnum inline-flex items-center gap-1 rounded-full bg-fuchsia-500/10 px-2.5 py-1 text-[12px] font-bold text-fuchsia-700 ring-1 ring-fuchsia-500/20">
             ⏱ {formatTime(elapsedSec)}
           </span>
+          {hasAudio && (
+            <button
+              type="button"
+              onClick={() => setAutoPlay((v) => !v)}
+              className={`rounded-full px-3 py-1 text-[12px] font-semibold transition ${
+                autoPlay
+                  ? "bg-fuchsia-500/10 text-fuchsia-600 ring-1 ring-fuchsia-500/20"
+                  : "text-neutral-400 ring-1 ring-neutral-200 hover:text-neutral-600"
+              }`}
+              aria-pressed={autoPlay}
+            >
+              🔊 발음 {autoPlay ? "켬" : "끔"}
+            </button>
+          )}
           <button
             type="button"
             onClick={() => setShowKo((v) => !v)}
@@ -346,10 +415,11 @@ export default function OrderingGame({ deck }: { deck: WarmupDeck }) {
                 <span className="tabnum text-gradient mt-0.5 text-[13px] font-extrabold">
                   {it.no}.
                 </span>
-                <div className="min-w-0">
+                <div className="min-w-0 flex-1">
                   <p className="text-[13.5px] leading-snug text-neutral-800">{it.en}</p>
                   {showKo && <p className="mt-0.5 text-[12px] text-neutral-400">{it.ko}</p>}
                 </div>
+                {hasAudio && <SpeakDot onClick={() => playNo(it.no)} />}
               </div>
             ))}
           </div>
@@ -391,10 +461,11 @@ export default function OrderingGame({ deck }: { deck: WarmupDeck }) {
                     <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-[11px] font-bold text-white">
                       ✓
                     </span>
-                    <div className="min-w-0">
+                    <div className="min-w-0 flex-1">
                       <p className="text-[14px] leading-snug text-neutral-800">{it.en}</p>
                       {showKo && <p className="mt-0.5 text-[12px] text-neutral-400">{it.ko}</p>}
                     </div>
+                    {hasAudio && <SpeakDot onClick={() => playNo(it.no)} />}
                   </motion.div>
                 ))}
               </AnimatePresence>
