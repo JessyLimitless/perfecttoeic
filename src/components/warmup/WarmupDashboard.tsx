@@ -1,7 +1,6 @@
 "use client";
 
 import { motion } from "framer-motion";
-import type { WarmupDeck } from "@/lib/warmup-loader";
 import { bookProgress, type WarmupProgress } from "@/game/warmup";
 import {
   deckSr,
@@ -18,11 +17,20 @@ import {
   type OrderStore,
 } from "@/game/order";
 
+/** 대시보드 집계에 필요한 최소 덱 정보 (문장 내용 불필요 → 로비에서도 경량 재사용) */
+export interface WarmupDeckSummary {
+  id: string;
+  total: number;
+  sectionCount: number;
+}
+
 interface Props {
-  decks: WarmupDeck[];
+  decks: WarmupDeckSummary[];
   progress: WarmupProgress;
   memo: MemorizeStore;
   order: OrderStore;
+  /** 바깥 여백 (기본 mt-8) — 로비 카드 스택에선 "" 로 상쇄 */
+  className?: string;
 }
 
 const ease = [0.22, 1, 0.36, 1] as const;
@@ -51,7 +59,13 @@ const ACCENT = {
 type Tone = keyof typeof ACCENT;
 type BadgeVariant = "success" | "normal" | "alert" | "muted";
 
-export default function WarmupDashboard({ decks, progress, memo, order }: Props) {
+export default function WarmupDashboard({
+  decks,
+  progress,
+  memo,
+  order,
+  className = "mt-8",
+}: Props) {
   const totalSentences = decks.reduce((s, d) => s + d.total, 0);
 
   // 읽기 집계
@@ -79,7 +93,7 @@ export default function WarmupDashboard({ decks, progress, memo, order }: Props)
     totalSentences > 0 ? Math.round((totalMastered / totalSentences) * 100) : 0;
 
   // 순서 집계
-  const totalChunks = decks.reduce((s, d) => s + d.sections.length, 0);
+  const totalChunks = decks.reduce((s, d) => s + d.sectionCount, 0);
   const totalCleared = decks.reduce(
     (s, d) => s + clearedCount(deckOrder(order, d.id)),
     0
@@ -108,7 +122,7 @@ export default function WarmupDashboard({ decks, progress, memo, order }: Props)
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease }}
-      className="mt-8 overflow-hidden rounded-2xl bg-white/75 ring-1 ring-neutral-900/[0.06] backdrop-blur-sm"
+      className={`${className} overflow-hidden rounded-2xl bg-white/75 ring-1 ring-neutral-900/[0.06] backdrop-blur-sm`}
     >
       {/* 전체 진도 헤더 */}
       <div className="flex items-center gap-3 border-b border-neutral-900/[0.05] px-5 py-3 sm:px-6">

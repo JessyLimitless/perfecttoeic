@@ -99,7 +99,12 @@ export default function WarmupHome({ decks }: { decks: WarmupDeck[] }) {
       </motion.div>
 
       {/* 통합 진도 대시보드 — 진도 있을 때만 표시 */}
-      <WarmupDashboard decks={decks} progress={progress} memo={memo} order={order} />
+      <WarmupDashboard
+        decks={decks.map((d) => ({ id: d.id, total: d.total, sectionCount: d.sections.length }))}
+        progress={progress}
+        memo={memo}
+        order={order}
+      />
 
       {/* 모드 토글 — 슬라이딩 세그먼트 */}
       <div className="mt-7 inline-flex rounded-2xl bg-neutral-900/[0.05] p-1 ring-1 ring-neutral-900/[0.04]">

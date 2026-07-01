@@ -6,7 +6,13 @@ import { motion } from "framer-motion";
 import PartSelector from "@/components/lobby/PartSelector";
 import TypeSelector from "@/components/lobby/TypeSelector";
 import ProgressCard from "@/components/lobby/ProgressCard";
+import WarmupDashboard, {
+  type WarmupDeckSummary,
+} from "@/components/warmup/WarmupDashboard";
 import { loadProgress, resetProgress, type Progress } from "@/game/progress";
+import { loadWarmupProgress, type WarmupProgress } from "@/game/warmup";
+import { loadMemorize, type MemorizeStore } from "@/game/memorize";
+import { loadOrder, type OrderStore } from "@/game/order";
 import { usePracticeStore } from "@/game/store";
 import {
   normalizeCategory,
@@ -43,12 +49,24 @@ export default function HomePage() {
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState<Progress | null>(null);
 
+  // 몸풀기(Warm-up) 진도 대시보드용 — 덱 요약 + 3모드 로컬 진도
+  const [warmDecks, setWarmDecks] = useState<WarmupDeckSummary[] | null>(null);
+  const [warmProgress, setWarmProgress] = useState<WarmupProgress>({});
+  const [warmMemo, setWarmMemo] = useState<MemorizeStore>({});
+  const [warmOrder, setWarmOrder] = useState<OrderStore>({});
+
   // 로비 진입 시 기출 은행을 미리 불러와 파트·유형별 문항 수를 집계한다
   useEffect(() => {
     let alive = true;
     fetchBank().then((sets) => {
       if (alive) setBank(sets);
     });
+    fetch("/api/warmup")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (alive && d && Array.isArray(d.decks)) setWarmDecks(d.decks);
+      })
+      .catch(() => {});
     return () => {
       alive = false;
     };
@@ -57,6 +75,9 @@ export default function HomePage() {
   // 저장된 학습 진도 불러오기 (클라이언트 전용)
   useEffect(() => {
     setProgress(loadProgress());
+    setWarmProgress(loadWarmupProgress());
+    setWarmMemo(loadMemorize());
+    setWarmOrder(loadOrder());
   }, []);
 
   // 파트별 문항 수
@@ -157,6 +178,17 @@ export default function HomePage() {
             <ProgressCard
               progress={progress}
               onReset={() => setProgress(resetProgress())}
+            />
+          )}
+
+          {/* 몸풀기 진도 — 진행 기록 있을 때만 대시보드가 스스로 렌더 */}
+          {warmDecks && (
+            <WarmupDashboard
+              decks={warmDecks}
+              progress={warmProgress}
+              memo={warmMemo}
+              order={warmOrder}
+              className=""
             />
           )}
 
