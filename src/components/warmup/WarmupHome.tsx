@@ -32,7 +32,7 @@ import ResetButton from "./ResetButton";
 import WarmupDashboard from "./WarmupDashboard";
 import { ArrowLeft } from "./icons";
 
-type Mode = "read" | "memorize" | "order";
+type Mode = "read" | "memorize" | "order" | "ebook";
 
 const COVER: Record<number, { emoji: string; grad: string }> = {
   1: { emoji: "📕", grad: "from-rose-500 via-red-500 to-orange-500" },
@@ -80,7 +80,9 @@ export default function WarmupHome({ decks }: { decks: WarmupDeck[] }) {
       ? "from-indigo-400/25 via-violet-400/20 to-sky-400/15"
       : mode === "memorize"
         ? "from-violet-400/25 via-fuchsia-400/20 to-amber-300/15"
-        : "from-fuchsia-400/25 via-pink-400/20 to-indigo-400/15";
+        : mode === "order"
+          ? "from-fuchsia-400/25 via-pink-400/20 to-indigo-400/15"
+          : "from-sky-400/25 via-indigo-400/20 to-violet-400/15";
 
   return (
     <main className="container-app relative min-h-dvh overflow-hidden py-10 pb-safe sm:py-14 lg:py-16">
@@ -116,7 +118,9 @@ export default function WarmupHome({ decks }: { decks: WarmupDeck[] }) {
             ? "영문을 한 문장씩 읽고, 막히면 탭해서 뜻을 확인하세요. 이야기 흐름을 따라가며 문장 구조가 자연스럽게 익혀집니다. 먼저 머릿속으로 해석해보는 게 핵심이에요."
             : mode === "memorize"
               ? "빈칸을 채우고 한국어를 영어로 떠올리며 통문장을 외웁니다. 맞힌 문장은 더 긴 간격으로, 틀린 문장은 곧 다시 나타나요 (간격 반복)."
-              : "10문장씩 끊어 순서를 맞추는 게임이에요. ‘다음 문장’을 차례로 골라 이야기를 완성하면, 문장 사이의 연결을 자연스럽게 익힙니다. (총 10개 청크)"}
+              : mode === "order"
+                ? "10문장씩 끊어 순서를 맞추는 게임이에요. ‘다음 문장’을 차례로 골라 이야기를 완성하면, 문장 사이의 연결을 자연스럽게 익힙니다. (총 10개 청크)"
+                : "책 한 권의 영문과 번역을 한 화면에 이어서 읽는 전자책이에요. 이야기 전체와 문장을 한눈에 훑고, 원어민 발음도 문장마다 들을 수 있어요."}
         </p>
       </motion.div>
 
@@ -128,8 +132,8 @@ export default function WarmupHome({ decks }: { decks: WarmupDeck[] }) {
         order={order}
       />
 
-      {/* 모드 토글 — 슬라이딩 세그먼트 */}
-      <div className="mt-7 inline-flex rounded-2xl bg-neutral-900/[0.05] p-1 ring-1 ring-neutral-900/[0.04]">
+      {/* 모드 토글 — 슬라이딩 세그먼트 (모바일: 꽉 찬 균등 4탭 / 데스크탑: 자동폭) */}
+      <div className="mt-7 flex w-full rounded-2xl bg-neutral-900/[0.05] p-1 ring-1 ring-neutral-900/[0.04] sm:inline-flex sm:w-auto">
         <ModeTab
           active={mode === "read"}
           onClick={() => setMode("read")}
@@ -150,6 +154,13 @@ export default function WarmupHome({ decks }: { decks: WarmupDeck[] }) {
           icon="🧩"
           label="순서"
           grad="from-fuchsia-500 to-pink-500"
+        />
+        <ModeTab
+          active={mode === "ebook"}
+          onClick={() => setMode("ebook")}
+          icon="📚"
+          label="전자책"
+          grad="from-sky-500 to-indigo-500"
         />
       </div>
 
@@ -220,12 +231,17 @@ export default function WarmupHome({ decks }: { decks: WarmupDeck[] }) {
                   onStart={() => router.push(`/warmup/${deck.id}/memorize`)}
                   onReset={() => setMemo(resetMemorizeDeck(deck.id))}
                 />
-              ) : (
+              ) : mode === "order" ? (
                 <OrderCardBody
                   deck={deck}
                   order={order}
                   onStart={() => router.push(`/warmup/${deck.id}/order`)}
                   onReset={() => setOrder(resetOrderDeck(deck.id))}
+                />
+              ) : (
+                <EbookCardBody
+                  deck={deck}
+                  onStart={() => router.push(`/warmup/${deck.id}/book`)}
                 />
               )}
             </motion.div>
@@ -253,7 +269,7 @@ function ModeTab({
     <button
       type="button"
       onClick={onClick}
-      className={`relative flex items-center gap-1.5 rounded-xl px-5 py-2 text-[14px] font-semibold transition-colors ${
+      className={`relative flex flex-1 items-center justify-center gap-1.5 rounded-xl px-2.5 py-2 text-[13px] font-semibold transition-colors sm:flex-none sm:px-5 sm:text-[14px] ${
         active ? "text-white" : "text-neutral-400 hover:text-neutral-600"
       }`}
     >
@@ -542,6 +558,34 @@ function OrderCardBody({
             description="이 책의 청크 클리어 기록이 모두 지워져요."
           />
         )}
+      </div>
+    </>
+  );
+}
+
+/** 전자책 모드 카드 본문 — 전체 영문+번역을 한 화면에서 읽기 (진도 없음) */
+function EbookCardBody({ deck, onStart }: { deck: WarmupDeck; onStart: () => void }) {
+  return (
+    <>
+      <div className="px-5 sm:px-6">
+        <div className="flex items-center justify-between text-[12px] text-neutral-500">
+          <span>{deck.total}문장 · {deck.sections.length}챕터</span>
+          <span className="font-semibold text-sky-600">영문 + 번역 한눈에</span>
+        </div>
+        <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-neutral-900/[0.06]">
+          <div className="h-full w-full rounded-full bg-gradient-to-r from-sky-500 to-indigo-500" />
+        </div>
+      </div>
+      <div className="mt-5 flex items-center gap-2.5 px-5 pb-5 sm:px-6">
+        <motion.button
+          type="button"
+          onClick={onStart}
+          whileHover={{ scale: 1.015 }}
+          whileTap={{ scale: 0.985 }}
+          className="btn-primary min-h-[48px] flex-1 text-[15px]"
+        >
+          📚 전자책 열기
+        </motion.button>
       </div>
     </>
   );
