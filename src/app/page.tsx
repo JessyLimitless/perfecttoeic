@@ -162,6 +162,7 @@ export default function HomePage() {
               onStart={handleStart}
               onMatch={() => router.push("/match")}
               onWarmup={() => router.push("/warmup")}
+              onListening={() => router.push("/listening")}
               onTts={() => router.push("/tts")}
             />
           </div>
@@ -251,6 +252,7 @@ export default function HomePage() {
               onStart={handleStart}
               onMatch={() => router.push("/match")}
               onWarmup={() => router.push("/warmup")}
+              onListening={() => router.push("/listening")}
               onTts={() => router.push("/tts")}
             />
           </div>
@@ -278,12 +280,14 @@ function CtaButtons({
   onStart,
   onMatch,
   onWarmup,
+  onListening,
   onTts,
 }: {
   loading: boolean;
   onStart: () => void;
   onMatch: () => void;
   onWarmup: () => void;
+  onListening: () => void;
   onTts: () => void;
 }) {
   return (
@@ -338,6 +342,24 @@ function CtaButtons({
           몸풀기 · 스토리 리딩
           <span className="rounded-full bg-indigo-500/10 px-2 py-0.5 text-[11px] font-semibold tracking-wide text-indigo-500">
             워밍업
+          </span>
+        </span>
+      </motion.button>
+
+      <motion.button
+        type="button"
+        onClick={onListening}
+        whileHover={{ scale: 1.015 }}
+        whileTap={{ scale: 0.985 }}
+        className="btn-ghost group min-h-[52px] w-full"
+      >
+        <span className="inline-flex items-center justify-center gap-2 text-[15px]">
+          <span className="text-[17px] transition-transform group-hover:scale-110">
+            🎧
+          </span>
+          리스닝 · Part 2·3·4
+          <span className="rounded-full bg-cyan-500/10 px-2 py-0.5 text-[11px] font-semibold tracking-wide text-cyan-600">
+            듣기
           </span>
         </span>
       </motion.button>
