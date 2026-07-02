@@ -246,6 +246,22 @@ function ReadCardBody({
   const pct = deck.total > 0 ? Math.round((bp.seen / deck.total) * 100) : 0;
   const started = bp.seen > 0;
 
+  // 오디오북(책 전체 통합본) — 파일이 있을 때만 노출
+  const fullSrc = `/audio/warmup/${deck.id}/${deck.id}-full.mp3`;
+  const [hasFull, setHasFull] = useState(false);
+  const [showBook, setShowBook] = useState(false);
+  useEffect(() => {
+    let alive = true;
+    fetch(fullSrc, { method: "HEAD" })
+      .then((r) => {
+        if (alive && r.ok) setHasFull(true);
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, [fullSrc]);
+
   return (
     <>
       <div className="px-5 sm:px-6">
@@ -280,6 +296,31 @@ function ReadCardBody({
           />
         )}
       </div>
+
+      {/* 오디오북 — 책 전체를 원어민 목소리로 이어 듣기 */}
+      {hasFull && (
+        <div className="border-t border-neutral-900/[0.05] px-5 py-3.5 sm:px-6">
+          <button
+            type="button"
+            onClick={() => setShowBook((v) => !v)}
+            className="flex w-full items-center justify-between rounded-xl bg-indigo-50/60 px-3.5 py-2.5 text-[13px] font-semibold text-indigo-600 ring-1 ring-indigo-500/15 transition hover:bg-indigo-50"
+            aria-expanded={showBook}
+          >
+            <span className="inline-flex items-center gap-1.5">
+              🎧 오디오북 · 전체 듣기
+            </span>
+            <span className="text-[11px] text-indigo-400">{showBook ? "닫기 ▲" : "펼치기 ▼"}</span>
+          </button>
+          {showBook && (
+            <audio
+              className="mt-2.5 w-full"
+              controls
+              preload="none"
+              src={fullSrc}
+            />
+          )}
+        </div>
+      )}
     </>
   );
 }
