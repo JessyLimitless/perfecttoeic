@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import type { WarmupDeck } from "@/lib/warmup-loader";
 import { ArrowLeft } from "./icons";
+import ChapterArt from "./ChapterArt";
 
 /** 전역 1~100 번호가 매겨진 문장 (오디오 파일명 = no zero-pad 3) */
 interface EbookSentence {
@@ -216,6 +217,9 @@ export default function EbookReader({ deck }: { deck: WarmupDeck }) {
         <div className="px-4 py-5 sm:px-7 sm:py-7">
           {sections.map((sec) => (
             <section key={sec.idx} className="mb-8 last:mb-0">
+              {/* 챕터 삽화 (스토리 맞춤 SVG) */}
+              <ChapterArt bookNo={deck.bookNo} chapterIndex={sec.idx} />
+
               {/* 챕터 헤더 */}
               <div className="mb-4 border-b border-neutral-900/[0.06] pb-2.5">
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-indigo-500/10 px-2.5 py-1 text-[10.5px] font-bold uppercase tracking-[0.08em] text-indigo-600 ring-1 ring-indigo-500/15">
