@@ -11,6 +11,7 @@ import {
   recordChunk,
   resetOrderDeck,
 } from "@/game/order";
+import { ArrowLeft } from "./icons";
 
 /** 초 → mm:ss 문자열 */
 function formatTime(sec: number): string {
@@ -299,9 +300,9 @@ export default function OrderingGame({ deck }: { deck: WarmupDeck }) {
         <button
           type="button"
           onClick={() => router.push("/warmup")}
-          className="-ml-1 inline-flex items-center gap-1 rounded-full px-2 py-1 text-[13px] font-medium text-neutral-400 transition-colors hover:bg-white/60 hover:text-neutral-700"
+          className="-ml-1 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-[13px] font-medium text-neutral-400 transition-colors hover:bg-white/60 hover:text-neutral-700 active:scale-95"
         >
-          ← 책 목록
+          <ArrowLeft size={16} /> 책 목록
         </button>
         <span className="chip ring-1 ring-neutral-900/[0.05] normal-case tracking-normal text-neutral-500">
           🧩 <span className="max-w-[34vw] truncate">{deck.titleKo}</span>

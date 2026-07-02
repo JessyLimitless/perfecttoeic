@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import type { WarmupDeck } from "@/lib/warmup-loader";
 import { bookProgress, loadWarmupProgress, markWarmupSeen, resetWarmupBook } from "@/game/warmup";
+import { ArrowLeft, ChevronLeft } from "./icons";
 
 interface FlatSentence {
   en: string;
@@ -230,9 +231,9 @@ export default function WarmupPlayer({ deck }: { deck: WarmupDeck }) {
         <button
           type="button"
           onClick={() => router.push("/warmup")}
-          className="-ml-1 inline-flex items-center gap-1 rounded-full px-2 py-1 text-[13px] font-medium text-neutral-400 transition-colors hover:bg-white/60 hover:text-neutral-700"
+          className="-ml-1 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-[13px] font-medium text-neutral-400 transition-colors hover:bg-white/60 hover:text-neutral-700 active:scale-95"
         >
-          ← 책 목록
+          <ArrowLeft size={16} /> 책 목록
         </button>
         <span className="chip ring-1 ring-neutral-900/[0.05] normal-case tracking-normal text-neutral-500">
           {deck.bookNo === 1 ? "📕" : "📗"}
@@ -379,10 +380,10 @@ export default function WarmupPlayer({ deck }: { deck: WarmupDeck }) {
           type="button"
           onClick={prev}
           disabled={index === 0}
-          className="flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-2xl text-[18px] text-neutral-500 ring-1 ring-neutral-200 transition hover:bg-white hover:ring-neutral-300 disabled:opacity-30"
+          className="flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-2xl text-neutral-500 ring-1 ring-neutral-200 transition hover:bg-white hover:ring-neutral-300 active:scale-95 disabled:opacity-30"
           aria-label="이전 문장"
         >
-          ←
+          <ChevronLeft size={20} />
         </button>
         <motion.button
           type="button"

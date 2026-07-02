@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
+import { RotateCcw } from "./icons";
 
 /**
  * 파괴적 초기화를 보호하는 확인 버튼.
@@ -46,17 +47,17 @@ export default function ResetButton({
           onClick={() => setOpen(true)}
           aria-label={triggerLabel}
           title={triggerLabel}
-          className="flex h-[48px] w-[48px] shrink-0 items-center justify-center rounded-2xl text-[17px] text-neutral-400 ring-1 ring-neutral-200 transition hover:bg-white hover:text-rose-500 hover:ring-rose-200 active:scale-95"
+          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-neutral-400 ring-1 ring-neutral-200 transition hover:bg-white hover:text-rose-500 hover:ring-rose-200 active:scale-95"
         >
-          ↺
+          <RotateCcw size={18} />
         </button>
       ) : (
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[12px] font-medium text-neutral-400 ring-1 ring-neutral-200 transition hover:text-rose-500 hover:ring-rose-200"
+          className="inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-[12px] font-medium text-neutral-400 ring-1 ring-neutral-200 transition hover:text-rose-500 hover:ring-rose-200 active:scale-95"
         >
-          <span className="text-[13px]">↺</span> {triggerLabel}
+          <RotateCcw size={14} /> {triggerLabel}
         </button>
       )}
 
@@ -89,8 +90,8 @@ export default function ResetButton({
                   className="card-elevated relative w-full max-w-[20rem] overflow-hidden px-6 py-6 text-center"
                 >
                   <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-rose-400 to-orange-400" />
-                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-500/10 text-[22px]">
-                    ↺
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-500/10 text-rose-500">
+                    <RotateCcw size={22} />
                   </div>
                   <h3 className="mt-3 text-[16px] font-bold tracking-[-0.01em] text-neutral-900">
                     {title}
