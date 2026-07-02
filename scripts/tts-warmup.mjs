@@ -21,6 +21,8 @@ import { MsEdgeTTS, OUTPUT_FORMAT } from "msedge-tts";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
 const MD_FILE = path.join(ROOT, "content", "sets", "cheese_books_summary.md");
+// 기초편(쉬운 문장) — 슬러그에 `-basic` 접미. 파일 없으면 조용히 건너뜀.
+const BASIC_MD_FILE = path.join(ROOT, "content", "sets", "cheese_books_basic.md");
 const OUT_ROOT = path.join(ROOT, "public", "audio", "warmup");
 
 // warmup-loader.ts BOOK_META 와 동일한 bookNo -> 슬러그 매핑
@@ -58,8 +60,8 @@ function chunkSentences(sentences, maxChars = 1500) {
   return chunks;
 }
 
-/** {deck_slug: [sentence, ...]} — 섹션·문장 순서 기준 flatten (영문만). */
-function parseEnglishSentences(md) {
+/** {deck_slug: [sentence, ...]} — 섹션·문장 순서 기준 flatten (영문만). slugSuffix 로 기초편 구분. */
+function parseEnglishSentences(md, slugSuffix = "") {
   const lines = md.split(/\r?\n/);
 
   // `## ` (단, `### ` 제외) 로 책 블록 분할
@@ -77,7 +79,7 @@ function parseEnglishSentences(md) {
     const m = block.header.match(/Book\s+(\d+)/i);
     if (!m) continue;
     const bookNo = Number(m[1]);
-    const slug = BOOK_SLUG[bookNo] || `book-${bookNo}`;
+    const slug = (BOOK_SLUG[bookNo] || `book-${bookNo}`) + slugSuffix;
 
     // 책 안에서 `### ` 언어 블록 분할, English Summary 찾기
     const langs = [];
@@ -145,6 +147,10 @@ async function synthWithRetry(voice, text, tries = 3) {
 async function main() {
   const { deck, voice, force, single } = parseArgs();
   let decks = parseEnglishSentences(fs.readFileSync(MD_FILE, "utf8"));
+  // 기초편 파일이 있으면 `<slug>-basic` 으로 합친다.
+  if (fs.existsSync(BASIC_MD_FILE)) {
+    decks = { ...decks, ...parseEnglishSentences(fs.readFileSync(BASIC_MD_FILE, "utf8"), "-basic") };
+  }
   if (deck) {
     if (!decks[deck]) {
       console.error(`덱 '${deck}' 없음. 가능: ${Object.keys(decks).join(", ")}`);

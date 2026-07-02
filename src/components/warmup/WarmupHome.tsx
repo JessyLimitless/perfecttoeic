@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import type { WarmupDeck } from "@/lib/warmup-loader";
+import type { WarmupDeck, WarmupLevel } from "@/lib/warmup-loader";
 import {
   loadWarmupProgress,
   bookProgress,
@@ -30,13 +30,22 @@ import {
 } from "@/game/order";
 import ResetButton from "./ResetButton";
 import WarmupDashboard from "./WarmupDashboard";
+import { ArrowLeft } from "./icons";
 
 type Mode = "read" | "memorize" | "order";
 
 const COVER: Record<number, { emoji: string; grad: string }> = {
   1: { emoji: "📕", grad: "from-rose-500 via-red-500 to-orange-500" },
   2: { emoji: "📗", grad: "from-emerald-500 via-teal-500 to-cyan-500" },
+  3: { emoji: "📘", grad: "from-sky-500 via-blue-500 to-indigo-500" },
 };
+
+/** 같은 책(bookNo)의 기본편/기초편을 묶는다 */
+interface BookGroup {
+  bookNo: number;
+  standard?: WarmupDeck;
+  basic?: WarmupDeck;
+}
 
 export default function WarmupHome({ decks }: { decks: WarmupDeck[] }) {
   const router = useRouter();
@@ -44,12 +53,25 @@ export default function WarmupHome({ decks }: { decks: WarmupDeck[] }) {
   const [progress, setProgress] = useState<WarmupProgress>({});
   const [memo, setMemo] = useState<MemorizeStore>({});
   const [order, setOrder] = useState<OrderStore>({});
+  // 책별 난이도 선택 (기본값: 기본편)
+  const [levelByBook, setLevelByBook] = useState<Record<number, WarmupLevel>>({});
 
   useEffect(() => {
     setProgress(loadWarmupProgress());
     setMemo(loadMemorize());
     setOrder(loadOrder());
   }, []);
+
+  const books = useMemo<BookGroup[]>(() => {
+    const map = new Map<number, BookGroup>();
+    for (const d of decks) {
+      const g = map.get(d.bookNo) ?? { bookNo: d.bookNo };
+      if (d.level === "basic") g.basic = d;
+      else g.standard = d;
+      map.set(d.bookNo, g);
+    }
+    return Array.from(map.values()).sort((a, b) => a.bookNo - b.bookNo);
+  }, [decks]);
 
   const ease = [0.22, 1, 0.36, 1] as const;
 
@@ -76,9 +98,9 @@ export default function WarmupHome({ decks }: { decks: WarmupDeck[] }) {
         <button
           type="button"
           onClick={() => router.push("/")}
-          className="-ml-1 inline-flex items-center gap-1 rounded-full px-2 py-1 text-[13px] font-medium text-neutral-400 transition-colors hover:bg-white/60 hover:text-neutral-700"
+          className="-ml-1 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-[13px] font-medium text-neutral-400 transition-colors hover:bg-white/60 hover:text-neutral-700 active:scale-95"
         >
-          ← 로비
+          <ArrowLeft size={16} /> 로비
         </button>
 
         <span className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-white/70 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-indigo-500 ring-1 ring-indigo-500/15 backdrop-blur-sm">
@@ -139,11 +161,16 @@ export default function WarmupHome({ decks }: { decks: WarmupDeck[] }) {
           </p>
         )}
 
-        {decks.map((deck, i) => {
-          const cover = COVER[deck.bookNo] ?? { emoji: "📘", grad: "from-indigo-500 to-violet-500" };
+        {books.map((book, i) => {
+          const cover = COVER[book.bookNo] ?? { emoji: "📘", grad: "from-indigo-500 to-violet-500" };
+          const lvl: WarmupLevel = levelByBook[book.bookNo] ?? "standard";
+          // 선택 난이도의 덱(없으면 있는 쪽으로 폴백)
+          const deck =
+            (lvl === "basic" ? book.basic : book.standard) ?? book.standard ?? book.basic;
+          if (!deck) return null;
           return (
             <motion.div
-              key={deck.id}
+              key={book.bookNo}
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.06 * i, ease }}
@@ -158,13 +185,26 @@ export default function WarmupHome({ decks }: { decks: WarmupDeck[] }) {
                   <span className="drop-shadow-sm">{cover.emoji}</span>
                 </div>
                 <div className="min-w-0">
-                  <p className="label">Book {deck.bookNo}</p>
+                  <p className="label">Book {book.bookNo}</p>
                   <h2 className="mt-0.5 truncate text-[16px] font-bold tracking-[-0.01em] text-neutral-900">
                     {deck.titleKo}
                   </h2>
                   <p className="truncate text-[12.5px] italic text-neutral-400">{deck.titleEn}</p>
                 </div>
               </div>
+
+              {/* 난이도 토글 — 기초편이 있을 때만 노출 */}
+              {book.basic && book.standard && (
+                <div className="px-5 sm:px-6">
+                  <LevelToggle
+                    level={lvl}
+                    groupKey={book.bookNo}
+                    onChange={(next) =>
+                      setLevelByBook((prev) => ({ ...prev, [book.bookNo]: next }))
+                    }
+                  />
+                </div>
+              )}
 
               {mode === "read" ? (
                 <ReadCardBody
@@ -227,6 +267,57 @@ function ModeTab({
       <span className="relative">{icon}</span>
       <span className="relative">{label}</span>
     </button>
+  );
+}
+
+/** 책별 난이도 토글 — 기초편(쉬운 문장) / 기본편 */
+function LevelToggle({
+  level,
+  onChange,
+  groupKey,
+}: {
+  level: WarmupLevel;
+  onChange: (next: WarmupLevel) => void;
+  /** layoutId 충돌 방지용 책별 고유 키 */
+  groupKey: string | number;
+}) {
+  const opts: { value: WarmupLevel; label: string; hint: string }[] = [
+    { value: "basic", label: "기초", hint: "쉬운 문장" },
+    { value: "standard", label: "기본", hint: "원문 요약" },
+  ];
+  return (
+    <div className="flex items-center gap-2 rounded-xl bg-neutral-900/[0.04] p-1 text-[12px] ring-1 ring-neutral-900/[0.04]">
+      {opts.map((o) => {
+        const active = level === o.value;
+        return (
+          <button
+            key={o.value}
+            type="button"
+            onClick={() => onChange(o.value)}
+            aria-pressed={active}
+            className={`relative flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 font-semibold transition-colors ${
+              active ? "text-white" : "text-neutral-500 hover:text-neutral-700"
+            }`}
+          >
+            {active && (
+              <motion.span
+                layoutId={`warmup-level-pill-${groupKey}`}
+                transition={{ type: "spring", stiffness: 400, damping: 32 }}
+                className={`absolute inset-0 rounded-lg bg-gradient-to-r ${
+                  o.value === "basic"
+                    ? "from-amber-500 to-orange-500 shadow-[0_6px_16px_-8px_rgba(245,158,11,0.7)]"
+                    : "from-indigo-500 to-violet-500 shadow-[0_6px_16px_-8px_rgba(99,102,241,0.6)]"
+                }`}
+              />
+            )}
+            <span className="relative">{o.label}</span>
+            <span className={`relative text-[10.5px] font-medium ${active ? "text-white/75" : "text-neutral-400"}`}>
+              {o.hint}
+            </span>
+          </button>
+        );
+      })}
+    </div>
   );
 }
 
