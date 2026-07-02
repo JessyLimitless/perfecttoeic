@@ -220,7 +220,9 @@ async function main() {
   console.log("\n완료.");
 }
 
-main().catch((e) => {
-  console.error(e);
-  process.exit(1);
-});
+main()
+  .then(() => process.exit(0)) // msedge-tts 소켓이 열린 채 남아 프로세스가 안 끝나는 문제 방지
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  });
