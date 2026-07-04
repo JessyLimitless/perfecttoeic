@@ -146,7 +146,7 @@ export default function DiagnosticRunner({ test }: { test: DiagnosticTest }) {
         >
           <button
             type="button"
-            onClick={() => router.push("/")}
+            onClick={() => router.push("/learn")}
             className="mb-6 text-[13px] font-semibold text-neutral-400 transition hover:text-neutral-600"
           >
             ← 홈으로
@@ -208,7 +208,7 @@ export default function DiagnosticRunner({ test }: { test: DiagnosticTest }) {
           setResult(null);
           setPhase("intro");
         }}
-        onHome={() => router.push("/")}
+        onHome={() => router.push("/learn")}
         onStudy={handleStudy}
       />
     );

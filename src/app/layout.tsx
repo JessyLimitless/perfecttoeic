@@ -2,9 +2,9 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "토익넷 2.0 — TOEIC RC 실전 · AI 대결",
+  title: "퍼펙토익 · PerfecTOEIC — 토익 LC·RC 실전 학습",
   description:
-    "Part 5·6·7 기출 빈출 유형을 골라 집중 연습하고, AI 챌린저와 1:1 속도전으로 실력을 겨루는 토익 RC 학습 앱",
+    "파트·빈출 유형별 실전 문제, 4개국 원어민 리스닝, AI 대결, 레벨 진단까지. 한 문제씩 완성하는 토익 만점 학습 앱, 퍼펙토익.",
 };
 
 export const viewport: Viewport = {

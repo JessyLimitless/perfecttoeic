@@ -2,572 +2,487 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
-import PartSelector from "@/components/lobby/PartSelector";
-import TypeSelector from "@/components/lobby/TypeSelector";
-import ProgressCard from "@/components/lobby/ProgressCard";
-import WarmupDashboard, {
-  type WarmupDeckSummary,
-} from "@/components/warmup/WarmupDashboard";
-import { loadProgress, resetProgress, type Progress } from "@/game/progress";
+import { motion, useReducedMotion } from "framer-motion";
 import { loadDiagnosticResult, type DiagnosticResult } from "@/game/diagnostic";
-import { loadWarmupProgress, type WarmupProgress } from "@/game/warmup";
-import { loadMemorize, type MemorizeStore } from "@/game/memorize";
-import { loadOrder, type OrderStore } from "@/game/order";
-import { usePracticeStore } from "@/game/store";
-import {
-  normalizeCategory,
-  QUESTION_TYPE_ORDER,
-  type QuestionType,
-  type TypeFilter,
-} from "@/game/questionTypes";
-import {
-  LC_TYPE_META,
-  LC_TYPE_ORDER,
-  type LcType,
-  type LcTypeFilter,
-} from "@/game/listeningTypes";
-import { PART_META, partOf } from "@/game/parts";
-import type { Part, PassageSet } from "@/game/types";
 
-/** MD 기출 은행 전체를 한 번 불러온다 (실패 시 null → 로컬 폴백) */
-async function fetchBank(): Promise<PassageSet[] | null> {
+/** 실전 문항 수 라이브 집계 (실패 시 정적 폴백) */
+interface Counts {
+  rc: number;
+  lc: number;
+  warmup: number;
+}
+const FALLBACK: Counts = { rc: 830, lc: 330, warmup: 600 };
+
+async function fetchCounts(): Promise<Counts> {
+  const out = { ...FALLBACK };
   try {
-    const r = await fetch("/api/sets");
-    if (!r.ok) return null;
-    const { sets } = (await r.json()) as { sets: PassageSet[] };
-    return Array.isArray(sets) && sets.length > 0 ? sets : null;
+    const [rcRes, lcRes] = await Promise.all([
+      fetch("/api/sets").then((r) => (r.ok ? r.json() : null)),
+      fetch("/api/listening").then((r) => (r.ok ? r.json() : null)),
+    ]);
+    if (rcRes?.sets)
+      out.rc = rcRes.sets.reduce(
+        (n: number, s: any) => n + (s.questions?.length ?? 0),
+        0,
+      );
+    if (lcRes?.sets)
+      out.lc = lcRes.sets.reduce(
+        (n: number, s: any) =>
+          n + (s.part === 2 ? s.items?.length ?? 0 : s.questions?.length ?? 0),
+        0,
+      );
   } catch {
-    return null;
+    /* 폴백 유지 */
   }
+  return out;
 }
 
-/** 리스닝 세트 요약 (파트·유형 집계용) */
-interface LcSummary {
-  part: number;
-  count: number;
-  types: LcType[];
-}
+const EASE = [0.22, 1, 0.36, 1] as const;
 
-const EMPTY_TYPE_COUNTS = QUESTION_TYPE_ORDER.reduce(
-  (acc, t) => ({ ...acc, [t]: 0 }),
-  {} as Record<QuestionType, number>,
-);
-
-type Domain = "RC" | "LC";
-type LcPart = 2 | 3 | 4 | "ALL";
-
-export default function HomePage() {
+export default function LandingPage() {
   const router = useRouter();
-  const start = usePracticeStore((s) => s.start);
-
-  const [domain, setDomain] = useState<Domain>("RC");
-
-  // RC(리딩) 상태
-  const [part, setPart] = useState<Part>(7);
-  const [type, setType] = useState<TypeFilter>("ALL");
-  const [bank, setBank] = useState<PassageSet[] | null>(null);
-  const [loading, setLoading] = useState(false);
-
-  // LC(리스닝) 상태
-  const [lcPart, setLcPart] = useState<LcPart>("ALL");
-  const [lcType, setLcType] = useState<LcTypeFilter>("ALL");
-  const [lcSets, setLcSets] = useState<LcSummary[] | null>(null);
-
-  const [progress, setProgress] = useState<Progress | null>(null);
+  const reduce = useReducedMotion();
+  const [counts, setCounts] = useState<Counts>(FALLBACK);
   const [diag, setDiag] = useState<DiagnosticResult | null>(null);
 
-  // 몸풀기(Warm-up) 진도 대시보드용
-  const [warmDecks, setWarmDecks] = useState<WarmupDeckSummary[] | null>(null);
-  const [warmProgress, setWarmProgress] = useState<WarmupProgress>({});
-  const [warmMemo, setWarmMemo] = useState<MemorizeStore>({});
-  const [warmOrder, setWarmOrder] = useState<OrderStore>({});
-
-  // 로비 진입 시 기출 은행 + 리스닝 세트 + 몸풀기 요약 미리 로드
   useEffect(() => {
-    let alive = true;
-    fetchBank().then((sets) => {
-      if (alive) setBank(sets);
-    });
-    fetch("/api/listening")
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d) => {
-        if (!alive || !d || !Array.isArray(d.sets)) return;
-        const summ: LcSummary[] = d.sets.map((s: any) => {
-          const cats: string[] =
-            s.part === 2
-              ? (s.items ?? []).map((i: any) => i.category)
-              : (s.questions ?? []).map((q: any) => q.category);
-          const present = new Set<LcType>(cats.map(normLc));
-          return {
-            part: s.part,
-            count: s.part === 2 ? s.items?.length ?? 0 : s.questions?.length ?? 0,
-            types: LC_TYPE_ORDER.filter((t) => present.has(t)),
-          };
-        });
-        setLcSets(summ);
-      })
-      .catch(() => {});
-    fetch("/api/warmup")
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d) => {
-        if (alive && d && Array.isArray(d.decks)) setWarmDecks(d.decks);
-      })
-      .catch(() => {});
-    return () => {
-      alive = false;
-    };
-  }, []);
-
-  useEffect(() => {
-    setProgress(loadProgress());
+    fetchCounts().then(setCounts);
     setDiag(loadDiagnosticResult());
-    setWarmProgress(loadWarmupProgress());
-    setWarmMemo(loadMemorize());
-    setWarmOrder(loadOrder());
   }, []);
 
-  // RC 파트별 문항 수
-  const partCounts = useMemo(() => {
-    const c: Record<Part, number> = { 5: 0, 6: 0, 7: 0 };
-    for (const s of bank ?? []) c[partOf(s)] += s.questions.length;
-    return c;
-  }, [bank]);
+  const rise = (delay = 0) =>
+    reduce
+      ? { initial: { opacity: 0 }, animate: { opacity: 1 } }
+      : {
+          initial: { opacity: 0, y: 18 },
+          animate: { opacity: 1, y: 0 },
+          transition: { duration: 0.5, ease: EASE, delay },
+        };
 
-  const rcTotal = useMemo(
-    () => partCounts[5] + partCounts[6] + partCounts[7],
-    [partCounts],
-  );
-
-  // RC Part 7 빈출 유형별 문항 수
-  const { typeCounts, typeTotal } = useMemo(() => {
-    const c: Record<QuestionType, number> = { ...EMPTY_TYPE_COUNTS };
-    let t = 0;
-    for (const s of bank ?? []) {
-      if (partOf(s) !== 7) continue;
-      for (const q of s.questions) {
-        c[normalizeCategory(q.category)] += 1;
-        t += 1;
-      }
-    }
-    return { typeCounts: c, typeTotal: t };
-  }, [bank]);
-
-  // LC 파트별 문항 수 / 유형별 세트 수
-  const lcPartCounts = useMemo(() => {
-    const c: Record<number, number> = { 2: 0, 3: 0, 4: 0 };
-    for (const s of lcSets ?? []) c[s.part] += s.count;
-    return c;
-  }, [lcSets]);
-
-  const lcTotal = useMemo(
-    () => (lcSets ?? []).reduce((n, s) => n + s.count, 0),
-    [lcSets],
-  );
-
-  const lcTypeCounts = useMemo(() => {
-    const scoped = (lcSets ?? []).filter((s) => lcPart === "ALL" || s.part === lcPart);
-    const c = {} as Record<LcType, number>;
-    for (const t of LC_TYPE_ORDER) c[t] = 0;
-    for (const s of scoped) for (const t of s.types) c[t] += 1;
-    return c;
-  }, [lcSets, lcPart]);
-
-  const lcAvailableTypes = LC_TYPE_ORDER.filter((t) => lcTypeCounts[t] > 0);
-
-  const handleStartRc = async () => {
-    setLoading(true);
-    const sets = bank ?? (await fetchBank());
-    if (!bank && sets) setBank(sets);
-    start({ part, type: part === 7 ? type : "ALL", sets: sets ?? undefined });
-    router.push("/game");
-  };
-
-  const handleStartLc = () => {
-    const params = new URLSearchParams();
-    if (lcPart !== "ALL") params.set("part", String(lcPart));
-    if (lcType !== "ALL") params.set("type", lcType);
-    const qs = params.toString();
-    router.push(qs ? `/listening?${qs}` : "/listening");
-  };
-
-  const ease = [0.22, 1, 0.36, 1] as const;
+  const total = counts.rc + counts.lc;
 
   return (
-    <main className="container-app min-h-dvh py-10 pb-safe sm:py-14 lg:py-20">
-      <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:gap-12">
-        {/* ── 좌: 히어로 ───────────────────────────── */}
-        <motion.section
-          initial={{ opacity: 0, y: 14 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.45, ease }}
-          className="lg:sticky lg:top-20"
+    <main className="relative min-h-dvh overflow-hidden pb-safe">
+      <AmbientBackdrop reduce={!!reduce} />
+
+      {/* ── 상단 브랜드 바 ─────────────────────────── */}
+      <header className="container-app relative z-10 flex items-center justify-between py-5">
+        <Wordmark />
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => router.push("/diagnostic")}
+            className="hidden rounded-full px-4 py-2 text-[13px] font-semibold text-neutral-500 transition hover:text-neutral-900 sm:inline-flex"
+          >
+            레벨 진단
+          </button>
+          <button
+            type="button"
+            onClick={() => router.push("/learn")}
+            className="rounded-full bg-neutral-900 px-4 py-2 text-[13px] font-bold text-white shadow-sm transition hover:bg-neutral-800 active:scale-95"
+          >
+            학습 시작
+          </button>
+        </div>
+      </header>
+
+      {/* ── 히어로 ─────────────────────────────────── */}
+      <section className="container-app relative z-10 pt-10 text-center sm:pt-16 lg:pt-20">
+        <motion.span
+          {...rise(0)}
+          className="inline-flex items-center gap-2 rounded-full bg-white/70 px-4 py-1.5 text-[12px] font-semibold text-indigo-600 ring-1 ring-indigo-500/15 backdrop-blur-sm"
         >
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-white/70 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-indigo-500 ring-1 ring-indigo-500/15 backdrop-blur-sm">
-            <span className="h-1.5 w-1.5 animate-glow-pulse rounded-full bg-indigo-500" />
-            TOEIC · LC Part 2·3·4 · RC Part 5·6·7
-          </span>
+          <span className="h-1.5 w-1.5 animate-glow-pulse rounded-full bg-indigo-500" />
+          최신 경향 · LC Part 2·3·4 · RC Part 5·6·7
+        </motion.span>
 
-          <h1 className="mt-6 text-[2.4rem] font-extrabold leading-[1.08] tracking-[-0.02em] text-neutral-900 sm:text-[3rem] lg:text-[3.3rem]">
-            토익 점수를
-            <br />
-            <span className="text-gradient">파트·유형별</span>로
-          </h1>
-
-          <p className="mt-5 max-w-md text-[15px] leading-relaxed text-neutral-500 sm:text-base">
-            리스닝(Part 2·3·4)과 리딩(Part 5·6·7)을 파트와 빈출 유형으로 골라
-            집중 연습하세요. 몸풀기 스토리 리딩으로 워밍업하고, AI 챌린저와의
-            속도전으로 실전 감각까지.
-          </p>
-
-          <div className="mt-7 flex flex-wrap items-center gap-2.5">
-            <Metric value={rcTotal > 0 ? `${rcTotal}` : "—"} label="RC 기출" />
-            <Metric value={lcTotal > 0 ? `${lcTotal}` : "—"} label="LC 문항" />
-            <Metric value="6" label="파트" />
-          </div>
-        </motion.section>
-
-        {/* ── 우: 학습 카드 + 모드 ──────────────────────────── */}
-        <motion.section
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.45, delay: 0.08, ease }}
-          className="flex flex-col gap-5"
+        <motion.h1
+          {...rise(0.06)}
+          className="mx-auto mt-7 max-w-3xl text-[2.6rem] font-black leading-[1.05] tracking-[-0.03em] text-neutral-900 sm:text-[3.6rem] lg:text-[4.4rem]"
         >
-          <DiagnosticBanner diag={diag} onStart={() => router.push("/diagnostic")} />
+          토익 만점,
+          <br className="sm:hidden" />{" "}
+          <span className="text-gradient">퍼펙토익</span>과
+          <br />
+          한 문제씩 완성하다
+        </motion.h1>
 
-          {progress && progress.totalSolved > 0 && (
-            <ProgressCard progress={progress} onReset={() => setProgress(resetProgress())} />
-          )}
+        <motion.p
+          {...rise(0.12)}
+          className="mx-auto mt-6 max-w-xl text-[15px] leading-relaxed text-neutral-500 sm:text-[17px]"
+        >
+          파트·빈출 유형별 실전 문제, 원어민 리스닝, AI 대결, 레벨 진단까지.
+          <br className="hidden sm:block" />
+          지금 바로 한 문제 풀며 실전 감각을 끌어올리세요.
+        </motion.p>
 
-          {warmDecks && (
-            <WarmupDashboard
-              decks={warmDecks}
-              progress={warmProgress}
-              memo={warmMemo}
-              order={warmOrder}
-              className=""
-              onOpen={() => router.push("/warmup")}
-            />
-          )}
+        {/* 핵심 CTA */}
+        <motion.div
+          {...rise(0.18)}
+          className="mx-auto mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row"
+        >
+          <button
+            type="button"
+            onClick={() => router.push("/learn")}
+            className="btn-primary group min-h-[54px] w-full px-8 text-[16px] sm:w-auto"
+          >
+            <span className="inline-flex items-center gap-2">
+              바로 문제 풀기
+              <span className="transition-transform group-hover:translate-x-0.5">
+                →
+              </span>
+            </span>
+          </button>
+          <button
+            type="button"
+            onClick={() => router.push("/diagnostic")}
+            className="min-h-[54px] w-full rounded-2xl bg-white px-8 text-[16px] font-bold text-neutral-800 ring-1 ring-neutral-900/[0.08] shadow-sm transition hover:ring-neutral-900/[0.16] active:scale-[0.99] sm:w-auto"
+          >
+            {diag ? `내 점수 ${diag.totalScore} · 다시 진단` : "무료 레벨 진단"}
+          </button>
+        </motion.div>
 
-          {/* 학습 카드 */}
-          <div className="card-elevated overflow-hidden">
-            <div className="border-b border-neutral-900/[0.05] px-4 py-4 sm:px-6">
-              <p className="label">학습</p>
-              <h2 className="mt-1 text-[15px] font-bold text-neutral-900 sm:text-base">
-                무엇을 연습할까요
-              </h2>
-            </div>
+        {/* 신뢰 메트릭 */}
+        <motion.div
+          {...rise(0.24)}
+          className="mx-auto mt-10 flex max-w-lg flex-wrap items-center justify-center gap-x-8 gap-y-3"
+        >
+          <Stat value={total} suffix="+" label="실전 문항" />
+          <Divider />
+          <Stat value={counts.lc} suffix="+" label="원어민 리스닝" />
+          <Divider />
+          <Stat value={6} label="파트 완전 커버" />
+        </motion.div>
+      </section>
 
-            <div className="px-4 py-5 sm:px-6 sm:py-6">
-              {/* 도메인 토글 (리스닝 / 리딩) */}
-              <div className="relative grid grid-cols-2 gap-1 rounded-2xl bg-neutral-900/[0.05] p-1 ring-1 ring-neutral-900/[0.05]">
-                {(["LC", "RC"] as Domain[]).map((d) => {
-                  const active = domain === d;
-                  const isLc = d === "LC";
-                  return (
-                    <button
-                      key={d}
-                      type="button"
-                      onClick={() => setDomain(d)}
-                      className="relative z-10 min-h-[52px] rounded-xl px-2 py-2 text-center transition"
-                    >
-                      {active && (
-                        <motion.span
-                          layoutId="domain-pill"
-                          transition={{ type: "spring", stiffness: 600, damping: 40 }}
-                          className={`absolute inset-0 -z-10 rounded-xl shadow-sm ${
-                            isLc
-                              ? "bg-gradient-to-r from-cyan-500 to-sky-500"
-                              : "bg-gradient-to-r from-indigo-500 to-violet-500"
-                          }`}
-                        />
-                      )}
-                      <span className={`block text-[14px] font-bold ${active ? "text-white" : "text-neutral-500"}`}>
-                        {isLc ? "🎧 리스닝" : "📖 리딩"}
-                      </span>
-                      <span className={`mt-0.5 block text-[11px] ${active ? "text-white/70" : "text-neutral-400"}`}>
-                        {isLc ? "Part 2·3·4" : "Part 5·6·7"}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-
-              <div className="mt-5">
-                <AnimatePresence mode="wait">
-                  {domain === "RC" ? (
-                    <motion.div
-                      key="rc"
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -8 }}
-                      transition={{ duration: 0.22, ease }}
-                      className="flex flex-col gap-5"
-                    >
-                      <PartSelector value={part} onChange={setPart} counts={partCounts} />
-                      {part === 7 ? (
-                        <TypeSelector value={type} onChange={setType} counts={typeCounts} total={typeTotal} />
-                      ) : (
-                        <div className="rounded-2xl bg-gradient-to-br from-indigo-50/70 to-white px-5 py-4 ring-1 ring-indigo-500/10">
-                          <p className="text-[14px] font-bold text-neutral-900">
-                            {PART_META[part].label} · {PART_META[part].name}
-                            <span className="ml-1.5 text-indigo-500">{partCounts[part]}문항</span>
-                          </p>
-                          <p className="mt-1 text-[13px] leading-relaxed text-neutral-500">
-                            {PART_META[part].desc}.{" "}
-                            {part === 5
-                              ? "품사·시제·전치사·접속사·관계사 등 핵심 문법을 빠르게 점검해요."
-                              : "문맥·연결어·문장 삽입까지 한 지문에서 함께 연습해요."}
-                          </p>
-                        </div>
-                      )}
-                      <button
-                        type="button"
-                        onClick={handleStartRc}
-                        disabled={loading}
-                        className="btn-primary min-h-[52px] w-full text-base disabled:opacity-60"
-                      >
-                        {loading ? (
-                          <span className="inline-flex items-center justify-center gap-2">
-                            <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />
-                            기출 불러오는 중…
-                          </span>
-                        ) : (
-                          "리딩 학습 시작"
-                        )}
-                      </button>
-                    </motion.div>
-                  ) : (
-                    <motion.div
-                      key="lc"
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -8 }}
-                      transition={{ duration: 0.22, ease }}
-                      className="flex flex-col gap-4"
-                    >
-                      {/* LC 파트 선택 */}
-                      <div className="relative grid grid-cols-4 gap-1 rounded-2xl bg-neutral-900/[0.05] p-1 ring-1 ring-neutral-900/[0.05]">
-                        {(["ALL", 2, 3, 4] as LcPart[]).map((p) => {
-                          const active = lcPart === p;
-                          return (
-                            <button
-                              key={String(p)}
-                              type="button"
-                              onClick={() => setLcPart(p)}
-                              className="relative z-10 min-h-[52px] rounded-xl px-1 py-2 text-center transition"
-                            >
-                              {active && (
-                                <motion.span
-                                  layoutId="lc-lobby-part-pill"
-                                  transition={{ type: "spring", stiffness: 600, damping: 40 }}
-                                  className="absolute inset-0 -z-10 rounded-xl bg-white shadow-sm ring-1 ring-neutral-900/[0.05]"
-                                />
-                              )}
-                              <span className={`block text-[13.5px] font-bold ${active ? "text-cyan-600" : "text-neutral-500"}`}>
-                                {p === "ALL" ? "전체" : `Part ${p}`}
-                              </span>
-                              <span className={`mt-0.5 block text-[10.5px] ${active ? "text-neutral-400" : "text-neutral-400/70"}`}>
-                                {p === "ALL" ? `${lcTotal}문항` : `${lcPartCounts[p] ?? 0}문항`}
-                              </span>
-                            </button>
-                          );
-                        })}
-                      </div>
-
-                      {/* LC 유형 필터 */}
-                      <div className="flex flex-wrap gap-1.5">
-                        <LcChip active={lcType === "ALL"} onClick={() => setLcType("ALL")} label="전체 유형" />
-                        {lcAvailableTypes.map((t) => (
-                          <LcChip
-                            key={t}
-                            active={lcType === t}
-                            onClick={() => setLcType(t)}
-                            label={LC_TYPE_META[t].label}
-                            count={lcTypeCounts[t]}
-                          />
-                        ))}
-                      </div>
-
-                      <button
-                        type="button"
-                        onClick={handleStartLc}
-                        className="min-h-[52px] w-full rounded-2xl bg-gradient-to-r from-cyan-500 to-sky-600 text-base font-bold text-white shadow-md transition active:scale-[0.98]"
-                      >
-                        리스닝 시작
-                      </button>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            </div>
-          </div>
-
-          {/* 모드 섹션 */}
+      {/* ── 빠른 시작 (직관적 진입) ─────────────────── */}
+      <section className="container-app relative z-10 mt-16 sm:mt-24">
+        <motion.div {...rise(0)} className="mb-5 flex items-end justify-between">
           <div>
-            <p className="label mb-2 px-1">모드</p>
-            <div className="grid gap-2.5 sm:grid-cols-3">
-              <ModeButton
-                onClick={() => router.push("/match")}
-                emoji="🤖"
-                title="AI 대결"
-                sub="속도전"
-                tint="from-neutral-800 to-neutral-900"
-                dark
-              />
-              <ModeButton
-                onClick={() => router.push("/warmup")}
-                emoji="📖"
-                title="몸풀기"
-                sub="스토리 리딩"
-                tint="from-indigo-50 to-white"
-              />
-              <ModeButton
-                onClick={() => router.push("/tts")}
-                emoji="🔊"
-                title="발음 듣기"
-                sub="TTS"
-                tint="from-sky-50 to-white"
-              />
-            </div>
+            <p className="label">빠른 시작</p>
+            <h2 className="mt-1 text-[20px] font-extrabold tracking-tight text-neutral-900 sm:text-[24px]">
+              한 번의 탭으로 바로 풀이
+            </h2>
           </div>
-        </motion.section>
-      </div>
+        </motion.div>
+
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3">
+          <QuickCard
+            index={0}
+            reduce={!!reduce}
+            onClick={() => router.push("/learn")}
+            emoji="📖"
+            title="리딩 유형별"
+            sub={`Part 5·6·7 · ${counts.rc}문항`}
+            gradient="from-indigo-500 via-violet-500 to-purple-600"
+            span
+          />
+          <QuickCard
+            index={1}
+            reduce={!!reduce}
+            onClick={() => router.push("/listening")}
+            emoji="🎧"
+            title="리스닝"
+            sub={`Part 2·3·4 · ${counts.lc}문항`}
+            gradient="from-cyan-500 to-sky-600"
+          />
+          <QuickCard
+            index={2}
+            reduce={!!reduce}
+            onClick={() => router.push("/diagnostic")}
+            emoji="🎯"
+            title="레벨 진단"
+            sub="30문항 · 예상 점수"
+            gradient="from-violet-500 to-fuchsia-600"
+          />
+          <QuickCard
+            index={3}
+            reduce={!!reduce}
+            onClick={() => router.push("/match")}
+            emoji="🤖"
+            title="AI 대결"
+            sub="1:1 속도전"
+            gradient="from-neutral-700 to-neutral-900"
+          />
+          <QuickCard
+            index={4}
+            reduce={!!reduce}
+            onClick={() => router.push("/warmup")}
+            emoji="🔥"
+            title="몸풀기"
+            sub="스토리 리딩·암기"
+            gradient="from-amber-500 to-orange-600"
+          />
+          <QuickCard
+            index={5}
+            reduce={!!reduce}
+            onClick={() => router.push("/tts")}
+            emoji="🔊"
+            title="발음 듣기"
+            sub="원어민 TTS"
+            gradient="from-emerald-500 to-teal-600"
+          />
+        </div>
+      </section>
+
+      {/* ── 왜 퍼펙토익 ────────────────────────────── */}
+      <section className="container-app relative z-10 mt-20 sm:mt-28">
+        <motion.div {...rise(0)} className="text-center">
+          <p className="label">WHY PERFECTOEIC</p>
+          <h2 className="mx-auto mt-2 max-w-2xl text-[26px] font-extrabold leading-tight tracking-tight text-neutral-900 sm:text-[34px]">
+            점수가 오르는{" "}
+            <span className="text-gradient-rose">이유</span>가 있습니다
+          </h2>
+        </motion.div>
+
+        <div className="mt-10 grid gap-4 sm:gap-5 lg:grid-cols-3">
+          <Feature
+            reduce={!!reduce}
+            index={0}
+            icon="🎯"
+            title="파트·유형별 집중"
+            desc="Part 5·6·7 문법·독해, Part 2·3·4 리스닝을 빈출 유형으로 나눠 약점만 정조준합니다."
+          />
+          <Feature
+            reduce={!!reduce}
+            index={1}
+            icon="🗣️"
+            title="4개국 원어민 음원"
+            desc="미국·영국·호주·캐나다 발음을 실전과 동일하게 섞어, 진짜 시험장 리스닝에 대비합니다."
+          />
+          <Feature
+            reduce={!!reduce}
+            index={2}
+            icon="⚡"
+            title="게임처럼 몰입"
+            desc="AI 챌린저와의 속도전, 스토리 몸풀기, 레벨 진단으로 지루하지 않게 매일 이어갑니다."
+          />
+        </div>
+      </section>
+
+      {/* ── 마무리 CTA ─────────────────────────────── */}
+      <section className="container-app relative z-10 mt-20 sm:mt-28">
+        <motion.div
+          {...rise(0)}
+          className="surface-dark relative overflow-hidden px-7 py-12 text-center sm:px-12 sm:py-16"
+        >
+          <span className="pointer-events-none absolute -right-10 -top-16 h-56 w-56 rounded-full bg-violet-500/30 blur-3xl" />
+          <span className="pointer-events-none absolute -bottom-16 -left-10 h-52 w-52 rounded-full bg-cyan-500/20 blur-3xl" />
+          <div className="relative">
+            <h2 className="mx-auto max-w-xl text-[26px] font-extrabold leading-tight tracking-tight text-white sm:text-[32px]">
+              오늘 한 문제가
+              <br className="sm:hidden" /> 내일의 만점을 만듭니다
+            </h2>
+            <p className="mx-auto mt-4 max-w-md text-[14px] leading-relaxed text-white/60 sm:text-[15px]">
+              가입 없이 지금 바로 시작하세요. 진도는 자동으로 저장됩니다.
+            </p>
+            <button
+              type="button"
+              onClick={() => router.push("/learn")}
+              className="group mt-8 inline-flex min-h-[54px] items-center gap-2 rounded-2xl bg-white px-9 text-[16px] font-bold text-neutral-900 shadow-lg transition hover:shadow-xl active:scale-[0.98]"
+            >
+              무료로 시작하기
+              <span className="transition-transform group-hover:translate-x-0.5">
+                →
+              </span>
+            </button>
+          </div>
+        </motion.div>
+      </section>
+
+      {/* ── 푸터 ───────────────────────────────────── */}
+      <footer className="container-app relative z-10 mt-16 flex flex-col items-center gap-3 border-t border-neutral-900/[0.06] py-10 text-center sm:mt-24">
+        <Wordmark small />
+        <p className="text-[12px] text-neutral-400">
+          퍼펙토익 · TOEIC LC/RC 실전 학습 · 최신 경향 문제
+        </p>
+      </footer>
     </main>
   );
 }
 
-/** category → 리스닝 표준 유형 (page 로컬 경량 정규화; listeningTypes.ts와 동일 규칙) */
-const LC_MAP: Record<string, LcType> = {
-  Where의문문: "WH", When의문문: "WH", Who의문문: "WH", What의문문: "WH", How의문문: "WH", Why의문문: "WH",
-  조동사의문문: "YESNO", 부정의문문: "YESNO", 부가의문문: "YESNO",
-  선택의문문: "CHOICE",
-  평서문: "STATEMENT", "요청·제안": "STATEMENT",
-  "주제·목적": "MAIN", 세부사항: "DETAIL", 세부: "DETAIL", 추론: "INFERENCE", "의도·화법": "INTENT",
-};
-function normLc(cat?: string): LcType {
-  if (!cat) return "DETAIL";
-  return LC_MAP[cat.trim()] ?? "DETAIL";
-}
+/* ────────────────────────────────────────────────── */
 
-function DiagnosticBanner({
-  diag,
-  onStart,
-}: {
-  diag: DiagnosticResult | null;
-  onStart: () => void;
-}) {
+function Wordmark({ small = false }: { small?: boolean }) {
   return (
-    <motion.button
-      type="button"
-      onClick={onStart}
-      whileHover={{ y: -2 }}
-      whileTap={{ scale: 0.99 }}
-      className="group relative overflow-hidden rounded-3xl bg-neutral-900 px-5 py-5 text-left shadow-lg ring-1 ring-white/10"
-    >
-      <span className="pointer-events-none absolute -right-8 -top-10 h-40 w-40 rounded-full bg-violet-500/30 blur-3xl transition-transform group-hover:scale-125" />
-      <span className="pointer-events-none absolute -bottom-12 -left-6 h-36 w-36 rounded-full bg-cyan-500/20 blur-3xl" />
-      <div className="relative flex items-center justify-between gap-4">
-        <div className="min-w-0">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-2.5 py-0.5 text-[10.5px] font-bold uppercase tracking-[0.12em] text-violet-200 ring-1 ring-white/15">
-            <span className="h-1.5 w-1.5 animate-glow-pulse rounded-full bg-violet-300" />
-            레벨 진단
-          </span>
-          <p className="mt-2.5 text-[17px] font-extrabold leading-snug text-white">
-            30문항으로 내 토익 점수 확인
-          </p>
-          <p className="mt-1 text-[12.5px] text-white/55">
-            LC·RC 예상 점수 + 취약 파트 진단 · 약 15분
-          </p>
-        </div>
-        {diag ? (
-          <div className="shrink-0 text-right">
-            <p className="text-[10px] font-semibold uppercase tracking-wide text-white/40">지난 진단</p>
-            <p className="tabnum text-[28px] font-extrabold leading-none text-white">{diag.totalScore}</p>
-            <p className="text-[10px] text-white/40">다시 진단 →</p>
-          </div>
-        ) : (
-          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-500 text-[18px] text-white shadow-md transition-transform group-hover:scale-110">
-            →
+    <div className="inline-flex items-center gap-2.5">
+      <span
+        className={`relative grid place-items-center rounded-[0.7rem] bg-gradient-to-br from-indigo-500 via-violet-500 to-fuchsia-500 text-white shadow-md ${
+          small ? "h-7 w-7 text-[14px]" : "h-9 w-9 text-[18px]"
+        }`}
+      >
+        <span className="font-black leading-none">P</span>
+        <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-fuchsia-300 ring-2 ring-white" />
+      </span>
+      <span className="flex flex-col leading-none">
+        <span
+          className={`font-black tracking-tight text-neutral-900 ${
+            small ? "text-[15px]" : "text-[18px]"
+          }`}
+        >
+          퍼펙토익
+        </span>
+        {!small && (
+          <span className="mt-0.5 text-[10px] font-bold uppercase tracking-[0.18em] text-neutral-400">
+            PerfecTOEIC
           </span>
         )}
-      </div>
-    </motion.button>
-  );
-}
-
-function Metric({ value, label }: { value: string; label: string }) {
-  return (
-    <div className="flex items-baseline gap-1.5 rounded-2xl bg-white/70 px-3.5 py-2 ring-1 ring-neutral-900/[0.05] backdrop-blur-sm">
-      <span className="text-[17px] font-extrabold tabnum text-neutral-900">{value}</span>
-      <span className="text-[12px] text-neutral-500">{label}</span>
+      </span>
     </div>
   );
 }
 
-function LcChip({
-  active,
-  onClick,
-  label,
-  count,
-}: {
-  active: boolean;
-  onClick: () => void;
-  label: string;
-  count?: number;
-}) {
+function AmbientBackdrop({ reduce }: { reduce: boolean }) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`rounded-full px-3 py-1.5 text-[12.5px] font-semibold transition active:scale-95 ${
-        active
-          ? "bg-gradient-to-r from-cyan-500 to-sky-500 text-white shadow-sm"
-          : "bg-white text-neutral-500 ring-1 ring-neutral-200 hover:ring-cyan-300 hover:text-cyan-600"
-      }`}
-    >
-      {label}
-      {typeof count === "number" && (
-        <span className={`ml-1 ${active ? "text-white/70" : "text-neutral-400"}`}>{count}</span>
-      )}
-    </button>
+    <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+      <motion.span
+        className="absolute -left-24 -top-24 h-[28rem] w-[28rem] rounded-full bg-indigo-400/25 blur-[100px]"
+        animate={reduce ? undefined : { y: [0, 30, 0], x: [0, 20, 0] }}
+        transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
+      />
+      <motion.span
+        className="absolute -right-28 top-20 h-[26rem] w-[26rem] rounded-full bg-fuchsia-400/20 blur-[100px]"
+        animate={reduce ? undefined : { y: [0, -26, 0], x: [0, -18, 0] }}
+        transition={{ duration: 16, repeat: Infinity, ease: "easeInOut" }}
+      />
+      <motion.span
+        className="absolute bottom-10 left-1/3 h-[24rem] w-[24rem] rounded-full bg-cyan-300/20 blur-[100px]"
+        animate={reduce ? undefined : { y: [0, 24, 0] }}
+        transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+      />
+    </div>
   );
 }
 
-function ModeButton({
+function Stat({
+  value,
+  suffix,
+  label,
+}: {
+  value: number;
+  suffix?: string;
+  label: string;
+}) {
+  return (
+    <div className="text-center">
+      <p className="tabnum text-[26px] font-black leading-none text-neutral-900 sm:text-[30px]">
+        <CountUp value={value} />
+        {suffix}
+      </p>
+      <p className="mt-1.5 text-[12px] font-medium text-neutral-500">{label}</p>
+    </div>
+  );
+}
+
+function Divider() {
+  return <span className="hidden h-8 w-px bg-neutral-900/10 sm:block" />;
+}
+
+/** 진입 시 0→value 카운트업 */
+function CountUp({ value }: { value: number }) {
+  const reduce = useReducedMotion();
+  const [n, setN] = useState(reduce ? value : 0);
+  useEffect(() => {
+    if (reduce) {
+      setN(value);
+      return;
+    }
+    let raf = 0;
+    const start = performance.now();
+    const dur = 900;
+    const tick = (t: number) => {
+      const p = Math.min(1, (t - start) / dur);
+      const eased = 1 - Math.pow(1 - p, 3);
+      setN(Math.round(value * eased));
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [value, reduce]);
+  return <>{n.toLocaleString()}</>;
+}
+
+function QuickCard({
+  index,
+  reduce,
   onClick,
   emoji,
   title,
   sub,
-  tint,
-  dark = false,
+  gradient,
+  span = false,
 }: {
+  index: number;
+  reduce: boolean;
   onClick: () => void;
   emoji: string;
   title: string;
   sub: string;
-  tint: string;
-  dark?: boolean;
+  gradient: string;
+  span?: boolean;
 }) {
   return (
     <motion.button
       type="button"
       onClick={onClick}
-      whileHover={{ y: -2 }}
+      initial={reduce ? { opacity: 0 } : { opacity: 0, y: 16 }}
+      whileInView={reduce ? { opacity: 1 } : { opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-40px" }}
+      transition={{ duration: 0.4, ease: EASE, delay: index * 0.05 }}
+      whileHover={reduce ? undefined : { y: -4 }}
       whileTap={{ scale: 0.98 }}
-      className={`group flex items-center gap-3 rounded-2xl bg-gradient-to-br ${tint} px-4 py-3.5 text-left ring-1 transition ${
-        dark ? "ring-white/10 shadow-md" : "ring-neutral-900/[0.06]"
+      className={`group relative flex min-h-[128px] flex-col justify-between overflow-hidden rounded-3xl bg-gradient-to-br ${gradient} p-5 text-left shadow-lg ring-1 ring-white/10 ${
+        span ? "col-span-2 lg:col-span-1" : ""
       }`}
     >
-      <span className="text-[20px] transition-transform group-hover:scale-110">{emoji}</span>
-      <span className="min-w-0">
-        <span className={`block text-[14px] font-bold ${dark ? "text-white" : "text-neutral-900"}`}>
+      <span className="pointer-events-none absolute -right-6 -top-6 h-24 w-24 rounded-full bg-white/15 blur-xl transition-transform duration-500 group-hover:scale-150" />
+      <span className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/15 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+      <span className="relative text-[28px] drop-shadow-sm transition-transform group-hover:scale-110">
+        {emoji}
+      </span>
+      <span className="relative">
+        <span className="block text-[16px] font-extrabold text-white drop-shadow-sm sm:text-[17px]">
           {title}
         </span>
-        <span className={`block text-[11.5px] ${dark ? "text-white/60" : "text-neutral-400"}`}>{sub}</span>
+        <span className="mt-0.5 flex items-center gap-1 text-[12px] font-medium text-white/75">
+          {sub}
+          <span className="transition-transform group-hover:translate-x-0.5">
+            →
+          </span>
+        </span>
       </span>
     </motion.button>
+  );
+}
+
+function Feature({
+  reduce,
+  index,
+  icon,
+  title,
+  desc,
+}: {
+  reduce: boolean;
+  index: number;
+  icon: string;
+  title: string;
+  desc: string;
+}) {
+  return (
+    <motion.div
+      initial={reduce ? { opacity: 0 } : { opacity: 0, y: 20 }}
+      whileInView={reduce ? { opacity: 1 } : { opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-40px" }}
+      transition={{ duration: 0.45, ease: EASE, delay: index * 0.08 }}
+      className="card-elevated group p-6 transition-transform hover:-translate-y-1 sm:p-7"
+    >
+      <span className="grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br from-indigo-50 to-violet-50 text-[24px] ring-1 ring-indigo-500/10 transition-transform group-hover:scale-110">
+        {icon}
+      </span>
+      <h3 className="mt-5 text-[17px] font-extrabold tracking-tight text-neutral-900">
+        {title}
+      </h3>
+      <p className="mt-2 text-[14px] leading-relaxed text-neutral-500">{desc}</p>
+    </motion.div>
   );
 }

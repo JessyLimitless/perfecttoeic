@@ -103,7 +103,7 @@ export default function TtsStudio() {
       <div className="flex items-center justify-between gap-3">
         <button
           type="button"
-          onClick={() => router.push("/")}
+          onClick={() => router.push("/learn")}
           className="-ml-1 inline-flex items-center gap-1 rounded-full px-2 py-1 text-[13px] font-medium text-neutral-400 transition-colors hover:bg-white/60 hover:text-neutral-700"
         >
           ← 홈

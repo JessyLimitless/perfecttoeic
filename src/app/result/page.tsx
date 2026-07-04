@@ -20,14 +20,14 @@ export default function SummaryPage() {
   // 푼 문제 없이 직접 진입/새로고침이면 로비로.
   // (active = 약점 집중 연습 시작 → /game 으로 보내는 중이므로 가로채지 않음)
   useEffect(() => {
-    if (status === "idle") router.replace("/");
+    if (status === "idle") router.replace("/learn");
   }, [status, router]);
 
   if (status !== "ended") return null;
 
   const handleReplay = () => {
     reset();
-    router.push("/");
+    router.push("/learn");
   };
 
   return (

@@ -99,7 +99,7 @@ export default function WarmupHome({ decks }: { decks: WarmupDeck[] }) {
       >
         <button
           type="button"
-          onClick={() => router.push("/")}
+          onClick={() => router.push("/learn")}
           className="-ml-1 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-[13px] font-medium text-neutral-400 transition-colors hover:bg-white/60 hover:text-neutral-700 active:scale-95"
         >
           <ArrowLeft size={16} /> 로비
