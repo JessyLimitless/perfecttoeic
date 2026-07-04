@@ -10,6 +10,7 @@ import WarmupDashboard, {
   type WarmupDeckSummary,
 } from "@/components/warmup/WarmupDashboard";
 import { loadProgress, resetProgress, type Progress } from "@/game/progress";
+import { loadDiagnosticResult, type DiagnosticResult } from "@/game/diagnostic";
 import { loadWarmupProgress, type WarmupProgress } from "@/game/warmup";
 import { loadMemorize, type MemorizeStore } from "@/game/memorize";
 import { loadOrder, type OrderStore } from "@/game/order";
@@ -74,6 +75,7 @@ export default function HomePage() {
   const [lcSets, setLcSets] = useState<LcSummary[] | null>(null);
 
   const [progress, setProgress] = useState<Progress | null>(null);
+  const [diag, setDiag] = useState<DiagnosticResult | null>(null);
 
   // 몸풀기(Warm-up) 진도 대시보드용
   const [warmDecks, setWarmDecks] = useState<WarmupDeckSummary[] | null>(null);
@@ -119,6 +121,7 @@ export default function HomePage() {
 
   useEffect(() => {
     setProgress(loadProgress());
+    setDiag(loadDiagnosticResult());
     setWarmProgress(loadWarmupProgress());
     setWarmMemo(loadMemorize());
     setWarmOrder(loadOrder());
@@ -231,6 +234,8 @@ export default function HomePage() {
           transition={{ duration: 0.45, delay: 0.08, ease }}
           className="flex flex-col gap-5"
         >
+          <DiagnosticBanner diag={diag} onStart={() => router.push("/diagnostic")} />
+
           {progress && progress.totalSolved > 0 && (
             <ProgressCard progress={progress} onReset={() => setProgress(resetProgress())} />
           )}
@@ -445,6 +450,52 @@ const LC_MAP: Record<string, LcType> = {
 function normLc(cat?: string): LcType {
   if (!cat) return "DETAIL";
   return LC_MAP[cat.trim()] ?? "DETAIL";
+}
+
+function DiagnosticBanner({
+  diag,
+  onStart,
+}: {
+  diag: DiagnosticResult | null;
+  onStart: () => void;
+}) {
+  return (
+    <motion.button
+      type="button"
+      onClick={onStart}
+      whileHover={{ y: -2 }}
+      whileTap={{ scale: 0.99 }}
+      className="group relative overflow-hidden rounded-3xl bg-neutral-900 px-5 py-5 text-left shadow-lg ring-1 ring-white/10"
+    >
+      <span className="pointer-events-none absolute -right-8 -top-10 h-40 w-40 rounded-full bg-violet-500/30 blur-3xl transition-transform group-hover:scale-125" />
+      <span className="pointer-events-none absolute -bottom-12 -left-6 h-36 w-36 rounded-full bg-cyan-500/20 blur-3xl" />
+      <div className="relative flex items-center justify-between gap-4">
+        <div className="min-w-0">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-2.5 py-0.5 text-[10.5px] font-bold uppercase tracking-[0.12em] text-violet-200 ring-1 ring-white/15">
+            <span className="h-1.5 w-1.5 animate-glow-pulse rounded-full bg-violet-300" />
+            레벨 진단
+          </span>
+          <p className="mt-2.5 text-[17px] font-extrabold leading-snug text-white">
+            30문항으로 내 토익 점수 확인
+          </p>
+          <p className="mt-1 text-[12.5px] text-white/55">
+            LC·RC 예상 점수 + 취약 파트 진단 · 약 15분
+          </p>
+        </div>
+        {diag ? (
+          <div className="shrink-0 text-right">
+            <p className="text-[10px] font-semibold uppercase tracking-wide text-white/40">지난 진단</p>
+            <p className="tabnum text-[28px] font-extrabold leading-none text-white">{diag.totalScore}</p>
+            <p className="text-[10px] text-white/40">다시 진단 →</p>
+          </div>
+        ) : (
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-500 text-[18px] text-white shadow-md transition-transform group-hover:scale-110">
+            →
+          </span>
+        )}
+      </div>
+    </motion.button>
+  );
 }
 
 function Metric({ value, label }: { value: string; label: string }) {

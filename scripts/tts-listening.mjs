@@ -19,7 +19,6 @@ import { MsEdgeTTS, OUTPUT_FORMAT } from "msedge-tts";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
-const SRC_DIR = path.join(ROOT, "content", "listening");
 const OUT_DIR = path.join(ROOT, "public", "audio", "listening");
 
 // voice 키 → 실제 msedge 목소리 (혼합 액센트: 미/영/호/캐 — 실전 TOEIC 유사)
@@ -40,14 +39,14 @@ function parseArgs() {
     const i = a.indexOf(k);
     return i >= 0 ? a[i + 1] : undefined;
   };
-  return { set: get("--set"), force: a.includes("--force") };
+  return { set: get("--set"), force: a.includes("--force"), dir: get("--dir") };
 }
 
-function loadSets() {
+function loadSets(srcDir) {
   const out = [];
-  for (const file of fs.readdirSync(SRC_DIR)) {
+  for (const file of fs.readdirSync(srcDir)) {
     if (!file.endsWith(".md")) continue;
-    const raw = fs.readFileSync(path.join(SRC_DIR, file), "utf8");
+    const raw = fs.readFileSync(path.join(srcDir, file), "utf8");
     const m = raw.match(/```json\s*([\s\S]*?)```/);
     if (!m) continue;
     try {
@@ -106,13 +105,15 @@ async function synthLines(lines) {
 }
 
 async function main() {
-  const { set: only, force } = parseArgs();
+  const { set: only, force, dir } = parseArgs();
+  const srcDir = dir ? path.resolve(ROOT, dir) : path.join(ROOT, "content", "listening");
   fs.mkdirSync(OUT_DIR, { recursive: true });
-  let sets = loadSets();
+  let sets = loadSets(srcDir);
   if (only) sets = sets.filter((s) => s.id === only);
 
   const made = [];
   for (const s of sets) {
+    if (![2, 3, 4].includes(s.part)) continue; // RC 세트 등은 건너뜀
     if (s.part === 2) {
       for (const item of s.items || []) {
         const dest = path.join(OUT_DIR, `${item.id}.mp3`);
@@ -151,11 +152,20 @@ async function main() {
     }
   }
 
+  // 기존 매니페스트와 병합(다른 소스 디렉터리 실행 시 목록 유실 방지)
+  const manifestPath = path.join(OUT_DIR, "manifest.json");
+  let existing = [];
+  try {
+    existing = JSON.parse(fs.readFileSync(manifestPath, "utf8")).clips ?? [];
+  } catch {
+    /* 없으면 새로 */
+  }
+  const clips = Array.from(new Set([...existing, ...made]));
   fs.writeFileSync(
-    path.join(OUT_DIR, "manifest.json"),
-    JSON.stringify({ clips: made, generatedAt: new Date().toISOString() }, null, 2),
+    manifestPath,
+    JSON.stringify({ clips, generatedAt: new Date().toISOString() }, null, 2),
   );
-  console.log(`\n완료. 클립 ${made.length}개, manifest.json 갱신.`);
+  console.log(`\n완료. 이번 ${made.length}개, 매니페스트 총 ${clips.length}개.`);
 }
 
 main()
