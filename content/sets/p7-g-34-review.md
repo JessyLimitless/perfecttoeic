@@ -1,4 +1,4 @@
-# p7-g-34 — MEDIUM — Product Review: Reporting Tool (Review)
+# p7-g-34 — MEDIUM — Coworking Space Review (Review)
 
 ```json
 {
@@ -7,54 +7,54 @@
   "difficulty": "MEDIUM",
   "passageType": "Review",
   "passageLines": [
-    { "en": "Customer Review — ClearReport Pro", "ko": "고객 후기 — 클리어리포트 프로" },
-    { "en": "Reviewer: Hannah Cho, Operations Lead at a mid-sized logistics firm", "ko": "작성자: 중견 물류 회사 운영 책임자 한나 조" },
+    { "en": "Customer Review — ClearDesk Coworking", "ko": "고객 후기 — 클리어데스크 코워킹" },
+    { "en": "Reviewer: Hannah Cho, freelance designer", "ko": "작성자: 프리랜서 디자이너 한나 조" },
     { "en": "Rating: 4 out of 5 stars", "ko": "평점: 별 5개 중 4개" },
-    { "en": "We switched to ClearReport Pro six months ago, and overall it has saved our team hours of manual work each week.", "ko": "우리는 6개월 전 클리어리포트 프로로 전환했고, 전반적으로 매주 수 시간의 수작업을 절약했습니다." },
-    { "en": "The automated weekly summaries are excellent, and setting up custom charts took only minutes.", "ko": "자동 주간 요약은 훌륭했고, 맞춤 차트 설정은 몇 분밖에 걸리지 않았습니다." },
-    { "en": "My only complaint is that the mobile app is slower than the desktop version, especially when opening large files.", "ko": "유일한 불만은 모바일 앱이 데스크톱 버전보다 느리다는 점인데, 특히 큰 파일을 열 때 그렇습니다." },
-    { "en": "Customer support responded to my questions within a day, which I appreciated.", "ko": "고객 지원팀이 하루 안에 제 질문에 답해 주어 만족스러웠습니다." },
-    { "en": "I would recommend it to any team that produces regular reports, as long as they mostly work on desktops.", "ko": "정기 보고서를 작성하는 팀이라면, 주로 데스크톱에서 작업하는 한 추천합니다." }
+    { "en": "I started renting a desk at ClearDesk six months ago, and overall it has been a great place to focus on my work.", "ko": "저는 6개월 전 클리어데스크에서 책상을 빌리기 시작했는데, 전반적으로 제 일에 집중하기 좋은 곳이었습니다." },
+    { "en": "The workspace is quiet and bright, and booking a meeting room takes only a minute through the front desk.", "ko": "작업 공간은 조용하고 밝으며, 안내 데스크를 통해 회의실을 예약하는 데 1분밖에 걸리지 않습니다." },
+    { "en": "My only complaint is that the parking lot is small, so it fills up quickly during busy mornings.", "ko": "유일한 불만은 주차장이 작아서 바쁜 아침에는 금방 가득 찬다는 점입니다." },
+    { "en": "The staff responded to my questions within a day, which I appreciated.", "ko": "직원들이 하루 안에 제 질문에 답해 주어 만족스러웠습니다." },
+    { "en": "I would recommend it to anyone looking for a calm place to work, as long as they can travel by public transit.", "ko": "조용히 일할 곳을 찾는 분이라면, 대중교통으로 이동할 수 있는 한 추천합니다." }
   ],
   "questions": [
     {
       "id": "p7-g-34-q1",
       "prompt": "What is the main purpose of the review?",
       "promptKo": "이 후기의 주된 목적은 무엇인가?",
-      "choices": ["To request a refund", "To share an opinion of a software tool", "To apply for a job", "To announce a sale"],
-      "choicesKo": ["환불을 요청하려고", "소프트웨어 도구에 대한 의견을 공유하려고", "일자리에 지원하려고", "할인 행사를 알리려고"],
+      "choices": ["To request a refund", "To share an opinion of a coworking space", "To apply for a job", "To announce a sale"],
+      "choicesKo": ["환불을 요청하려고", "코워킹 공간에 대한 의견을 공유하려고", "일자리에 지원하려고", "할인 행사를 알리려고"],
       "answerIndex": 1,
-      "explanation": "글은 클리어리포트 프로 사용 경험과 평가를 공유하는 후기입니다. 따라서 정답은 (나)=1입니다.",
+      "explanation": "글은 클리어데스크 코워킹 이용 경험과 평가를 공유하는 후기입니다. 따라서 정답은 (나)=1입니다.",
       "category": "주제·목적"
     },
     {
       "id": "p7-g-34-q2",
-      "prompt": "What does Ms. Cho praise about the product?",
-      "promptKo": "조 씨는 제품의 어떤 점을 칭찬하는가?",
-      "choices": ["Its low price", "Its automated weekly summaries", "Its offline mode", "Its printed manual"],
-      "choicesKo": ["저렴한 가격", "자동 주간 요약", "오프라인 모드", "인쇄된 설명서"],
+      "prompt": "What does Ms. Cho praise about the space?",
+      "promptKo": "조 씨는 공간의 어떤 점을 칭찬하는가?",
+      "choices": ["Its low price", "Its quiet workspace and easy room booking", "Its free parking", "Its rooftop café"],
+      "choicesKo": ["저렴한 가격", "조용한 작업 공간과 손쉬운 회의실 예약", "무료 주차", "옥상 카페"],
       "answerIndex": 1,
-      "explanation": "자동 주간 요약이 훌륭하고 맞춤 차트 설정도 몇 분이면 된다고 칭찬합니다. 따라서 정답은 (나)=1입니다.",
+      "explanation": "작업 공간이 조용하고 밝으며 회의실 예약이 1분이면 된다고 칭찬합니다. 따라서 정답은 (나)=1입니다.",
       "category": "세부사항"
     },
     {
       "id": "p7-g-34-q3",
       "prompt": "What problem does Ms. Cho mention?",
       "promptKo": "조 씨는 어떤 문제를 언급하는가?",
-      "choices": ["The mobile app is slow with large files", "The desktop version crashes often", "The charts are hard to read", "Support never replied"],
-      "choicesKo": ["모바일 앱이 큰 파일에서 느리다", "데스크톱 버전이 자주 멈춘다", "차트를 읽기 어렵다", "지원팀이 답하지 않았다"],
+      "choices": ["The parking lot is small and fills up quickly", "The internet is slow", "The rooms are too cold", "Staff never replied"],
+      "choicesKo": ["주차장이 작아 금방 가득 찬다", "인터넷이 느리다", "방이 너무 춥다", "직원이 답하지 않았다"],
       "answerIndex": 0,
-      "explanation": "유일한 불만으로 모바일 앱이 큰 파일을 열 때 데스크톱보다 느리다고 했습니다. 따라서 정답은 (가)=0입니다.",
+      "explanation": "유일한 불만으로 주차장이 작아 바쁜 아침에 금방 가득 찬다고 했습니다. 따라서 정답은 (가)=0입니다.",
       "category": "세부사항"
     },
     {
       "id": "p7-g-34-q4",
       "prompt": "What is suggested about Ms. Cho's recommendation?",
       "promptKo": "조 씨의 추천에 대해 무엇이 암시되는가?",
-      "choices": ["It applies only to teams that mostly use desktops", "It is limited to large corporations", "It excludes logistics firms", "It requires a two-year contract"],
-      "choicesKo": ["주로 데스크톱을 쓰는 팀에만 해당한다", "대기업에만 국한된다", "물류 회사는 제외된다", "2년 계약이 필요하다"],
+      "choices": ["It applies mainly to people who use public transit", "It is limited to large companies", "It excludes freelancers", "It requires a two-year contract"],
+      "choicesKo": ["주로 대중교통을 이용하는 사람에게 해당한다", "대기업에만 국한된다", "프리랜서는 제외된다", "2년 계약이 필요하다"],
       "answerIndex": 0,
-      "explanation": "'주로 데스크톱에서 작업하는 한' 추천한다고 조건을 달았으므로, 데스크톱 위주 팀에 한정된 추천입니다. 따라서 정답은 (가)=0입니다.",
+      "explanation": "'대중교통으로 이동할 수 있는 한' 추천한다고 조건을 달았으므로, 대중교통 이용자에게 한정된 추천입니다. 따라서 정답은 (가)=0입니다.",
       "category": "추론"
     },
     {
