@@ -228,14 +228,36 @@ function Part34View({ set }: { set: ListeningSet }) {
     setAnswers((prev) => prev.map((v, i) => (i === qi ? ci : v)));
   };
 
-  return (
-    <div>
-      <AudioCard
-        src={audioSrc(set.id)}
-        label={set.part === 3 ? "대화를 듣고 문항을 푸세요" : "담화를 듣고 문항을 푸세요"}
-      />
+  const answeredCount = answers.filter((a) => a !== null).length;
 
-      <div className="mt-4 space-y-4">
+  return (
+    <div className="lg:grid lg:grid-cols-[minmax(0,340px)_minmax(0,1fr)] lg:items-start lg:gap-6">
+      {/* 좌: 오디오 + 진행 (데스크탑에서 sticky) */}
+      <div className="space-y-3 lg:sticky lg:top-6">
+        <AudioCard
+          src={audioSrc(set.id)}
+          label={set.part === 3 ? "대화를 듣고 문항을 푸세요" : "담화를 듣고 문항을 푸세요"}
+        />
+        <div className="hidden rounded-2xl bg-white/70 px-4 py-3.5 ring-1 ring-neutral-900/[0.05] backdrop-blur-sm lg:block">
+          <p className="text-[12px] font-semibold text-neutral-400">진행</p>
+          <p className="mt-0.5 text-[15px] font-bold text-neutral-900">
+            {revealed ? "제출 완료" : `${answeredCount} / ${questions.length} 문항`}
+          </p>
+          <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-neutral-100">
+            <div
+              className="h-full rounded-full bg-gradient-to-r from-cyan-500 to-sky-500 transition-all"
+              style={{ width: `${(answeredCount / Math.max(questions.length, 1)) * 100}%` }}
+            />
+          </div>
+          <p className="mt-2.5 text-[11.5px] leading-relaxed text-neutral-400">
+            제출 후 정답·해설·스크립트가 공개됩니다.
+          </p>
+        </div>
+      </div>
+
+      {/* 우: 문항 + 결과 */}
+      <div className="mt-4 lg:mt-0">
+        <div className="space-y-4">
         {questions.map((q, qi) => (
           <div key={q.id} className="card-elevated overflow-hidden">
             <div className="px-4 py-3.5 sm:px-5">
@@ -345,6 +367,7 @@ function Part34View({ set }: { set: ListeningSet }) {
           </button>
         </div>
       )}
+      </div>
     </div>
   );
 }
@@ -405,8 +428,10 @@ const PART_LABEL: Record<number, string> = {
 
 export default function ListeningPlayer({ set }: { set: ListeningSet }) {
   const router = useRouter();
+  // Part 2는 간결해 좁은 칼럼, Part 3/4는 넓은 프레임(데스크탑 2단)으로.
+  const frame = set.part === 2 ? "container-narrow" : "container-app";
   return (
-    <main className="container-narrow relative min-h-dvh overflow-hidden py-5 pb-safe sm:py-8">
+    <main className={`${frame} relative min-h-dvh overflow-hidden py-5 pb-safe sm:py-8`}>
       <div
         aria-hidden
         className="pointer-events-none absolute -right-16 -top-8 -z-10 h-96 w-96 rounded-full bg-gradient-to-br from-cyan-400/25 to-sky-400/15 blur-[80px]"
