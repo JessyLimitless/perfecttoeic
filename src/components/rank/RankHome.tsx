@@ -3,19 +3,13 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import {
-  loadRank,
-  simulateLeaderboard,
-  RANK_EVENT,
-  resetRank,
-} from "@/game/rank/store";
+import { loadRank, RANK_EVENT, resetRank } from "@/game/rank/store";
 import { rankFromRp, rpToNextDivision, type RankPos } from "@/game/rank/types";
 import LevelHud from "@/components/progression/LevelHud";
 import ResetButton from "@/components/warmup/ResetButton";
 import JennyAvatar from "@/components/match/JennyAvatar";
 import { jennyChapterForRp, MATCH_DOMAINS, type MatchDomain } from "@/game/match/jenny";
 import RankLadder from "./RankLadder";
-import Leaderboard from "./Leaderboard";
 
 interface View {
   rankPos: RankPos;
@@ -283,27 +277,17 @@ export default function RankHome() {
         </p>
       </section>
 
-      {/* ───────── 래더 ───────── */}
+      {/* ───────── 마스터로 가는 길 (내 티어 래더) ───────── */}
       <RankLadder current={rankPos} />
 
-      {/* ───────── 리더보드 ───────── */}
-      <Leaderboard rows={simulateLeaderboard(rp)} />
-
-      {/* ───────── 미션 · 리그 · 상점 진입 ───────── */}
-      <div className="grid grid-cols-3 gap-2.5">
+      {/* ───────── 미션 · 상점 진입 ───────── */}
+      <div className="grid grid-cols-2 gap-2.5">
         <button
           type="button"
           onClick={() => router.push("/missions")}
           className="flex min-h-[52px] flex-col items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-600 text-[13px] font-black text-white shadow-[0_10px_24px_-12px_rgba(192,38,211,0.7)] transition active:scale-[0.97]"
         >
           🎯 미션
-        </button>
-        <button
-          type="button"
-          onClick={() => router.push("/league")}
-          className="flex min-h-[52px] flex-col items-center justify-center rounded-2xl bg-gradient-to-br from-sky-500 to-indigo-600 text-[13px] font-black text-white shadow-[0_10px_24px_-12px_rgba(79,70,229,0.7)] transition active:scale-[0.97]"
-        >
-          🏆 리그
         </button>
         <button
           type="button"

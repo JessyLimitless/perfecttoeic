@@ -126,7 +126,7 @@ export type Reward =
 /** 티어 승급 레벨에서 주는 해금 보상 */
 const TIER_UNLOCK_AT: Record<number, Reward> = {
   10: { kind: "unlock", slot: "mode", id: "snake-hard", label: "스네이크 HARD 모드" },
-  20: { kind: "unlock", slot: "mode", id: "league", label: "주간 리그 입장권" },
+  20: { kind: "unlock", slot: "mode", id: "jenny-special", label: "제니 특별전 해금" },
   35: { kind: "unlock", slot: "theme", id: "diamond", label: "다이아 테마" },
   50: { kind: "unlock", slot: "avatar", id: "crown", label: "마스터 왕관 아바타" },
 };

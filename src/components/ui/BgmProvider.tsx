@@ -185,10 +185,50 @@ export default function BgmProvider({ children }: { children: React.ReactNode })
 
 /* ───────────────── 좌하단 플로팅 컨트롤 (명확한 재생/정지) ───────────────── */
 
+const COLLAPSE_KEY = "toeic-bgm-collapsed";
+
 function FloatingControl() {
   const bgm = useBgm()!;
   const [open, setOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
   const { playing, muted, track, toggle, setTrack } = bgm;
+
+  // 접힘 상태 로드/저장 (사용자가 배너를 치우면 유지)
+  useEffect(() => {
+    try {
+      setCollapsed(localStorage.getItem(COLLAPSE_KEY) === "1");
+    } catch {
+      /* 무시 */
+    }
+  }, []);
+  const setCollapse = (v: boolean) => {
+    setCollapsed(v);
+    setOpen(false);
+    try {
+      localStorage.setItem(COLLAPSE_KEY, v ? "1" : "0");
+    } catch {
+      /* 무시 */
+    }
+  };
+
+  // 접힌 상태 — 작은 원형 버튼만(탭하면 다시 펼침)
+  if (collapsed) {
+    return (
+      <div className="fixed bottom-4 left-4 z-[60] pb-safe">
+        <motion.button
+          type="button"
+          onClick={() => setCollapse(false)}
+          whileTap={{ scale: 0.92 }}
+          aria-label="배경음악 컨트롤 열기"
+          className={`grid h-9 w-9 place-items-center rounded-full text-white shadow-lg ring-1 ring-white/20 ${
+            playing ? `bg-gradient-to-br ${track.grad}` : "bg-neutral-800/90"
+          }`}
+        >
+          <span className="text-[13px]">🎵</span>
+        </motion.button>
+      </div>
+    );
+  }
 
   return (
     <div className="fixed bottom-4 left-4 z-[60] pb-safe">
@@ -252,7 +292,7 @@ function FloatingControl() {
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
-          className="flex items-center gap-2 rounded-full px-2.5 py-1.5 pr-3 text-left text-white transition hover:bg-white/[0.06]"
+          className="flex items-center gap-2 rounded-full px-2.5 py-1.5 text-left text-white transition hover:bg-white/[0.06]"
         >
           <span className="text-[15px]">{track.emoji}</span>
           <span className="leading-tight">
@@ -261,6 +301,17 @@ function FloatingControl() {
               {muted ? "학습 중 음소거" : playing ? "재생 중" : "일시정지"}
             </span>
           </span>
+        </button>
+        {/* 배너 치우기(접기) */}
+        <button
+          type="button"
+          onClick={() => setCollapse(true)}
+          aria-label="배경음악 배너 숨기기"
+          className="mr-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full text-white/50 transition hover:bg-white/10 hover:text-white"
+        >
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden>
+            <path d="M6 6l12 12M18 6L6 18" />
+          </svg>
         </button>
       </div>
     </div>
