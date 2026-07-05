@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import BackgroundMusic from "@/components/ui/BackgroundMusic";
 
 export const metadata: Metadata = {
   title: "퍼펙토익 · PerfecTOEIC — 토익 LC·RC 실전 학습",
@@ -19,7 +20,10 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="ko">
-      <body className="min-h-dvh antialiased">{children}</body>
+      <body className="min-h-dvh antialiased">
+        {children}
+        <BackgroundMusic />
+      </body>
     </html>
   );
 }
