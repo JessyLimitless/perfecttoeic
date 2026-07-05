@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
 import { loadDiagnosticResult, type DiagnosticResult } from "@/game/diagnostic";
 import LevelHud from "@/components/progression/LevelHud";
+import JennyOriginalArt from "@/components/match/JennyOriginalArt";
+import { JENNY } from "@/game/match/jenny";
 
 /** 실전 문항 수 라이브 집계 (실패 시 정적 폴백) */
 interface Counts {
@@ -216,46 +218,8 @@ export default function LandingPage() {
               </button>
             </div>
 
-            {/* 우: 티어 프리뷰 카드 */}
-            <div className="relative hidden lg:block">
-              <div className="rounded-3xl bg-white/[0.06] p-6 ring-1 ring-white/10 backdrop-blur-sm">
-                <div className="flex items-center justify-between">
-                  <span className="text-[12px] font-bold uppercase tracking-[0.15em] text-white/40">
-                    Current Tier
-                  </span>
-                  <span className="rounded-full bg-white/10 px-2.5 py-1 text-[11px] font-bold text-white/70">
-                    LIVE
-                  </span>
-                </div>
-                <div className="mt-4 flex items-center gap-4">
-                  <span className="grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-amber-400 via-orange-500 to-rose-500 text-[28px] shadow-lg">
-                    🏅
-                  </span>
-                  <div>
-                    <p className="text-[22px] font-black leading-none text-white">
-                      Gold III
-                    </p>
-                    <p className="mt-1.5 text-[13px] font-semibold text-white/50">
-                      1,240 RP · 다음 티어까지 260
-                    </p>
-                  </div>
-                </div>
-                <div className="mt-5 h-2.5 w-full overflow-hidden rounded-full bg-white/10">
-                  <motion.span
-                    className="block h-full rounded-full bg-gradient-to-r from-amber-400 to-rose-500"
-                    initial={reduce ? false : { width: 0 }}
-                    whileInView={{ width: "82%" }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 1, ease: EASE, delay: 0.2 }}
-                  />
-                </div>
-                <div className="mt-5 space-y-2">
-                  <LeaderRow rank={1} name="민준" rp="2,410" me={false} />
-                  <LeaderRow rank={2} name="서연" rp="2,180" me={false} />
-                  <LeaderRow rank={7} name="나" rp="1,240" me />
-                </div>
-              </div>
-            </div>
+            {/* 우: 라이벌 제니 대형 포트레이트 (전면·모든 화면 노출) */}
+            <JennyHero reduce={!!reduce} />
           </div>
         </motion.div>
       </section>
@@ -604,41 +568,69 @@ function RankPoint({ icon, text }: { icon: string; text: string }) {
   );
 }
 
-function LeaderRow({
-  rank,
-  name,
-  rp,
-  me,
-}: {
-  rank: number;
-  name: string;
-  rp: string;
-  me: boolean;
-}) {
+/** 라이벌 제니 대형 포트레이트 — 랜딩 플래그십 우측을 전면 장식. 실사 실패 시 오리지널 SVG 폴백. */
+function JennyHero({ reduce }: { reduce: boolean }) {
+  const [broken, setBroken] = useState(false);
   return (
-    <div
-      className={`flex items-center gap-3 rounded-xl px-3 py-2 ${
-        me ? "bg-white/15 ring-1 ring-white/20" : "bg-white/[0.04]"
-      }`}
+    <motion.div
+      initial={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.9, y: 16 }}
+      whileInView={reduce ? { opacity: 1 } : { opacity: 1, scale: 1, y: 0 }}
+      viewport={{ once: true, margin: "-40px" }}
+      transition={{ duration: 0.6, ease: EASE }}
+      className="relative order-first mx-auto w-full max-w-[340px] lg:order-none"
     >
+      {/* 뒤 글로우 */}
       <span
-        className={`grid h-6 w-6 shrink-0 place-items-center rounded-lg text-[11px] font-black ${
-          me ? "bg-white text-neutral-900" : "bg-white/10 text-white/60"
-        }`}
-      >
-        {rank}
-      </span>
-      <span
-        className={`flex-1 text-[13px] font-bold ${
-          me ? "text-white" : "text-white/70"
-        }`}
-      >
-        {name}
-      </span>
-      <span className="tabnum text-[12px] font-semibold text-white/50">
-        {rp} RP
-      </span>
-    </div>
+        aria-hidden
+        className={`pointer-events-none absolute -inset-6 rounded-[2.5rem] bg-gradient-to-br ${JENNY.gradient} opacity-40 blur-3xl`}
+      />
+      {/* 회전 링 */}
+      {!reduce && (
+        <motion.span
+          aria-hidden
+          className="pointer-events-none absolute -inset-3 rounded-[2.5rem] bg-gradient-to-tr from-fuchsia-400/40 via-transparent to-sky-400/40 blur-md"
+          animate={{ rotate: 360 }}
+          transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
+        />
+      )}
+
+      <div className="relative aspect-square w-full overflow-hidden rounded-[2rem] ring-1 ring-white/25 shadow-[0_40px_90px_-30px_rgba(217,70,239,0.6)]">
+        {broken ? (
+          <JennyOriginalArt size={340} expression="idle" className="h-full w-full" />
+        ) : (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={JENNY.images.idle}
+            alt={`라이벌 ${JENNY.name}`}
+            onError={() => setBroken(true)}
+            className="h-full w-full object-cover"
+          />
+        )}
+        {/* 하단 그라데이션 + 이름표 */}
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent px-5 pb-5 pt-16">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-2.5 py-1 text-[11px] font-black uppercase tracking-[0.14em] text-white ring-1 ring-white/25 backdrop-blur-sm">
+            👑 라이벌
+          </span>
+          <p className="mt-2 text-[30px] font-black leading-none text-white drop-shadow-lg">
+            {JENNY.name}
+          </p>
+          <p className="mt-1.5 text-[12.5px] font-semibold leading-snug text-white/80">
+            {JENNY.intro}
+          </p>
+        </div>
+      </div>
+
+      {/* 떠 있는 티어 칩 */}
+      <div className="absolute -right-3 -top-3 flex items-center gap-2 rounded-2xl bg-white px-3.5 py-2 shadow-xl ring-1 ring-neutral-900/10">
+        <span className="grid h-8 w-8 place-items-center rounded-xl bg-gradient-to-br from-amber-400 via-orange-500 to-rose-500 text-[16px]">
+          🏅
+        </span>
+        <div className="leading-tight">
+          <p className="text-[11px] font-bold text-neutral-400">챔피언</p>
+          <p className="text-[13px] font-black text-neutral-900">MASTER</p>
+        </div>
+      </div>
+    </motion.div>
   );
 }
 
