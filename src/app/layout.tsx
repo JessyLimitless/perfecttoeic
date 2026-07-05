@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
-import BackgroundMusic from "@/components/ui/BackgroundMusic";
+import BgmProvider from "@/components/ui/BgmProvider";
 
 export const metadata: Metadata = {
   title: "퍼펙토익 · PerfecTOEIC — 토익 LC·RC 실전 학습",
@@ -21,8 +21,7 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body className="min-h-dvh antialiased">
-        {children}
-        <BackgroundMusic />
+        <BgmProvider>{children}</BgmProvider>
       </body>
     </html>
   );

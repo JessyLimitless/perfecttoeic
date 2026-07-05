@@ -7,6 +7,7 @@ import { loadDiagnosticResult, type DiagnosticResult } from "@/game/diagnostic";
 import LevelHud from "@/components/progression/LevelHud";
 import JennyOriginalArt from "@/components/match/JennyOriginalArt";
 import { JENNY } from "@/game/match/jenny";
+import { useBgm } from "@/components/ui/BgmProvider";
 
 /** 실전 문항 수 라이브 집계 (실패 시 정적 폴백) */
 interface Counts {
@@ -102,10 +103,13 @@ export default function LandingPage() {
       </div>
 
       {/* ── 히어로 ─────────────────────────────────── */}
-      <section className="container-app relative z-10 pt-10 text-center sm:pt-16 lg:pt-20">
+      <section className="container-app relative z-10 pt-8 text-center sm:pt-12 lg:pt-14">
+        {/* 제니 브랜드 히어로 (최상단 전면 + 음악 통합) */}
+        <JennyBrandHero reduce={!!reduce} />
+
         <motion.span
           {...rise(0)}
-          className="inline-flex items-center gap-2 rounded-full bg-white/70 px-4 py-1.5 text-[12px] font-semibold text-indigo-600 ring-1 ring-indigo-500/15 backdrop-blur-sm"
+          className="mt-8 inline-flex items-center gap-2 rounded-full bg-white/70 px-4 py-1.5 text-[12px] font-semibold text-indigo-600 ring-1 ring-indigo-500/15 backdrop-blur-sm"
         >
           <span className="h-1.5 w-1.5 animate-glow-pulse rounded-full bg-indigo-500" />
           RP·티어로 겨루는 랭크 대결 · LC/RC 실전
@@ -218,8 +222,46 @@ export default function LandingPage() {
               </button>
             </div>
 
-            {/* 우: 라이벌 제니 대형 포트레이트 (전면·모든 화면 노출) */}
-            <JennyHero reduce={!!reduce} />
+            {/* 우: 티어 프리뷰 카드 */}
+            <div className="relative hidden lg:block">
+              <div className="rounded-3xl bg-white/[0.06] p-6 ring-1 ring-white/10 backdrop-blur-sm">
+                <div className="flex items-center justify-between">
+                  <span className="text-[12px] font-bold uppercase tracking-[0.15em] text-white/40">
+                    Current Tier
+                  </span>
+                  <span className="rounded-full bg-white/10 px-2.5 py-1 text-[11px] font-bold text-white/70">
+                    LIVE
+                  </span>
+                </div>
+                <div className="mt-4 flex items-center gap-4">
+                  <span className="grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-amber-400 via-orange-500 to-rose-500 text-[28px] shadow-lg">
+                    🏅
+                  </span>
+                  <div>
+                    <p className="text-[22px] font-black leading-none text-white">
+                      Gold III
+                    </p>
+                    <p className="mt-1.5 text-[13px] font-semibold text-white/50">
+                      1,240 RP · 다음 티어까지 260
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-5 h-2.5 w-full overflow-hidden rounded-full bg-white/10">
+                  <motion.span
+                    className="block h-full rounded-full bg-gradient-to-r from-amber-400 to-rose-500"
+                    initial={reduce ? false : { width: 0 }}
+                    whileInView={{ width: "82%" }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 1, ease: EASE, delay: 0.2 }}
+                  />
+                </div>
+                <div className="mt-5 space-y-2">
+                  <LeaderRow rank={1} name="민준" rp="2,410" me={false} />
+                  <LeaderRow rank={2} name="서연" rp="2,180" me={false} />
+                  <LeaderRow rank={7} name="나" rp="1,240" me />
+                </div>
+              </div>
+            </div>
           </div>
         </motion.div>
       </section>
@@ -568,69 +610,156 @@ function RankPoint({ icon, text }: { icon: string; text: string }) {
   );
 }
 
-/** 라이벌 제니 대형 포트레이트 — 랜딩 플래그십 우측을 전면 장식. 실사 실패 시 오리지널 SVG 폴백. */
-function JennyHero({ reduce }: { reduce: boolean }) {
+/** 라이벌 제니 브랜드 히어로 — 랜딩 최상단 전면. 대형 이미지 + 배경음악 컨트롤 통합. */
+function JennyBrandHero({ reduce }: { reduce: boolean }) {
   const [broken, setBroken] = useState(false);
+  const bgm = useBgm();
+  const playing = !!bgm?.playing;
+  const muted = !!bgm?.muted;
+
   return (
     <motion.div
-      initial={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.9, y: 16 }}
-      whileInView={reduce ? { opacity: 1 } : { opacity: 1, scale: 1, y: 0 }}
-      viewport={{ once: true, margin: "-40px" }}
+      initial={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.92, y: 14 }}
+      animate={reduce ? { opacity: 1 } : { opacity: 1, scale: 1, y: 0 }}
       transition={{ duration: 0.6, ease: EASE }}
-      className="relative order-first mx-auto w-full max-w-[340px] lg:order-none"
+      className="mx-auto flex w-full max-w-md flex-col items-center"
     >
-      {/* 뒤 글로우 */}
-      <span
-        aria-hidden
-        className={`pointer-events-none absolute -inset-6 rounded-[2.5rem] bg-gradient-to-br ${JENNY.gradient} opacity-40 blur-3xl`}
-      />
-      {/* 회전 링 */}
-      {!reduce && (
-        <motion.span
+      <div className="relative">
+        {/* 뒤 글로우 */}
+        <span
           aria-hidden
-          className="pointer-events-none absolute -inset-3 rounded-[2.5rem] bg-gradient-to-tr from-fuchsia-400/40 via-transparent to-sky-400/40 blur-md"
-          animate={{ rotate: 360 }}
-          transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
+          className={`pointer-events-none absolute -inset-8 rounded-full bg-gradient-to-br ${JENNY.gradient} opacity-40 blur-3xl`}
         />
-      )}
-
-      <div className="relative aspect-square w-full overflow-hidden rounded-[2rem] ring-1 ring-white/25 shadow-[0_40px_90px_-30px_rgba(217,70,239,0.6)]">
-        {broken ? (
-          <JennyOriginalArt size={340} expression="idle" className="h-full w-full" />
-        ) : (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={JENNY.images.idle}
-            alt={`라이벌 ${JENNY.name}`}
-            onError={() => setBroken(true)}
-            className="h-full w-full object-cover"
+        {/* 회전 링 */}
+        {!reduce && (
+          <motion.span
+            aria-hidden
+            className="pointer-events-none absolute -inset-2 rounded-[2.4rem] bg-gradient-to-tr from-fuchsia-400/50 via-transparent to-sky-400/50 blur-md"
+            animate={{ rotate: 360 }}
+            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
           />
         )}
-        {/* 하단 그라데이션 + 이름표 */}
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent px-5 pb-5 pt-16">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-2.5 py-1 text-[11px] font-black uppercase tracking-[0.14em] text-white ring-1 ring-white/25 backdrop-blur-sm">
-            👑 라이벌
-          </span>
-          <p className="mt-2 text-[30px] font-black leading-none text-white drop-shadow-lg">
-            {JENNY.name}
-          </p>
-          <p className="mt-1.5 text-[12.5px] font-semibold leading-snug text-white/80">
-            {JENNY.intro}
-          </p>
+
+        <div className="relative h-44 w-44 overflow-hidden rounded-[2rem] ring-2 ring-white/40 shadow-[0_36px_80px_-28px_rgba(217,70,239,0.65)] sm:h-52 sm:w-52">
+          {broken ? (
+            <JennyOriginalArt size={208} expression="idle" className="h-full w-full" />
+          ) : (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={JENNY.images.idle}
+              alt={`라이벌 ${JENNY.name}`}
+              onError={() => setBroken(true)}
+              className="h-full w-full object-cover"
+            />
+          )}
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent px-4 pb-3 pt-10">
+            <span className="inline-flex items-center gap-1 rounded-full bg-white/15 px-2 py-0.5 text-[10px] font-black uppercase tracking-[0.14em] text-white ring-1 ring-white/25 backdrop-blur-sm">
+              👑 라이벌
+            </span>
+          </div>
         </div>
+
+        {/* 재생 중 이퀄라이저 뱃지 */}
+        {playing && (
+          <span className="absolute -right-1 -top-1 grid h-9 w-9 place-items-center rounded-full bg-gradient-to-br from-fuchsia-500 to-rose-500 shadow-lg ring-2 ring-white">
+            <MiniEq />
+          </span>
+        )}
       </div>
 
-      {/* 떠 있는 티어 칩 */}
-      <div className="absolute -right-3 -top-3 flex items-center gap-2 rounded-2xl bg-white px-3.5 py-2 shadow-xl ring-1 ring-neutral-900/10">
-        <span className="grid h-8 w-8 place-items-center rounded-xl bg-gradient-to-br from-amber-400 via-orange-500 to-rose-500 text-[16px]">
-          🏅
-        </span>
-        <div className="leading-tight">
-          <p className="text-[11px] font-bold text-neutral-400">챔피언</p>
-          <p className="text-[13px] font-black text-neutral-900">MASTER</p>
-        </div>
-      </div>
+      <p className="mt-4 text-[15px] font-black tracking-tight text-neutral-900">
+        라이벌 <span className="text-gradient-rose">제니</span>
+      </p>
+
+      {/* 배경음악 컨트롤 — 제니 테마곡 */}
+      {bgm && (
+        <button
+          type="button"
+          onClick={bgm.toggle}
+          disabled={muted}
+          className="group mt-3 inline-flex items-center gap-2.5 rounded-full bg-white/80 py-1.5 pl-1.5 pr-4 shadow-sm ring-1 ring-neutral-900/[0.06] backdrop-blur-sm transition hover:ring-neutral-900/[0.14] disabled:opacity-60"
+        >
+          <span
+            className={`grid h-8 w-8 place-items-center rounded-full text-white ${
+              playing ? `bg-gradient-to-br ${bgm.track.grad}` : "bg-neutral-800"
+            }`}
+          >
+            {playing ? <MiniPause /> : <MiniPlay />}
+          </span>
+          <span className="text-left leading-tight">
+            <span className="block text-[12px] font-bold text-neutral-800">
+              {bgm.track.emoji} {bgm.track.label}
+            </span>
+            <span className="block text-[10px] font-semibold text-neutral-400">
+              {muted ? "학습 중 음소거" : playing ? "재생 중 · 눌러서 정지" : "테마곡 재생"}
+            </span>
+          </span>
+        </button>
+      )}
     </motion.div>
+  );
+}
+
+function MiniEq() {
+  return (
+    <span className="flex items-end gap-[2px]">
+      {[0, 1, 2].map((i) => (
+        <motion.span
+          key={i}
+          className="w-[2.5px] rounded-full bg-white"
+          animate={{ height: [4, 12, 6, 10, 4] }}
+          transition={{ duration: 0.9 + i * 0.12, repeat: Infinity, ease: "easeInOut", delay: i * 0.1 }}
+          style={{ height: 6 }}
+        />
+      ))}
+    </span>
+  );
+}
+function MiniPlay() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+      <path d="M8 5.5v13a1 1 0 0 0 1.53.85l10-6.5a1 1 0 0 0 0-1.7l-10-6.5A1 1 0 0 0 8 5.5Z" />
+    </svg>
+  );
+}
+function MiniPause() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+      <rect x="6.5" y="5" width="4" height="14" rx="1.4" />
+      <rect x="13.5" y="5" width="4" height="14" rx="1.4" />
+    </svg>
+  );
+}
+
+function LeaderRow({
+  rank,
+  name,
+  rp,
+  me,
+}: {
+  rank: number;
+  name: string;
+  rp: string;
+  me: boolean;
+}) {
+  return (
+    <div
+      className={`flex items-center gap-3 rounded-xl px-3 py-2 ${
+        me ? "bg-white/15 ring-1 ring-white/20" : "bg-white/[0.04]"
+      }`}
+    >
+      <span
+        className={`grid h-6 w-6 shrink-0 place-items-center rounded-lg text-[11px] font-black ${
+          me ? "bg-white text-neutral-900" : "bg-white/10 text-white/60"
+        }`}
+      >
+        {rank}
+      </span>
+      <span className={`flex-1 text-[13px] font-bold ${me ? "text-white" : "text-white/70"}`}>
+        {name}
+      </span>
+      <span className="tabnum text-[12px] font-semibold text-white/50">{rp} RP</span>
+    </div>
   );
 }
 
