@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import GameResultTable from "@/components/match/GameResultTable";
@@ -10,8 +10,17 @@ import ResultBanner from "@/components/match/ResultBanner";
 import RematchTimer, {
   isRematchExpired,
 } from "@/components/match/RematchTimer";
+import RankResultOverlay from "@/components/rank/RankResultOverlay";
+import LevelUpOverlay from "@/components/progression/LevelUpOverlay";
+import JennyAvatar from "@/components/match/JennyAvatar";
+import { Confetti, JennyCutin } from "@/components/match/JennyFx";
 import { useMatchStore } from "@/game/match/matchStore";
 import { CREDIT_WIN } from "@/game/match/types";
+import { JENNY, jennyReaction, jennyCutsceneForRp } from "@/game/match/jenny";
+import { applyRankedOutcome, loadRank } from "@/game/rank/store";
+import type { RankChange } from "@/game/rank/types";
+import { grantXp } from "@/game/progression/store";
+import { XP_BY_PART, type LevelUpResult } from "@/game/progression/types";
 import type { PassageSet } from "@/game/types";
 
 /** /api/sets 기출 은행 로드 (실패 시 null → 스토어 로컬 폴백) */
@@ -30,6 +39,7 @@ export default function MatchResultPage() {
   const router = useRouter();
 
   const status = useMatchStore((s) => s.status);
+  const part = useMatchStore((s) => s.part);
   const user = useMatchStore((s) => s.user);
   const ai = useMatchStore((s) => s.ai);
   const earnedCredits = useMatchStore((s) => s.earnedCredits);
@@ -42,6 +52,34 @@ export default function MatchResultPage() {
   const [reviewing, setReviewing] = useState(false);
   const [expired, setExpired] = useState(() => isRematchExpired(rematchDeadline));
   const [busy, setBusy] = useState(false);
+
+  // 랭크 RP 반영 + XP 적립 — 결과 진입 시 1회만(중복 반영 방지).
+  const appliedRef = useRef(false);
+  const [rankChange, setRankChange] = useState<RankChange | null>(null);
+  const [rankDismissed, setRankDismissed] = useState(false);
+  const [levelUp, setLevelUp] = useState<LevelUpResult | null>(null);
+  const [jennyLine, setJennyLine] = useState<string | null>(null);
+  const [cutinClosed, setCutinClosed] = useState(false);
+
+  useEffect(() => {
+    if (status !== "result" || appliedRef.current) return;
+    appliedRef.current = true;
+    const won = user.rank === 1;
+    const perfect = missions.includes("전 문항 정답");
+    const correct = user.results.filter(Boolean).length;
+    const scoreDiff = user.score - ai.score;
+    // 랭크 매치(장전됨)면 RP 반영, 캐주얼이면 null
+    const rc = applyRankedOutcome({ won, perfect, scoreDiff, correct });
+    // 제니의 승/패 반응 (챕터는 대결 당시 랭크 기준)
+    const rpForLine = rc ? rc.before.rp : loadRank().rp;
+    setJennyLine(jennyReaction(rpForLine, won));
+    // 문제 풀이 XP(계정 성장) — 맞힌 수 × 파트 XP + 승리 보너스
+    const xp = correct * XP_BY_PART[part] + (won ? 40 : 12);
+    const { levelUp: lu } = grantXp(xp, { correct });
+    if (rc) setRankChange(rc);
+    setLevelUp(lu);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [status]);
 
   // 결과 상태가 아니면(직접 진입/새로고침) 대결 로비로
   useEffect(() => {
@@ -111,6 +149,51 @@ export default function MatchResultPage() {
               earnedCredits={earnedCredits}
               missions={missions}
             />
+
+            {/* 라이벌 제니의 한마디 — 제니 관점 표정(내가 지면 제니는 승리 표정) */}
+            {jennyLine && (
+              <div className="flex items-center gap-3 rounded-2xl bg-white/95 px-4 py-3 ring-1 ring-fuchsia-900/10 shadow-sm">
+                <JennyAvatar
+                  size={44}
+                  variant={user.rank === 1 ? "lose" : "win"}
+                  motionPreset={user.rank === 1 ? "lose" : "win"}
+                  glow
+                />
+                <p className="text-[13px] font-semibold leading-snug text-neutral-800">
+                  <span className="text-fuchsia-600">{JENNY.name}</span>: “{jennyLine}”
+                </p>
+              </div>
+            )}
+
+            {/* 승급 시 제니 스토리 컷신 (순차 노출) */}
+            {rankChange && (rankChange.promoted || rankChange.tierPromoted) && (
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="overflow-hidden rounded-2xl bg-gradient-to-br from-rose-50 to-fuchsia-50 p-4 ring-1 ring-fuchsia-900/10"
+              >
+                <div className="mb-2 flex items-center gap-2">
+                  <JennyAvatar size={30} variant="idle" />
+                  <span className="text-[12px] font-black text-fuchsia-600">
+                    제니 · 승급 컷신
+                  </span>
+                </div>
+                <div className="space-y-1">
+                  {jennyCutsceneForRp(rankChange.after.rp).map((l, i) => (
+                    <motion.p
+                      key={i}
+                      initial={{ opacity: 0, x: -8 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.35 + i * 0.5 }}
+                      className="text-[13px] font-semibold leading-snug text-neutral-700"
+                    >
+                      “{l}”
+                    </motion.p>
+                  ))}
+                </div>
+              </motion.div>
+            )}
 
             {/* 중앙 버튼 3종 */}
             {!reviewing && (
@@ -244,6 +327,32 @@ export default function MatchResultPage() {
           />
         </div>
       </div>
+
+      {/* 랭크 매치 연출(있으면) → 닫으면 레벨업 연출 */}
+      {rankChange && !rankDismissed && (
+        <RankResultOverlay
+          change={rankChange}
+          onClose={() => setRankDismissed(true)}
+        />
+      )}
+      {(rankDismissed || !rankChange) && levelUp && (
+        <LevelUpOverlay result={levelUp} onClose={() => setLevelUp(null)} />
+      )}
+
+      {/* 승리 컨페티 */}
+      <Confetti trigger={user.rank === 1} />
+
+      {/* 제니 컷인 — 랭크/레벨 오버레이가 정리된 뒤 노출 */}
+      {jennyLine &&
+        !cutinClosed &&
+        !((rankChange && !rankDismissed) || levelUp) && (
+          <JennyCutin
+            open
+            expression={user.rank === 1 ? "lose" : "win"}
+            line={jennyLine}
+            onClose={() => setCutinClosed(true)}
+          />
+        )}
     </main>
   );
 }

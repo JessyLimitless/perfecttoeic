@@ -7,6 +7,7 @@ import { useMatchStore } from "@/game/match/matchStore";
 import { loadIdentity } from "@/game/match/persist";
 import { MATCH_LENGTH, secondsForPart, type AvatarPresetId } from "@/game/match/types";
 import PlayerAvatar from "./PlayerAvatar";
+import JennyAvatar from "./JennyAvatar";
 
 /** 인게임 상단 얇은 바 — 좌측 점수(나 vs AI), 우측 상단 심플 타이머, 하단 AI 진행선.
  *  시험지 느낌을 살리기 위해 무거운 다크 HUD 대신 가벼운 한 줄 바로 구성. */
@@ -80,9 +81,7 @@ export default function MatchHud() {
               />
             </div>
             <div className="relative shrink-0">
-              <span className="flex h-[30px] w-[30px] items-center justify-center rounded-xl bg-gradient-to-br from-fuchsia-500 to-indigo-600 text-[12px] font-bold text-white shadow-[0_5px_14px_-6px_rgba(124,58,237,0.7)]">
-                🤖
-              </span>
+              <JennyAvatar size={30} rounded="rounded-xl" />
               {leading === "ai" && (
                 <span className="absolute -left-1.5 -top-2 text-[12px]">👑</span>
               )}

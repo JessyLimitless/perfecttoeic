@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import MatchHud from "@/components/match/MatchHud";
@@ -11,6 +11,7 @@ import PassagePanel from "@/components/game/PassagePanel";
 import IdentitySettings from "@/components/match/IdentitySettings";
 import Matchmaking from "@/components/match/Matchmaking";
 import { useMatchStore } from "@/game/match/matchStore";
+import { armRankedMatch } from "@/game/rank/store";
 import { PART_META, PART_ORDER } from "@/game/parts";
 import type { Difficulty, Part, PassageSet } from "@/game/types";
 
@@ -75,6 +76,29 @@ function Lobby() {
   const handleReady = () => {
     startMatch({ part, difficulty, sets: bank });
   };
+
+  // 랭크 진입(?ranked=1): pending 토큰 장전 + 내 랭크 기반 봇 난이도로 자동 개시.
+  // (동결 계약을 건드리지 않고 URL 파라미터로만 확장)
+  const rankedArmed = useRef(false);
+  const [autoStart, setAutoStart] = useState(false);
+  useEffect(() => {
+    if (rankedArmed.current || typeof window === "undefined") return;
+    const sp = new URLSearchParams(window.location.search);
+    if (sp.get("ranked") !== "1") return;
+    rankedArmed.current = true;
+    const { difficulty: d } = armRankedMatch();
+    const pRaw = Number(sp.get("part"));
+    const p = (pRaw === 5 || pRaw === 6 || pRaw === 7 ? pRaw : 7) as Part;
+    setPart(p);
+    setDifficulty(d);
+    setAutoStart(true);
+  }, []);
+  useEffect(() => {
+    if (!autoStart) return;
+    setAutoStart(false);
+    handleStart();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoStart]);
 
   if (phase === "matchmaking") {
     return (

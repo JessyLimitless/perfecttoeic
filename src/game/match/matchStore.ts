@@ -6,6 +6,7 @@ import { getFallbackSets } from "@/lib/questions";
 import type { ChoiceIndex, Difficulty, Part } from "@/game/types";
 import { buildMatchItems } from "./pool";
 import { addCredits, loadIdentity, saveIdentity } from "./persist";
+import { JENNY } from "./jenny";
 import {
   BASE_SCORE,
   BOT_PROFILE,
@@ -57,7 +58,7 @@ function scoreFor(remaining: number): number {
 
 // 로비 초기 상태(하이드레이션 안정용 — 실제 신원은 startMatch/setIdentity에서 로드)
 const INITIAL_USER = makePlayer("user", "PLAYER", "P0000");
-const INITIAL_AI = makePlayer("ai", "AI CHALLENGER", "BOT");
+const INITIAL_AI = makePlayer("ai", JENNY.name, "BOT");
 
 export const useMatchStore = create<MatchState>((set, get) => {
   // ── 현재 문항 봇 시뮬레이션 상태(계약 외 임시값, 클로저 보관) ──
@@ -139,7 +140,7 @@ export const useMatchStore = create<MatchState>((set, get) => {
         remaining: secondsForPart(part),
         aiProgress: 0,
         user: makePlayer("user", identity.name, identity.playerId),
-        ai: makePlayer("ai", "AI CHALLENGER", "BOT"),
+        ai: makePlayer("ai", JENNY.name, "BOT"),
         userHistory: [],
         credits: identity.credits,
         earnedCredits: 0,
@@ -284,7 +285,7 @@ export const useMatchStore = create<MatchState>((set, get) => {
         aiProgress: 0,
         // 신원(이름/ID)·크레딧 미러는 유지하되 이번 판 점수/기록은 비운다
         user: makePlayer("user", s.user.name, s.user.playerId),
-        ai: makePlayer("ai", "AI CHALLENGER", "BOT"),
+        ai: makePlayer("ai", JENNY.name, "BOT"),
         userHistory: [],
         earnedCredits: 0,
         missions: [],

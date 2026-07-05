@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
 import { loadDiagnosticResult, type DiagnosticResult } from "@/game/diagnostic";
+import LevelHud from "@/components/progression/LevelHud";
 
 /** 실전 문항 수 라이브 집계 (실패 시 정적 폴백) */
 interface Counts {
@@ -86,6 +87,18 @@ export default function LandingPage() {
         </div>
       </header>
 
+      {/* ── 레벨 HUD (진행 시 표시 · 프로필 바로가기) ── */}
+      <div className="container-app relative z-10">
+        <button
+          type="button"
+          onClick={() => router.push("/profile")}
+          aria-label="내 프로필 열기"
+          className="mx-auto mt-1 block w-full max-w-md text-left transition active:scale-[0.99]"
+        >
+          <LevelHud variant="bar" />
+        </button>
+      </div>
+
       {/* ── 히어로 ─────────────────────────────────── */}
       <section className="container-app relative z-10 pt-10 text-center sm:pt-16 lg:pt-20">
         <motion.span
@@ -93,27 +106,27 @@ export default function LandingPage() {
           className="inline-flex items-center gap-2 rounded-full bg-white/70 px-4 py-1.5 text-[12px] font-semibold text-indigo-600 ring-1 ring-indigo-500/15 backdrop-blur-sm"
         >
           <span className="h-1.5 w-1.5 animate-glow-pulse rounded-full bg-indigo-500" />
-          최신 경향 · LC Part 2·3·4 · RC Part 5·6·7
+          RP·티어로 겨루는 랭크 대결 · LC/RC 실전
         </motion.span>
 
         <motion.h1
           {...rise(0.06)}
           className="mx-auto mt-7 max-w-3xl text-[2.6rem] font-black leading-[1.05] tracking-[-0.03em] text-neutral-900 sm:text-[3.6rem] lg:text-[4.4rem]"
         >
-          토익 만점,
-          <br className="sm:hidden" />{" "}
-          <span className="text-gradient">퍼펙토익</span>과
+          토익을 게임처럼,
           <br />
-          한 문제씩 완성하다
+          <span className="text-gradient">풀수록 랭크</span>가
+          <br className="sm:hidden" /> 오른다
         </motion.h1>
 
         <motion.p
           {...rise(0.12)}
           className="mx-auto mt-6 max-w-xl text-[15px] leading-relaxed text-neutral-500 sm:text-[17px]"
         >
-          파트·빈출 유형별 실전 문제, 원어민 리스닝, AI 대결, 레벨 진단까지.
+          퍼펙토익의 <b className="font-bold text-neutral-700">랭크 대결</b>은
+          문제를 풀수록 RP가 쌓이고 티어가 올라가는 경쟁 게임.
           <br className="hidden sm:block" />
-          지금 바로 한 문제 풀며 실전 감각을 끌어올리세요.
+          매일 한 판, 순위를 올리며 자연스럽게 실전 감각을 끌어올리세요.
         </motion.p>
 
         {/* 핵심 CTA */}
@@ -123,11 +136,11 @@ export default function LandingPage() {
         >
           <button
             type="button"
-            onClick={() => router.push("/learn")}
-            className="btn-primary group min-h-[54px] w-full px-8 text-[16px] sm:w-auto"
+            onClick={() => router.push("/rank")}
+            className="btn-dark group min-h-[54px] w-full px-8 text-[16px] sm:w-auto"
           >
             <span className="inline-flex items-center gap-2">
-              바로 문제 풀기
+              ⚔️ 랭크 대결 시작
               <span className="transition-transform group-hover:translate-x-0.5">
                 →
               </span>
@@ -138,7 +151,7 @@ export default function LandingPage() {
             onClick={() => router.push("/diagnostic")}
             className="min-h-[54px] w-full rounded-2xl bg-white px-8 text-[16px] font-bold text-neutral-800 ring-1 ring-neutral-900/[0.08] shadow-sm transition hover:ring-neutral-900/[0.16] active:scale-[0.99] sm:w-auto"
           >
-            {diag ? `내 점수 ${diag.totalScore} · 다시 진단` : "무료 레벨 진단"}
+            {diag ? `내 점수 ${diag.totalScore} · 다시 진단` : "무료 실력 테스트"}
           </button>
         </motion.div>
 
@@ -155,13 +168,105 @@ export default function LandingPage() {
         </motion.div>
       </section>
 
-      {/* ── 빠른 시작 (직관적 진입) ─────────────────── */}
+      {/* ── 랭크 대결 (플래그십) ─────────────────────── */}
+      <section className="container-app relative z-10 mt-16 sm:mt-24">
+        <motion.div
+          initial={reduce ? { opacity: 0 } : { opacity: 0, y: 24 }}
+          whileInView={reduce ? { opacity: 1 } : { opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 0.55, ease: EASE }}
+          className="surface-dark relative overflow-hidden px-6 py-9 sm:px-10 sm:py-12"
+        >
+          {/* 앰비언트 글로우 */}
+          <span className="pointer-events-none absolute -right-16 -top-20 h-72 w-72 rounded-full bg-violet-500/30 blur-3xl" />
+          <span className="pointer-events-none absolute -bottom-24 -left-16 h-72 w-72 rounded-full bg-cyan-500/20 blur-3xl" />
+
+          <div className="relative grid items-center gap-8 lg:grid-cols-[1.15fr_1fr]">
+            {/* 좌: 카피 */}
+            <div>
+              <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3.5 py-1.5 text-[12px] font-bold text-white/90 ring-1 ring-white/15">
+                ⚔️ 메인 모드 · RANKED
+              </span>
+              <h2 className="mt-5 text-[28px] font-black leading-[1.1] tracking-tight text-white sm:text-[38px]">
+                문제를 풀수록{" "}
+                <span className="text-gradient-rose">랭크</span>가 오른다
+              </h2>
+              <p className="mt-4 max-w-md text-[14px] leading-relaxed text-white/60 sm:text-[15px]">
+                토익 문제풀이를 완전히 게임화한 퍼펙토익의 시그니처 모드.
+                정답마다 RP를 얻고 티어를 올리며, AI 챌린저는 내 랭크에 맞춰
+                점점 강해집니다.
+              </p>
+
+              <ul className="mt-6 grid gap-2.5 sm:grid-cols-2">
+                <RankPoint icon="📈" text="RP·티어 상승 시스템" />
+                <RankPoint icon="🤖" text="내 랭크에 맞춰 강해지는 봇" />
+                <RankPoint icon="🏆" text="리더보드 실시간 순위" />
+                <RankPoint icon="✨" text="대결 종료 후 레벨업·보상" />
+              </ul>
+
+              <button
+                type="button"
+                onClick={() => router.push("/rank")}
+                className="group mt-8 inline-flex min-h-[52px] items-center gap-2 rounded-2xl bg-white px-8 text-[16px] font-bold text-neutral-900 shadow-lg transition hover:shadow-xl active:scale-[0.98]"
+              >
+                랭크 대결 시작
+                <span className="transition-transform group-hover:translate-x-1">
+                  →
+                </span>
+              </button>
+            </div>
+
+            {/* 우: 티어 프리뷰 카드 */}
+            <div className="relative hidden lg:block">
+              <div className="rounded-3xl bg-white/[0.06] p-6 ring-1 ring-white/10 backdrop-blur-sm">
+                <div className="flex items-center justify-between">
+                  <span className="text-[12px] font-bold uppercase tracking-[0.15em] text-white/40">
+                    Current Tier
+                  </span>
+                  <span className="rounded-full bg-white/10 px-2.5 py-1 text-[11px] font-bold text-white/70">
+                    LIVE
+                  </span>
+                </div>
+                <div className="mt-4 flex items-center gap-4">
+                  <span className="grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-amber-400 via-orange-500 to-rose-500 text-[28px] shadow-lg">
+                    🏅
+                  </span>
+                  <div>
+                    <p className="text-[22px] font-black leading-none text-white">
+                      Gold III
+                    </p>
+                    <p className="mt-1.5 text-[13px] font-semibold text-white/50">
+                      1,240 RP · 다음 티어까지 260
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-5 h-2.5 w-full overflow-hidden rounded-full bg-white/10">
+                  <motion.span
+                    className="block h-full rounded-full bg-gradient-to-r from-amber-400 to-rose-500"
+                    initial={reduce ? false : { width: 0 }}
+                    whileInView={{ width: "82%" }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 1, ease: EASE, delay: 0.2 }}
+                  />
+                </div>
+                <div className="mt-5 space-y-2">
+                  <LeaderRow rank={1} name="민준" rp="2,410" me={false} />
+                  <LeaderRow rank={2} name="서연" rp="2,180" me={false} />
+                  <LeaderRow rank={7} name="나" rp="1,240" me />
+                </div>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      </section>
+
+      {/* ── 그 외 학습 콘텐츠 ───────────────────────── */}
       <section className="container-app relative z-10 mt-16 sm:mt-24">
         <motion.div {...rise(0)} className="mb-5 flex items-end justify-between">
           <div>
-            <p className="label">빠른 시작</p>
+            <p className="label">그 외 학습 콘텐츠</p>
             <h2 className="mt-1 text-[20px] font-extrabold tracking-tight text-neutral-900 sm:text-[24px]">
-              한 번의 탭으로 바로 풀이
+              몸풀기·실력 다지기
             </h2>
           </div>
         </motion.div>
@@ -175,7 +280,6 @@ export default function LandingPage() {
             title="리딩 유형별"
             sub={`Part 5·6·7 · ${counts.rc}문항`}
             gradient="from-indigo-500 via-violet-500 to-purple-600"
-            span
           />
           <QuickCard
             index={1}
@@ -192,20 +296,11 @@ export default function LandingPage() {
             onClick={() => router.push("/diagnostic")}
             emoji="🎯"
             title="레벨 진단"
-            sub="30문항 · 예상 점수"
+            sub="실력 테스트 · 예상 점수"
             gradient="from-violet-500 to-fuchsia-600"
           />
           <QuickCard
             index={3}
-            reduce={!!reduce}
-            onClick={() => router.push("/match")}
-            emoji="🤖"
-            title="AI 대결"
-            sub="1:1 속도전"
-            gradient="from-neutral-700 to-neutral-900"
-          />
-          <QuickCard
-            index={4}
             reduce={!!reduce}
             onClick={() => router.push("/warmup")}
             emoji="🔥"
@@ -214,13 +309,58 @@ export default function LandingPage() {
             gradient="from-amber-500 to-orange-600"
           />
           <QuickCard
-            index={5}
+            index={4}
             reduce={!!reduce}
             onClick={() => router.push("/tts")}
             emoji="🔊"
             title="발음 듣기"
             sub="원어민 TTS"
             gradient="from-emerald-500 to-teal-600"
+          />
+          <QuickCard
+            index={5}
+            reduce={!!reduce}
+            onClick={() => router.push("/snake")}
+            emoji="⚡"
+            title="스피드 스네이크"
+            sub="훈련 · 엔드리스"
+            gradient="from-lime-500 via-emerald-500 to-teal-600"
+          />
+          <QuickCard
+            index={6}
+            reduce={!!reduce}
+            onClick={() => router.push("/match")}
+            emoji="🤖"
+            title="AI 대결 (캐주얼)"
+            sub="1:1 속도전 · 랭크 미반영"
+            gradient="from-neutral-700 to-neutral-900"
+          />
+          <QuickCard
+            index={7}
+            reduce={!!reduce}
+            onClick={() => router.push("/missions")}
+            emoji="🎯"
+            title="일일 미션"
+            sub="매일 새 목표 · 보상"
+            gradient="from-violet-500 to-fuchsia-600"
+          />
+          <QuickCard
+            index={8}
+            reduce={!!reduce}
+            onClick={() => router.push("/shop")}
+            emoji="🛒"
+            title="상점"
+            sub="코인으로 아이템 교환"
+            gradient="from-amber-500 to-orange-600"
+          />
+          <QuickCard
+            index={9}
+            reduce={!!reduce}
+            onClick={() => router.push("/league")}
+            emoji="🏆"
+            title="주간 리그"
+            sub="주간 순위 경쟁"
+            gradient="from-sky-500 to-indigo-600"
           />
         </div>
       </section>
@@ -254,8 +394,8 @@ export default function LandingPage() {
             reduce={!!reduce}
             index={2}
             icon="⚡"
-            title="게임처럼 몰입"
-            desc="AI 챌린저와의 속도전, 스토리 몸풀기, 레벨 진단으로 지루하지 않게 매일 이어갑니다."
+            title="랭크로 경쟁하는 재미"
+            desc="풀수록 RP·티어가 오르는 랭크 대결로 매일 순위를 겨루고, XP 레벨업·스피드 스네이크까지 지루할 틈이 없습니다."
           />
         </div>
       </section>
@@ -452,6 +592,53 @@ function QuickCard({
         </span>
       </span>
     </motion.button>
+  );
+}
+
+function RankPoint({ icon, text }: { icon: string; text: string }) {
+  return (
+    <li className="flex items-center gap-2.5 rounded-xl bg-white/[0.06] px-3.5 py-2.5 ring-1 ring-white/10">
+      <span className="text-[16px]">{icon}</span>
+      <span className="text-[13px] font-semibold text-white/85">{text}</span>
+    </li>
+  );
+}
+
+function LeaderRow({
+  rank,
+  name,
+  rp,
+  me,
+}: {
+  rank: number;
+  name: string;
+  rp: string;
+  me: boolean;
+}) {
+  return (
+    <div
+      className={`flex items-center gap-3 rounded-xl px-3 py-2 ${
+        me ? "bg-white/15 ring-1 ring-white/20" : "bg-white/[0.04]"
+      }`}
+    >
+      <span
+        className={`grid h-6 w-6 shrink-0 place-items-center rounded-lg text-[11px] font-black ${
+          me ? "bg-white text-neutral-900" : "bg-white/10 text-white/60"
+        }`}
+      >
+        {rank}
+      </span>
+      <span
+        className={`flex-1 text-[13px] font-bold ${
+          me ? "text-white" : "text-white/70"
+        }`}
+      >
+        {name}
+      </span>
+      <span className="tabnum text-[12px] font-semibold text-white/50">
+        {rp} RP
+      </span>
+    </div>
   );
 }
 

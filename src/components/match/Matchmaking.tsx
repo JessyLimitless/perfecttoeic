@@ -7,13 +7,9 @@ import { BOT_PROFILE } from "@/game/match/types";
 import { PART_META } from "@/game/parts";
 import type { Difficulty, Part } from "@/game/types";
 import PlayerAvatar from "./PlayerAvatar";
-
-/** 난이도 → AI 챌린저 등급 라벨 (실제 봇 톤과 일관) */
-const BOT_GRADE: Record<Difficulty, { tier: string; rank: string }> = {
-  EASY: { tier: "ROOKIE", rank: "C" },
-  MEDIUM: { tier: "CHALLENGER", rank: "A" },
-  HARD: { tier: "GRANDMASTER", rank: "S" },
-};
+import JennyAvatar from "./JennyAvatar";
+import { JENNY, jennyChapterForRp } from "@/game/match/jenny";
+import { loadRank } from "@/game/rank/store";
 
 /**
  * 매치메이킹 긴박감 연출.
@@ -42,8 +38,14 @@ export default function Matchmaking({
   }, []);
 
   const profile = BOT_PROFILE[difficulty];
-  const grade = BOT_GRADE[difficulty];
   const accuracyPct = Math.round(profile.accuracy * 100);
+
+  // 내 랭크에 맞는 제니 스토리 챕터
+  const [rp, setRp] = useState(0);
+  useEffect(() => {
+    setRp(loadRank().rp);
+  }, []);
+  const chapter = jennyChapterForRp(rp);
 
   useEffect(() => {
     const timers: ReturnType<typeof setTimeout>[] = [];
@@ -165,22 +167,43 @@ export default function Matchmaking({
                   initial={{ opacity: 0, scale: 0.92 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ type: "spring", stiffness: 340, damping: 17 }}
-                  className="animate-pop flex h-full flex-col items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-br from-fuchsia-500/15 to-indigo-600/10 p-4 ring-1 ring-fuchsia-400/30 shadow-[0_18px_44px_-22px_rgba(124,58,237,0.6)]"
+                  className="relative flex h-full flex-col items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-br from-fuchsia-500/15 to-indigo-600/10 p-4 ring-1 ring-fuchsia-400/30 shadow-[0_18px_44px_-22px_rgba(124,58,237,0.6)]"
                 >
+                  {/* 제니 등장! 플러리시 (잠깐 떴다 사라짐) */}
                   <motion.span
-                    initial={{ rotate: -12, scale: 0.7 }}
-                    animate={{ rotate: 0, scale: 1 }}
-                    transition={{ type: "spring", stiffness: 360, damping: 14 }}
-                    className="flex h-[72px] w-[72px] items-center justify-center rounded-2xl bg-gradient-to-br from-fuchsia-500 to-indigo-600 text-3xl shadow-[0_10px_28px_-8px_rgba(124,58,237,0.8)]"
+                    initial={{ opacity: 0, y: 8, scale: 0.6 }}
+                    animate={{ opacity: [0, 1, 1, 0], y: [-2, -14, -18, -26], scale: [0.6, 1.15, 1, 0.95] }}
+                    transition={{ duration: 1.6, times: [0, 0.2, 0.7, 1], ease: "easeOut" }}
+                    className="pointer-events-none absolute -top-3 left-1/2 z-20 -translate-x-1/2 whitespace-nowrap rounded-full bg-gradient-to-r from-rose-500 to-fuchsia-600 px-3 py-1 text-[11px] font-black text-white shadow-[0_8px_20px_-6px_rgba(217,70,239,0.9)] ring-1 ring-white/25"
                   >
-                    🤖
+                    제니 등장!
+                  </motion.span>
+
+                  <motion.span
+                    initial={{ rotate: -14, scale: 0.55 }}
+                    animate={{ rotate: 0, scale: 1 }}
+                    transition={{ type: "spring", stiffness: 420, damping: 12 }}
+                    className="relative"
+                  >
+                    {/* 등장 링 플래시 (한 번 확장) */}
+                    <motion.span
+                      aria-hidden
+                      initial={{ scale: 0.5, opacity: 0 }}
+                      animate={{ scale: [0.5, 1.9], opacity: [0.9, 0] }}
+                      transition={{ duration: 0.7, ease: "easeOut" }}
+                      className="pointer-events-none absolute inset-0 rounded-full ring-2 ring-fuchsia-300"
+                    />
+                    <JennyAvatar size={78} variant="idle" motionPreset="idle" glow />
                   </motion.span>
                   <div className="space-y-0.5 text-center">
-                    <p className="text-[13px] font-extrabold uppercase tracking-[0.08em] text-white">
-                      AI CHALLENGER
+                    <p className="text-[14px] font-extrabold tracking-[-0.01em] text-white">
+                      {JENNY.name}{" "}
+                      <span className="text-[11px] font-semibold text-fuchsia-200/80">
+                        {JENNY.en}
+                      </span>
                     </p>
                     <p className="text-[10.5px] font-semibold uppercase tracking-[0.1em] text-fuchsia-200/90">
-                      {grade.tier} · {grade.rank}급
+                      CH.{chapter.no} · {chapter.title}
                     </p>
                   </div>
                 </motion.div>
@@ -214,8 +237,11 @@ export default function Matchmaking({
                 animate={{ opacity: 1, y: 0 }}
                 className="space-y-1"
               >
-                <p className="text-[13px] font-bold text-emerald-300">
-                  상대 확정 · 예상 정답률 {accuracyPct}%
+                <p className="text-[13.5px] font-semibold leading-snug text-white/90">
+                  {JENNY.name}: “{chapter.greeting}”
+                </p>
+                <p className="text-[12px] font-bold text-emerald-300">
+                  예상 정답률 {accuracyPct}%
                 </p>
                 <p className="text-[12px] text-neutral-400">곧 카운트다운이 시작됩니다</p>
               </motion.div>
