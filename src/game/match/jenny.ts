@@ -20,10 +20,16 @@ export const JENNY = {
     lose: "/jeny.png",
   },
   /** 소개 한 줄 (실서버 챔피언 컨셉) */
-  intro: "퍼펙토익 랭크의 챔피언. 만점 실력의 라이벌.",
+  intro: "퍼펙토익 랭크의 챔피언. 듣기·읽기 모두 만점인 라이벌.",
+  /** 통합 스토리 시놉시스 — 랭크홈 배너/온보딩용 */
+  synopsis:
+    "제니는 리스닝과 리딩 모두 완벽한 챔피언. 그녀를 넘어서려면 듣기·읽기 어느 하나도 약해선 안 돼요. 두 무대에서 모두 이겨 정상에 오르세요.",
 } as const;
 
 export type JennyOutcomeVariant = "idle" | "win" | "lose";
+
+/** 대결 도메인 — 리딩(RC)·리스닝(LC) */
+export type MatchDomain = "rc" | "lc";
 
 export interface JennyChapter {
   /** 챕터 번호 1~6 */
@@ -172,4 +178,56 @@ const JENNY_TAUNTS: Record<RankTierId, string> = {
 export function jennyTaunt(rp: number): string {
   const tier = rankFromRp(rp).tier.id;
   return JENNY_TAUNTS[tier];
+}
+
+// ─────────────────────────── 도메인(듣기/읽기) 서사 레이어 ───────────────────────────
+// "제니를 이기려면 듣기·읽기 모두 정복" — 단일 라이벌 스토리를 두 무대로 확장한다.
+
+export interface MatchDomainMeta {
+  id: MatchDomain;
+  /** 무대 이름 */
+  label: string;
+  /** 짧은 부제 */
+  sub: string;
+  emoji: string;
+  /** 테마 그라데이션 */
+  gradient: string;
+  /** 대결 진입 라우트 (part 파라미터는 호출부에서 부여) */
+  route: string;
+  /** 제니의 무대별 도발/소개 한 줄 */
+  jennyLine: string;
+}
+
+export const MATCH_DOMAINS: Record<MatchDomain, MatchDomainMeta> = {
+  rc: {
+    id: "rc",
+    label: "리딩 대결",
+    sub: "Part 5·6·7 독해 속도전",
+    emoji: "📖",
+    gradient: "from-indigo-500 to-violet-600",
+    route: "/match",
+    jennyLine: "읽기 실력부터 볼까요? 눈으로 날 따라올 수 있겠어요?",
+  },
+  lc: {
+    id: "lc",
+    label: "리스닝 대결",
+    sub: "Part 2·3·4 듣기 속도전",
+    emoji: "🎧",
+    gradient: "from-sky-500 to-cyan-600",
+    route: "/lc-match",
+    jennyLine: "귀는 자신 있어요? 한 번 듣고 못 맞히면 끝이에요.",
+  },
+};
+
+/** 무대(도메인)를 곁들인 제니 인사 — 챕터 인사 + 무대별 도발 */
+export function jennyGreetingForDomain(rp: number, domain: MatchDomain): string {
+  return MATCH_DOMAINS[domain].jennyLine;
+}
+
+/** 두 무대의 진척(정복 여부)로 만드는 한 줄 서사 */
+export function jennyConquestLine(rcCleared: boolean, lcCleared: boolean): string {
+  if (rcCleared && lcCleared) return "듣기도 읽기도 날 이겼네요… 당신이 진짜 챔피언이에요.";
+  if (rcCleared) return "읽기는 인정할게요. 하지만 듣기에선 안 질 거예요.";
+  if (lcCleared) return "귀는 좋네요. 그런데 읽기도 그만큼 될까요?";
+  return "듣기와 읽기, 둘 다 넘어야 날 이길 수 있어요.";
 }

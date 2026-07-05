@@ -6,6 +6,25 @@ const config: Config = {
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
+  // 티어/스킨/제니 그라데이션은 데이터 파일(types.ts)의 런타임 문자열로만 쓰여
+  // JIT가 못 잡고 purge된다 → 여기서 명시 생성(빈 배지·동일 스킨 방지).
+  safelist: [
+    // 티어 (progression + rank 공용)
+    "from-amber-700", "to-orange-800",
+    "from-slate-400", "to-slate-500",
+    "from-amber-400", "to-yellow-500",
+    "from-cyan-400", "to-teal-500",
+    "from-sky-400", "to-indigo-500",
+    "from-fuchsia-500", "to-violet-600",
+    // 스네이크 스킨
+    "from-indigo-500", "to-violet-500",
+    "from-emerald-400",
+    "to-orange-500",
+    "to-purple-600",
+    "to-blue-600",
+    // 제니 라이벌
+    "from-rose-400", "to-fuchsia-500",
+  ],
   theme: {
     extend: {
       fontFamily: {

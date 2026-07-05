@@ -8,7 +8,9 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { currentCredits, loadProgress, PROGRESS_EVENT } from "@/game/progression/store";
 import { SHOP_ITEMS, buy, type ShopItem } from "@/game/shop";
+import { SNAKE_SKINS } from "@/game/progression/types";
 import { Confetti } from "@/components/match/JennyFx";
+import CoinIcon from "@/components/ui/CoinIcon";
 
 interface Toast {
   id: number;
@@ -29,7 +31,7 @@ function CoinBurst() {
           id: i,
           x: Math.cos(ang) * dist,
           y: Math.sin(ang) * dist - 12, // 살짝 위로 솟구치게
-          glyph: i % 3 === 0 ? "✨" : "🪙",
+          coin: i % 3 !== 0,
           size: 12 + Math.random() * 9,
           delay: Math.random() * 0.06,
           spin: (Math.random() - 0.5) * 120,
@@ -58,7 +60,7 @@ function CoinBurst() {
           }}
           transition={{ duration: 0.72, delay: b.delay, ease: "easeOut" }}
         >
-          {b.glyph}
+          {b.coin ? <CoinIcon size={b.size} /> : "✨"}
         </motion.span>
       ))}
     </div>
@@ -109,7 +111,7 @@ export default function Shop() {
         setFx({ id: item.id, key, ok: true });
         setConfettiKey((k) => k + 1);
         setCreditsPulse(true);
-        flash(true, `구매 완료! -${item.price}🪙`);
+        flash(true, `구매 완료! -${item.price} 크레딧`);
         window.setTimeout(() => setFx((f) => (f && f.key === key ? null : f)), 850);
         window.setTimeout(() => setCreditsPulse(false), 650);
       } else {
@@ -163,7 +165,7 @@ export default function Shop() {
               transition={{ type: "spring", stiffness: 320, damping: 18 }}
               className="relative flex items-center gap-1.5 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 px-4 py-2 text-[17px] font-black text-white shadow-[0_10px_24px_-10px_rgba(245,158,11,0.7)]"
             >
-              🪙 {credits}
+              <CoinIcon size={18} /> {credits}
             </motion.div>
           </div>
         )}
@@ -175,6 +177,11 @@ export default function Shop() {
           const ownedItem = isOwned(item);
           const canAfford = credits !== null && credits >= item.price;
           const disabled = credits === null || ownedItem || !canAfford;
+          // 스킨 품목이면 실제 스킨 그라데이션을 아이콘 타일에 입혀 색을 구분한다.
+          const skinBody =
+            item.kind === "skin" && item.skinId
+              ? SNAKE_SKINS[item.skinId]?.body
+              : undefined;
 
           // 이 카드에 걸린 피드백 상태
           const success = fx?.ok === true && fx.id === item.id;
@@ -231,9 +238,11 @@ export default function Shop() {
                       : {}
                   }
                   transition={{ duration: 0.6, ease: "easeOut" }}
-                  className={`grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-fuchsia-100 to-indigo-100 text-2xl ring-1 ring-neutral-900/[0.04] ${
-                    success ? "shadow-[0_0_0_4px_rgba(16,185,129,0.25)]" : ""
-                  }`}
+                  className={`grid h-12 w-12 shrink-0 place-items-center rounded-2xl text-2xl ring-1 ring-neutral-900/[0.04] ${
+                    skinBody
+                      ? `bg-gradient-to-br ${skinBody} text-white shadow-[0_8px_18px_-8px_rgba(0,0,0,0.4)]`
+                      : "bg-gradient-to-br from-fuchsia-100 to-indigo-100"
+                  } ${success ? "shadow-[0_0_0_4px_rgba(16,185,129,0.25)]" : ""}`}
                   aria-hidden
                 >
                   {item.icon}
@@ -250,8 +259,8 @@ export default function Shop() {
               </div>
 
               <div className="mt-auto flex items-center justify-between gap-2">
-                <span className="flex items-center gap-1 text-[15px] font-black text-amber-500">
-                  🪙 {item.price}
+                <span className="flex items-center gap-1 text-[15px] font-black text-amber-600">
+                  <CoinIcon size={15} /> {item.price}
                 </span>
                 <button
                   type="button"

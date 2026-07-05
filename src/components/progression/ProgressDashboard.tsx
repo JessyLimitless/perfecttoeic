@@ -20,6 +20,7 @@ import {
   type Reward,
 } from "@/game/progression/types";
 import ResetButton from "@/components/warmup/ResetButton";
+import CoinIcon from "@/components/ui/CoinIcon";
 
 // 대시보드가 실제로 그리는 스냅샷 (스토어 + 파생값)
 interface Snap {
@@ -151,7 +152,7 @@ export default function ProgressDashboard() {
         {/* 크레딧 · 스트릭 · 누적 정답 */}
         <div className="relative mt-5 flex flex-wrap gap-2.5">
           <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3.5 py-1.5 text-[13px] font-bold text-amber-300 ring-1 ring-white/10">
-            🪙 {credits}
+            <CoinIcon size={14} /> {credits}
             <span className="font-medium text-white/45">크레딧</span>
           </span>
           <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3.5 py-1.5 text-[13px] font-bold text-orange-300 ring-1 ring-white/10">
@@ -256,7 +257,11 @@ export default function ProgressDashboard() {
                 key={i}
                 className="inline-flex items-center gap-1.5 rounded-xl bg-amber-50 px-3 py-1.5 text-[12px] font-semibold text-amber-800 ring-1 ring-amber-200/70"
               >
-                <span className="text-[14px]">{b.icon}</span>
+                {r.kind === "credits" ? (
+                  <CoinIcon size={14} />
+                ) : (
+                  <span className="text-[14px]">{b.icon}</span>
+                )}
                 {b.label}
               </span>
             );

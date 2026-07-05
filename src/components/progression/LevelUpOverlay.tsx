@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import type { LevelUpResult, Reward } from "@/game/progression/types";
+import CoinIcon from "@/components/ui/CoinIcon";
 
 /** 보상 한 줄의 표시용 아이콘/문구 */
 function rewardView(r: Reward): { icon: string; label: string } {
@@ -152,7 +153,11 @@ export default function LevelUpOverlay({
                         transition={{ type: "spring", stiffness: 320, damping: 22 }}
                         className="flex items-center gap-3 rounded-2xl bg-white/[0.07] px-4 py-3 text-left ring-1 ring-white/10"
                       >
-                        <span className="text-[22px]">{rv.icon}</span>
+                        {r.kind === "credits" ? (
+                          <CoinIcon size={22} />
+                        ) : (
+                          <span className="text-[22px]">{rv.icon}</span>
+                        )}
                         <span className="text-[14px] font-bold text-white">{rv.label}</span>
                       </motion.div>
                     );

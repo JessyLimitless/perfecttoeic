@@ -15,16 +15,30 @@ function shuffle<T>(arr: readonly T[]): T[] {
   return a;
 }
 
+/** PassageSet의 한 문항을 지문 정보와 묶어 MatchItem으로 */
+function toItem(s: PassageSet, question: PassageSet["questions"][number]): MatchItem {
+  return {
+    part: partOf(s),
+    passageType: s.passageType,
+    passageLines: s.passageLines,
+    question,
+  };
+}
+
 /**
  * 이번 판의 10문항을 만든다.
- * 1) 선택한 파트의 세트만 추리고
- * 2) 각 문항을 그 세트의 지문(passageLines)·유형과 묶어 MatchItem으로 풀어내고
- * 3) 셔플해 MATCH_LENGTH개로 자른다. 모자라면 셔플 풀을 순환 반복해 채운다.
  *
- * Part 6/7은 문항이 지문을 동반하므로 인게임에서 지문을 표시할 수 있다.
- * (평탄화로 지문을 잃지 않는다.) Part 5는 passageLines가 빈 배열.
+ * ⚠️ 파트별 구조 차이를 반드시 존중한다:
+ * - **Part 5(단문)**: 문항이 서로 독립 → 개별로 셔플해 다양하게 뽑는다.
+ * - **Part 6·7(지문형)**: 실제 토익처럼 "지문 1개 + 그 지문에 딸린 문항들(1→n)"이
+ *   **한 덩어리로, 원래 순서 그대로** 나와야 한다. 그래서 문항을 개별 셔플하면 안 되고,
+ *   **지문(세트) 단위로만 셔플**한 뒤 각 지문 안 문항은 배열 순서(=출제 순서)대로 이어붙인다.
+ *   (예전엔 모든 문항을 flat 셔플해서 같은 지문의 문항이 뒤죽박죽/역순으로 나오는 버그가 있었음.)
  *
- * difficulty는 현재 풀 구성에는 직접 쓰지 않지만(은행이 이미 난이도별로 들어옴)
+ * MATCH_LENGTH에 맞춰 지문을 이어붙이다 마지막 지문이 잘릴 수 있으나(뒤쪽 문항 일부 생략),
+ * 노출되는 문항들은 항상 지문별로 묶이고 순서가 보존된다.
+ *
+ * difficulty는 현재 풀 구성에 직접 쓰지 않지만(은행이 이미 난이도별로 들어옴)
  * 계약 시그니처를 맞추기 위해 받는다. 추후 난이도 필터 확장 지점.
  */
 export function buildMatchItems(
@@ -35,23 +49,31 @@ export function buildMatchItems(
   void difficulty; // 향후 난이도별 가중 추출 확장 지점
 
   const byPart = sets.filter((s) => partOf(s) === part);
-  const flat: MatchItem[] = shuffle(
-    byPart.flatMap((s) =>
-      s.questions.map((question) => ({
-        part: partOf(s),
-        passageType: s.passageType,
-        passageLines: s.passageLines,
-        question,
-      })),
-    ),
-  );
+  if (byPart.length === 0) return [];
 
-  if (flat.length === 0) return [];
-
-  // 셔플 풀을 순환하며 정확히 MATCH_LENGTH개를 채운다(문항이 부족해도 반복).
-  const out: MatchItem[] = [];
-  while (out.length < MATCH_LENGTH) {
-    out.push(flat[out.length % flat.length]);
+  // ── Part 5: 개별 문항 셔플(단문은 독립적이라 섞어야 다양함) ──
+  if (part === 5) {
+    const flat = shuffle(byPart.flatMap((s) => s.questions.map((q) => toItem(s, q))));
+    if (flat.length === 0) return [];
+    const out: MatchItem[] = [];
+    while (out.length < MATCH_LENGTH) out.push(flat[out.length % flat.length]);
+    return out;
   }
-  return out;
+
+  // ── Part 6·7: 지문(세트) 단위 셔플 + 지문 안 문항은 원래 순서 유지 ──
+  const passages = shuffle(byPart).filter((s) => s.questions.length > 0);
+  if (passages.length === 0) return [];
+
+  const out: MatchItem[] = [];
+  let gi = 0;
+  // 지문을 순환하며 문항을 순서대로 이어붙여 정확히 MATCH_LENGTH개를 채운다.
+  while (out.length < MATCH_LENGTH) {
+    const s = passages[gi % passages.length];
+    for (const q of s.questions) {
+      out.push(toItem(s, q));
+      if (out.length >= MATCH_LENGTH) break;
+    }
+    gi++;
+  }
+  return out.slice(0, MATCH_LENGTH);
 }

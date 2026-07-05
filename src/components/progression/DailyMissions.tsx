@@ -12,6 +12,7 @@ import {
   type SeasonInfo,
 } from "@/game/progression/missions";
 import { PROGRESS_EVENT } from "@/game/progression/store";
+import CoinIcon from "@/components/ui/CoinIcon";
 
 // 컴포넌트가 그리는 스냅샷
 interface Snap {
@@ -298,7 +299,7 @@ function MissionCard({
             <div className="flex flex-wrap gap-1.5">
               {m.reward.credits > 0 && (
                 <span className="inline-flex items-center gap-1 rounded-lg bg-amber-50 px-2.5 py-1 text-[11px] font-bold text-amber-700 ring-1 ring-amber-200/70">
-                  🪙 {m.reward.credits}
+                  <CoinIcon size={13} /> {m.reward.credits}
                 </span>
               )}
               {m.reward.xp > 0 && (

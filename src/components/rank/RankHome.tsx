@@ -13,7 +13,7 @@ import { rankFromRp, rpToNextDivision, type RankPos } from "@/game/rank/types";
 import LevelHud from "@/components/progression/LevelHud";
 import ResetButton from "@/components/warmup/ResetButton";
 import JennyAvatar from "@/components/match/JennyAvatar";
-import { jennyChapterForRp } from "@/game/match/jenny";
+import { jennyChapterForRp, MATCH_DOMAINS, type MatchDomain } from "@/game/match/jenny";
 import RankLadder from "./RankLadder";
 import Leaderboard from "./Leaderboard";
 
@@ -38,11 +38,16 @@ function read(): View {
   };
 }
 
-const PARTS = [5, 6, 7] as const;
+const PARTS_BY_DOMAIN: Record<MatchDomain, readonly number[]> = {
+  rc: [5, 6, 7],
+  lc: [2, 3, 4],
+};
+const DEFAULT_PART: Record<MatchDomain, number> = { rc: 7, lc: 3 };
 
 export default function RankHome() {
   const router = useRouter();
   const [v, setV] = useState<View | null>(null);
+  const [domain, setDomain] = useState<MatchDomain>("rc");
   const [part, setPart] = useState<number>(7);
 
   const refresh = useCallback(() => setV(read()), []);
@@ -166,16 +171,51 @@ export default function RankHome() {
         </div>
       </section>
 
-      {/* ───────── 파트 선택 + 대결 시작 CTA ───────── */}
+      {/* ───────── 무대(리딩/리스닝) + 파트 선택 + 대결 시작 CTA ───────── */}
       <section className="flex flex-col gap-3">
+        {/* 무대 토글 — 듣기·읽기 모두 제니를 이겨야 정상 */}
+        <div className="grid grid-cols-2 gap-2">
+          {(Object.keys(MATCH_DOMAINS) as MatchDomain[]).map((d) => {
+            const meta = MATCH_DOMAINS[d];
+            const active = domain === d;
+            return (
+              <button
+                key={d}
+                type="button"
+                onClick={() => {
+                  setDomain(d);
+                  setPart(DEFAULT_PART[d]);
+                }}
+                className={`relative overflow-hidden rounded-2xl px-4 py-3 text-left transition active:scale-[0.98] ${
+                  active ? "text-white" : "bg-white text-neutral-600 ring-1 ring-neutral-200"
+                }`}
+              >
+                {active && (
+                  <motion.span
+                    layoutId="rank-domain-pill"
+                    className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${meta.gradient}`}
+                    transition={{ type: "spring", stiffness: 360, damping: 30 }}
+                  />
+                )}
+                <span className="relative block text-[14px] font-black">
+                  {meta.emoji} {meta.label}
+                </span>
+                <span className={`relative block text-[11px] ${active ? "text-white/75" : "text-neutral-400"}`}>
+                  {meta.sub}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
         <div className="flex items-center justify-between">
           <span className="label">파트 선택</span>
           <span className="text-[11px] font-medium text-neutral-400">
-            Part 5 · 6 · 7 중 택1
+            {PARTS_BY_DOMAIN[domain].map((p) => `Part ${p}`).join(" · ")} 중 택1
           </span>
         </div>
         <div className="grid grid-cols-3 gap-2">
-          {PARTS.map((p) => {
+          {PARTS_BY_DOMAIN[domain].map((p) => {
             const active = part === p;
             return (
               <button
@@ -191,7 +231,7 @@ export default function RankHome() {
                 {active && (
                   <motion.span
                     layoutId="rank-part-pill"
-                    className="absolute inset-0 rounded-2xl bg-gradient-to-r from-indigo-500 to-violet-600 shadow-[0_10px_24px_-12px_rgba(79,70,229,0.7)]"
+                    className={`absolute inset-0 rounded-2xl bg-gradient-to-r ${MATCH_DOMAINS[domain].gradient} shadow-[0_10px_24px_-12px_rgba(79,70,229,0.7)]`}
                     transition={{ type: "spring", stiffness: 380, damping: 32 }}
                   />
                 )}
@@ -203,15 +243,17 @@ export default function RankHome() {
 
         <button
           type="button"
-          onClick={() => router.push(`/match?ranked=1&part=${part}`)}
+          onClick={() =>
+            router.push(`${MATCH_DOMAINS[domain].route}?ranked=1&part=${part}`)
+          }
           className="btn-dark min-h-[58px] w-full text-[16px] font-black active:scale-[0.98]"
         >
-          ⚔️ 랭크 대결 시작
+          {MATCH_DOMAINS[domain].emoji} {MATCH_DOMAINS[domain].label} 시작
         </button>
         <p className="text-center text-[12px] leading-relaxed text-neutral-500">
-          문제를 풀수록 RP가 오르고 티어가 올라갑니다.
+          듣기·읽기 모두 풀수록 RP가 오르고 티어가 올라갑니다.
           <br className="sm:hidden" />
-          봇은 내 랭크에 맞춰 강해져요.
+          제니를 이기려면 두 무대 다 정복해야 해요.
         </p>
       </section>
 

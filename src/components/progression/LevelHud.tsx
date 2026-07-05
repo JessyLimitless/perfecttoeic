@@ -8,6 +8,7 @@ import {
   PROGRESS_EVENT,
 } from "@/game/progression/store";
 import { levelFromXp, tierForLevel } from "@/game/progression/types";
+import CoinIcon from "@/components/ui/CoinIcon";
 
 interface View {
   level: number;
@@ -102,8 +103,8 @@ export default function LevelHud({
             />
           </div>
         </div>
-        <span className="ml-1 flex items-center gap-1 text-[12px] font-bold text-amber-500">
-          🪙 {v.credits}
+        <span className="ml-1 flex items-center gap-1 text-[12px] font-bold text-amber-600">
+          <CoinIcon size={14} /> {v.credits}
         </span>
       </div>
     );
@@ -136,8 +137,8 @@ export default function LevelHud({
         </div>
       </div>
       <div className="flex shrink-0 flex-col items-end gap-0.5">
-        <span className="flex items-center gap-1 text-[13px] font-bold text-amber-500">
-          🪙 {v.credits}
+        <span className="flex items-center gap-1 text-[13px] font-bold text-amber-600">
+          <CoinIcon size={15} /> {v.credits}
         </span>
         {v.streak > 0 && (
           <span className="flex items-center gap-0.5 text-[12px] font-bold text-orange-500">
