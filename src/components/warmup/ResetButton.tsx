@@ -42,23 +42,30 @@ export default function ResetButton({
   return (
     <>
       {variant === "icon" ? (
-        <button
+        <motion.button
           type="button"
           onClick={() => setOpen(true)}
           aria-label={triggerLabel}
           title={triggerLabel}
-          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-neutral-400 ring-1 ring-neutral-200 transition hover:bg-white hover:text-rose-500 hover:ring-rose-200 active:scale-95"
+          whileTap={{ scale: 0.9 }}
+          whileHover={{ rotate: -25 }}
+          transition={{ type: "spring", stiffness: 400, damping: 15 }}
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white/70 text-neutral-400 ring-1 ring-neutral-900/[0.06] shadow-sm backdrop-blur-sm transition-colors hover:bg-rose-50 hover:text-rose-500 hover:ring-rose-200"
         >
-          <RotateCcw size={18} />
-        </button>
+          <RotateCcw size={17} />
+        </motion.button>
       ) : (
-        <button
+        <motion.button
           type="button"
           onClick={() => setOpen(true)}
-          className="inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-[12px] font-medium text-neutral-400 ring-1 ring-neutral-200 transition hover:text-rose-500 hover:ring-rose-200 active:scale-95"
+          whileTap={{ scale: 0.96 }}
+          className="group inline-flex items-center gap-1.5 rounded-full bg-white/60 px-3.5 py-2 text-[12px] font-semibold text-neutral-400 ring-1 ring-neutral-900/[0.06] backdrop-blur-sm transition hover:text-rose-500 hover:ring-rose-200"
         >
-          <RotateCcw size={14} /> {triggerLabel}
-        </button>
+          <span className="transition-transform duration-300 group-hover:-rotate-180">
+            <RotateCcw size={13} />
+          </span>
+          {triggerLabel}
+        </motion.button>
       )}
 
       {mounted &&
@@ -70,53 +77,77 @@ export default function ResetButton({
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: 0.18 }}
+                transition={{ duration: 0.2 }}
               >
                 {/* 백드롭 */}
                 <button
                   type="button"
                   aria-label="닫기"
                   onClick={() => setOpen(false)}
-                  className="absolute inset-0 bg-neutral-950/40 backdrop-blur-[2px]"
+                  className="absolute inset-0 bg-neutral-950/50 backdrop-blur-[3px]"
                 />
                 {/* 모달 */}
                 <motion.div
                   role="dialog"
                   aria-modal="true"
-                  initial={{ opacity: 0, y: 20, scale: 0.96 }}
+                  initial={{ opacity: 0, y: 24, scale: 0.94 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 20, scale: 0.96 }}
-                  transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                  className="card-elevated relative w-full max-w-[20rem] overflow-hidden px-6 py-6 text-center"
+                  exit={{ opacity: 0, y: 24, scale: 0.94 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                  className="card-elevated relative w-full max-w-[20.5rem] overflow-hidden px-6 pb-6 pt-8 text-center"
                 >
-                  <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-rose-400 to-orange-400" />
-                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-500/10 text-rose-500">
-                    <RotateCcw size={22} />
+                  {/* 상단 그라데이션 액센트 + 은은한 위 글로우 */}
+                  <div className="pointer-events-none absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-rose-500 via-rose-400 to-orange-400" />
+                  <div className="pointer-events-none absolute -top-16 left-1/2 h-32 w-32 -translate-x-1/2 rounded-full bg-rose-400/25 blur-3xl" />
+
+                  {/* 위험 아이콘 + 펄스 링 */}
+                  <div className="relative mx-auto grid h-16 w-16 place-items-center">
+                    <motion.span
+                      aria-hidden
+                      className="absolute inset-0 rounded-full bg-rose-400/30"
+                      animate={{ scale: [1, 1.5], opacity: [0.5, 0] }}
+                      transition={{ duration: 1.8, repeat: Infinity, ease: "easeOut" }}
+                    />
+                    <span className="relative grid h-14 w-14 place-items-center rounded-full bg-gradient-to-br from-rose-500 to-orange-500 text-white shadow-[0_12px_28px_-10px_rgba(244,63,94,0.8)]">
+                      <RotateCcw size={24} />
+                    </span>
                   </div>
-                  <h3 className="mt-3 text-[16px] font-bold tracking-[-0.01em] text-neutral-900">
+
+                  <h3 className="mt-4 text-[17px] font-black tracking-[-0.01em] text-neutral-900">
                     {title}
                   </h3>
-                  <p className="mt-1.5 text-[13px] leading-relaxed text-neutral-500">
+                  <p className="mx-auto mt-2 max-w-[17rem] text-[13px] leading-relaxed text-neutral-500">
                     {description}
                   </p>
-                  <div className="mt-5 flex gap-2.5">
+                  <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-rose-50 px-3 py-1 text-[11px] font-bold text-rose-500 ring-1 ring-rose-100">
+                    <span className="h-1.5 w-1.5 rounded-full bg-rose-500" />
+                    되돌릴 수 없어요
+                  </div>
+
+                  <div className="mt-6 flex gap-2.5">
                     <button
                       type="button"
                       onClick={() => setOpen(false)}
-                      className="min-h-[46px] flex-1 rounded-2xl text-[14px] font-semibold text-neutral-600 ring-1 ring-neutral-200 transition hover:bg-neutral-50 active:scale-[0.98]"
+                      className="min-h-[48px] flex-1 rounded-2xl text-[14px] font-bold text-neutral-600 ring-1 ring-neutral-200 transition hover:bg-neutral-50 active:scale-[0.98]"
                     >
                       취소
                     </button>
-                    <button
+                    <motion.button
                       type="button"
                       onClick={() => {
                         onReset();
                         setOpen(false);
                       }}
-                      className="min-h-[46px] flex-1 rounded-2xl bg-rose-500 text-[14px] font-bold text-white shadow-[0_10px_24px_-10px_rgba(244,63,94,0.7)] transition hover:bg-rose-600 active:scale-[0.98]"
+                      whileTap={{ scale: 0.97 }}
+                      className="group relative min-h-[48px] flex-1 overflow-hidden rounded-2xl bg-gradient-to-br from-rose-500 to-orange-500 text-[14px] font-black text-white shadow-[0_12px_28px_-10px_rgba(244,63,94,0.75)] transition hover:shadow-[0_16px_32px_-10px_rgba(244,63,94,0.85)]"
                     >
-                      {confirmLabel}
-                    </button>
+                      <span className="inline-flex items-center gap-1.5">
+                        <span className="transition-transform duration-300 group-hover:-rotate-180">
+                          <RotateCcw size={15} />
+                        </span>
+                        {confirmLabel}
+                      </span>
+                    </motion.button>
                   </div>
                 </motion.div>
               </motion.div>
