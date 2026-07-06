@@ -42,6 +42,14 @@ export const TRACKS: Track[] = [
     emoji: "🥊",
     grad: "from-amber-500 to-orange-600",
   },
+  {
+    id: "playlist",
+    by: "믹스",
+    label: "플레이리스트",
+    src: "/music/playlist.mp3",
+    emoji: "🎶",
+    grad: "from-violet-500 to-indigo-600",
+  },
 ];
 
 const MUTE_PREFIXES = ["/listening", "/lc-match", "/warmup", "/tts", "/diagnostic"];
@@ -84,7 +92,7 @@ export default function BgmProvider({ children }: { children: React.ReactNode })
       if (raw) {
         const p = JSON.parse(raw) as { enabled?: boolean; track?: string };
         setEnabled(p.enabled !== false);
-        setTrackId(p.track === "rocky" ? "rocky" : "jennie");
+        setTrackId(TRACKS.some((t) => t.id === p.track) ? p.track! : "jennie");
       } else {
         setEnabled(true);
       }
