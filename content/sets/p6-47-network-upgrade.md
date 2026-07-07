@@ -11,7 +11,7 @@
     { "en": "During the upgrade, internet access throughout the building will be temporarily ------(1).", "ko": "업그레이드 동안 건물 전체의 인터넷 접속이 일시적으로 ______(1) 상태가 됩니다." },
     { "en": "The new system will provide a ------(2) faster and more reliable connection for everyone.", "ko": "새 시스템은 모두에게 ______(2) 더 빠르고 안정적인 연결을 제공할 것입니다." },
     { "en": "------(3)", "ko": "______(3)" },
-    { "en": "If you experience any ------(4) after the upgrade, please contact the IT help desk.", "ko": "업그레이드 후 어떤 ______(4)라도 겪으시면 IT 헬프데스크에 연락해 주세요." }
+    { "en": "Any problems that occur after the upgrade will be ------(4) promptly by our IT help desk.", "ko": "업그레이드 후 발생하는 문제는 저희 IT 헬프데스크에 의해 신속히 ______(4) 것입니다." }
   ],
   "questions": [
     {
@@ -56,13 +56,13 @@
     },
     {
       "id": "p6-47-q4",
-      "prompt": "Blank (4): choose the best word.",
-      "promptKo": "(4)번 빈칸에 가장 알맞은 단어를 고르세요.",
-      "choices": ["difficult", "difficultly", "difficulty", "difficulties"],
-      "choicesKo": ["어려운", "어렵게", "어려움(단수)", "어려움들(복수)"],
+      "prompt": "Blank (4): choose the best verb form.",
+      "promptKo": "(4)번 빈칸에 가장 알맞은 동사 형태를 고르세요.",
+      "choices": ["resolve", "resolving", "resolves", "resolved"],
+      "choicesKo": ["해결하다", "해결하는", "해결한다", "해결되는"],
       "answerIndex": 3,
-      "explanation": "'any + 가산 복수명사' 형태로 목적어가 필요하므로 difficulties가 정답입니다. 따라서 (라)=3입니다.",
-      "category": "어형"
+      "explanation": "'will be + 과거분사'의 수동태이므로 resolved가 정답입니다. 따라서 (라)=3입니다.",
+      "category": "태"
     }
   ]
 }

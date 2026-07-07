@@ -17,8 +17,8 @@
       "id": "p6-52-q1",
       "prompt": "Blank (1): choose the best word.",
       "promptKo": "(1)번 빈칸에 가장 알맞은 단어를 고르세요.",
-      "choices": ["suit", "suiting", "suited", "to suit"],
-      "choicesKo": ["맞추다", "맞추는", "맞춰진", "맞추기 위한"],
+      "choices": ["suit", "suits", "suited", "to suit"],
+      "choicesKo": ["맞추다", "맞춘다", "맞춰진", "맞추기 위한"],
       "answerIndex": 3,
       "explanation": "명사 memberships를 수식하며 '어떤 일정에도 맞추기 위한'의 목적 의미를 나타내는 to부정사 to suit이 정답입니다. 따라서 (라)=3입니다.",
       "category": "준동사"
