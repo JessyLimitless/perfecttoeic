@@ -52,7 +52,7 @@ export const TRACKS: Track[] = [
   },
 ];
 
-const MUTE_PREFIXES = ["/listening", "/lc-match", "/warmup", "/tts", "/diagnostic"];
+const MUTE_PREFIXES = ["/listening", "/lc-match", "/warmup", "/tts", "/diagnostic", "/mock"];
 const KEY = "toeic-bgm";
 const VOLUME = 0.32;
 

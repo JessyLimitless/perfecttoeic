@@ -272,6 +272,15 @@ export default function LandingPage() {
           <QuickCard
             index={3}
             reduce={!!reduce}
+            onClick={() => router.push("/mock")}
+            emoji="📝"
+            title="실전 모의고사"
+            sub="풀렝스 LC+RC · 예상 점수"
+            gradient="from-emerald-600 via-teal-600 to-cyan-700"
+          />
+          <QuickCard
+            index={4}
+            reduce={!!reduce}
             onClick={() => router.push("/warmup")}
             emoji="🔥"
             title="몸풀기"
