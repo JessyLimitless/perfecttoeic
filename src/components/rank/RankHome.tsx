@@ -65,13 +65,12 @@ export default function RankHome() {
     [drilling, practiceConquest, router],
   );
 
-  /** 파트 행/CTA 진입 — RC는 정복 드릴, LC는 리스닝 복습 */
+  /** 파트 행 진입 — 파트별 정복 상세 페이지 */
   const openPart = useCallback(
-    (p: number, dom: "LC" | "RC") => {
-      if (dom === "RC") void startRcConquest(p);
-      else router.push(`/listening?part=${p}`);
+    (p: number) => {
+      router.push(`/conquest/${p}`);
     },
-    [startRcConquest, router],
+    [router],
   );
 
   const refresh = useCallback(() => {
@@ -174,7 +173,7 @@ export default function RankHome() {
             <button
               key={p.part}
               type="button"
-              onClick={() => openPart(p.part, p.domain)}
+              onClick={() => openPart(p.part)}
               className="rounded-2xl bg-neutral-50 px-3.5 py-3 text-left ring-1 ring-neutral-900/[0.05] transition hover:bg-neutral-100 active:scale-[0.99]"
             >
               <div className="flex items-center justify-between gap-2">

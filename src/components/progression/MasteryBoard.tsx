@@ -14,19 +14,6 @@ import {
   type PartTotals,
   type MasteryPart,
 } from "@/game/mastery";
-import { usePracticeStore } from "@/game/store";
-import type { PassageSet } from "@/game/types";
-
-async function fetchRcSets(): Promise<PassageSet[] | undefined> {
-  try {
-    const r = await fetch("/api/sets");
-    if (!r.ok) return undefined;
-    const { sets } = (await r.json()) as { sets: PassageSet[] };
-    return Array.isArray(sets) && sets.length > 0 ? sets : undefined;
-  } catch {
-    return undefined;
-  }
-}
 
 const PART_LABEL: Record<MasteryPart, string> = {
   2: "Part 2 · 응답",
@@ -42,23 +29,13 @@ const EASE = [0.22, 1, 0.36, 1] as const;
 export default function MasteryBoard() {
   const router = useRouter();
   const [view, setView] = useState<MasteryView | null>(null);
-  const [drilling, setDrilling] = useState(false);
-  const practiceConquest = usePracticeStore((s) => s.practiceConquest);
 
-  // 파트 진입 — RC(5·6·7)는 미정복 문항 정복 드릴, LC(2·3·4)는 리스닝 복습
+  // 파트 진입 — 파트별 정복 상세 페이지
   const openPart = useCallback(
-    async (p: MasteryPart) => {
-      if (p <= 4) {
-        router.push(`/listening?part=${p}`);
-        return;
-      }
-      if (drilling) return;
-      setDrilling(true);
-      const sets = await fetchRcSets();
-      practiceConquest({ part: p as 5 | 6 | 7, sets });
-      router.push("/game");
+    (p: MasteryPart) => {
+      router.push(`/conquest/${p}`);
     },
-    [drilling, practiceConquest, router],
+    [router],
   );
 
   useEffect(() => {
