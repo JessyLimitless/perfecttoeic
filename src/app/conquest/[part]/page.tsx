@@ -38,10 +38,27 @@ const PART_LABEL: Record<MasteryPart, string> = {
 };
 const EASE = [0.22, 1, 0.36, 1] as const;
 
+type Diff = "EASY" | "MEDIUM" | "HARD";
+type DiffFilter = Diff | "ALL";
+const DIFFS: Diff[] = ["EASY", "MEDIUM", "HARD"];
+const DIFF_META: Record<Diff, { label: string; bar: string; chip: string }> = {
+  EASY: { label: "EASY", bar: "from-emerald-400 to-teal-500", chip: "text-emerald-600" },
+  MEDIUM: { label: "MEDIUM", bar: "from-amber-400 to-orange-500", chip: "text-amber-600" },
+  HARD: { label: "HARD", bar: "from-rose-400 to-red-500", chip: "text-rose-600" },
+};
+
+interface DiffStat {
+  diff: Diff;
+  total: number;
+  mastered: number;
+  pending: number;
+}
+
 interface PendingQ {
   q: PassageQuestion;
   streak: number;
   passageType: string;
+  difficulty: Diff;
 }
 
 interface PendingLcSet {
@@ -51,6 +68,7 @@ interface PendingLcSet {
   mastered: number;
   total: number;
   bestCorrect: number | null;
+  difficulty: Diff;
 }
 
 export default function ConquestDetailPage() {
@@ -64,6 +82,7 @@ export default function ConquestDetailPage() {
   const [lcSets, setLcSets] = useState<ListeningSet[] | null>(null);
   const [progress, setProgress] = useState<ListeningProgressState>({});
   const [state, setState] = useState<MasteryState | null>(null);
+  const [diff, setDiff] = useState<DiffFilter>("ALL");
   const practiceConquest = usePracticeStore((s) => s.practiceConquest);
 
   useEffect(() => {
@@ -105,10 +124,11 @@ export default function ConquestDetailPage() {
     const out: PendingQ[] = [];
     for (const s of sets) {
       if (partOf(s) !== part) continue;
+      const d = (s.difficulty ?? "MEDIUM") as Diff;
       for (const q of s.questions) {
         const st = streaks[q.id];
         if (st !== undefined && st < MASTER_STREAK) {
-          out.push({ q, streak: st, passageType: s.passageType });
+          out.push({ q, streak: st, passageType: s.passageType, difficulty: d });
         }
       }
     }
@@ -137,10 +157,48 @@ export default function ConquestDetailPage() {
         mastered,
         total,
         bestCorrect: p ? p.bestCorrect : null,
+        difficulty: (s.difficulty ?? "MEDIUM") as Diff,
       });
     }
     return out;
   }, [state, lcSets, progress, part]);
+
+  // 난이도별 정복 분해 (로드된 세트 + mastery로 파생)
+  const diffStats = useMemo<DiffStat[]>(() => {
+    if (!state || !part) return [];
+    const streaks = state.parts[part].streaks;
+    const acc: Record<Diff, DiffStat> = {
+      EASY: { diff: "EASY", total: 0, mastered: 0, pending: 0 },
+      MEDIUM: { diff: "MEDIUM", total: 0, mastered: 0, pending: 0 },
+      HARD: { diff: "HARD", total: 0, mastered: 0, pending: 0 },
+    };
+    const tally = (d: Diff, ids: string[]) => {
+      for (const id of ids) {
+        acc[d].total += 1;
+        const st = streaks[id];
+        if (st !== undefined && st >= MASTER_STREAK) acc[d].mastered += 1;
+        else if (st !== undefined) acc[d].pending += 1;
+      }
+    };
+    if (part >= 5) {
+      if (!sets) return [];
+      for (const s of sets) {
+        if (partOf(s) !== part) continue;
+        tally((s.difficulty ?? "MEDIUM") as Diff, s.questions.map((q) => q.id));
+      }
+    } else {
+      if (!lcSets) return [];
+      for (const s of lcSets) {
+        if (s.part !== part) continue;
+        const ids =
+          s.part === 2
+            ? (s.items ?? []).map((i) => i.id)
+            : (s.questions ?? []).map((q) => q.id);
+        tally((s.difficulty ?? "MEDIUM") as Diff, ids);
+      }
+    }
+    return DIFFS.map((d) => acc[d]).filter((x) => x.total > 0);
+  }, [state, sets, lcSets, part]);
 
   if (!part || !pv) {
     return (
@@ -154,9 +212,19 @@ export default function ConquestDetailPage() {
   const untouched = Math.max(total - pv.attempted, 0);
   const isRc = part >= 5;
 
+  // 난이도 필터 적용된 복습 목록
+  const pendingShown = diff === "ALL" ? pending : pending.filter((p) => p.difficulty === diff);
+  const lcPendingShown =
+    diff === "ALL" ? lcPending : lcPending.filter((p) => p.difficulty === diff);
+
   const startDrill = () => {
     if (isRc) {
-      practiceConquest({ part: part as 5 | 6 | 7, sets: sets ?? undefined });
+      // 난이도 선택 시 그 난이도 세트만 드릴(스토어가 mastered 제외)
+      const src =
+        diff === "ALL"
+          ? sets ?? undefined
+          : (sets ?? []).filter((s) => (s.difficulty ?? "MEDIUM") === diff);
+      practiceConquest({ part: part as 5 | 6 | 7, sets: src });
       router.push("/game");
     } else {
       // 복습 대기 세트가 있으면 복습 모드로 진입
@@ -219,14 +287,78 @@ export default function ConquestDetailPage() {
           className="relative mt-6 min-h-[54px] w-full rounded-2xl bg-white text-[15px] font-black text-neutral-900 shadow-lg transition hover:shadow-xl active:scale-[0.98]"
         >
           {isRc
-            ? pv.pending > 0
-              ? `🎯 복습 대기 ${pv.pending}문항 정복하기`
-              : "🎯 정복 복습 시작 · 미정복만 반복"
+            ? diff !== "ALL"
+              ? `🎯 ${diff} 정복 드릴`
+              : pv.pending > 0
+                ? `🎯 복습 대기 ${pv.pending}문항 정복하기`
+                : "🎯 정복 복습 시작 · 미정복만 반복"
             : pv.pending > 0
               ? "🎧 복습 대기 세트 풀기"
               : "🎧 리스닝으로 새 세트 풀기"}
         </button>
       </section>
+
+      {/* 난이도별 정복 분해 + 필터 */}
+      {diffStats.length > 0 && (
+        <section className="mt-5">
+          <div className="mb-2.5 flex items-center justify-between px-1">
+            <p className="label">난이도별 정복</p>
+            {diff !== "ALL" && (
+              <button
+                type="button"
+                onClick={() => setDiff("ALL")}
+                className="text-[12px] font-bold text-neutral-400 transition hover:text-neutral-600"
+              >
+                전체 보기 ✕
+              </button>
+            )}
+          </div>
+          <div className="space-y-2">
+            {diffStats.map((d) => {
+              const pct = d.total > 0 ? Math.round((d.mastered / d.total) * 100) : 0;
+              const active = diff === d.diff;
+              return (
+                <button
+                  key={d.diff}
+                  type="button"
+                  onClick={() => setDiff(active ? "ALL" : d.diff)}
+                  className={`card flex w-full items-center gap-3 px-4 py-3 text-left transition active:scale-[0.99] ${
+                    active ? "ring-2 ring-neutral-900/70" : "hover:-translate-y-0.5"
+                  }`}
+                >
+                  <span
+                    className={`w-[58px] shrink-0 text-[11px] font-black uppercase tracking-wide ${DIFF_META[d.diff].chip}`}
+                  >
+                    {DIFF_META[d.diff].label}
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="flex items-center justify-between text-[11.5px] font-semibold">
+                      <span className="text-neutral-400">
+                        정복 <span className="tabnum text-neutral-700">{d.mastered}</span>/{d.total}
+                        {d.pending > 0 && (
+                          <span className="ml-1.5 text-amber-600">· 복습 {d.pending}</span>
+                        )}
+                      </span>
+                      <span className="tabnum text-neutral-500">{pct}%</span>
+                    </span>
+                    <span className="mt-1.5 block h-2 overflow-hidden rounded-full bg-neutral-100">
+                      <span
+                        className={`block h-full rounded-full bg-gradient-to-r ${DIFF_META[d.diff].bar}`}
+                        style={{ width: `${pct}%` }}
+                      />
+                    </span>
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+          {diff !== "ALL" && (
+            <p className="mt-2 px-1 text-[12px] font-semibold text-neutral-400">
+              {DIFF_META[diff].label} 난이도만 표시 중
+            </p>
+          )}
+        </section>
+      )}
 
       {/* 복습 대기 세트 (LC) */}
       {!isRc && (
@@ -237,24 +369,28 @@ export default function ConquestDetailPage() {
               <span className="text-[12px] text-neutral-400">불러오는 중…</span>
             ) : (
               <span className="inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-amber-500 px-1.5 text-[11px] font-bold tabnum text-white">
-                {lcPending.length}
+                {lcPendingShown.length}
               </span>
             )}
           </div>
 
-          {lcSets !== null && lcPending.length === 0 ? (
+          {lcSets !== null && lcPendingShown.length === 0 ? (
             <div className="card px-6 py-10 text-center">
               <div className="text-3xl">🎉</div>
-              <p className="mt-2 font-bold text-neutral-900">복습 대기 세트가 없어요</p>
+              <p className="mt-2 font-bold text-neutral-900">
+                {diff !== "ALL" ? `${diff} 복습 대기 세트가 없어요` : "복습 대기 세트가 없어요"}
+              </p>
               <p className="mt-1 text-[13px] text-neutral-500">
-                {pv.attempted === 0
-                  ? "아직 이 파트를 풀지 않았어요. 리스닝으로 시작해보세요."
-                  : "지금까지 푼 세트는 모두 정복했습니다. 새 세트를 이어가세요."}
+                {diff !== "ALL"
+                  ? "다른 난이도를 골라보세요."
+                  : pv.attempted === 0
+                    ? "아직 이 파트를 풀지 않았어요. 리스닝으로 시작해보세요."
+                    : "지금까지 푼 세트는 모두 정복했습니다. 새 세트를 이어가세요."}
               </p>
             </div>
           ) : (
             <ul className="space-y-2.5">
-              {lcPending.map((s, i) => (
+              {lcPendingShown.map((s, i) => (
                 <motion.li
                   key={s.id}
                   initial={{ opacity: 0, y: 8 }}
@@ -276,8 +412,13 @@ export default function ConquestDetailPage() {
                       {s.status === "pending" ? "복습 대기" : "미착수"}
                     </span>
                     <span className="min-w-0 flex-1">
-                      <span className="block truncate text-[14px] font-semibold text-neutral-900">
-                        {s.passageType}
+                      <span className="flex items-center gap-1.5">
+                        <span className="truncate text-[14px] font-semibold text-neutral-900">
+                          {s.passageType}
+                        </span>
+                        <span className={`shrink-0 text-[10px] font-black uppercase ${DIFF_META[s.difficulty].chip}`}>
+                          {s.difficulty}
+                        </span>
                       </span>
                       <span className="block text-[12px] text-neutral-400">
                         정복 {s.mastered}/{s.total} 문항
@@ -304,24 +445,28 @@ export default function ConquestDetailPage() {
               <span className="text-[12px] text-neutral-400">불러오는 중…</span>
             ) : (
               <span className="inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-amber-500 px-1.5 text-[11px] font-bold tabnum text-white">
-                {pending.length}
+                {pendingShown.length}
               </span>
             )}
           </div>
 
-          {sets !== null && pending.length === 0 ? (
+          {sets !== null && pendingShown.length === 0 ? (
             <div className="card px-6 py-10 text-center">
               <div className="text-3xl">🎉</div>
-              <p className="mt-2 font-bold text-neutral-900">복습 대기 문항이 없어요</p>
+              <p className="mt-2 font-bold text-neutral-900">
+                {diff !== "ALL" ? `${diff} 복습 대기 문항이 없어요` : "복습 대기 문항이 없어요"}
+              </p>
               <p className="mt-1 text-[13px] text-neutral-500">
-                {pv.attempted === 0
-                  ? "아직 이 파트를 풀지 않았어요. 정복 복습으로 시작해보세요."
-                  : "지금까지 푼 문항은 모두 정복했습니다. 새 문항을 이어가세요."}
+                {diff !== "ALL"
+                  ? "다른 난이도를 골라보세요."
+                  : pv.attempted === 0
+                    ? "아직 이 파트를 풀지 않았어요. 정복 복습으로 시작해보세요."
+                    : "지금까지 푼 문항은 모두 정복했습니다. 새 문항을 이어가세요."}
               </p>
             </div>
           ) : (
             <ul className="space-y-2.5">
-              {pending.slice(0, 40).map(({ q, streak, passageType }, i) => (
+              {pendingShown.slice(0, 40).map(({ q, streak, passageType, difficulty }, i) => (
                 <motion.li
                   key={q.id + i}
                   initial={{ opacity: 0, y: 8 }}
@@ -342,6 +487,9 @@ export default function ConquestDetailPage() {
                     <span className="rounded-md bg-violet-50 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-violet-500">
                       {part === 7 ? passageType : `Part ${part}`}
                     </span>
+                    <span className={`text-[10px] font-black uppercase ${DIFF_META[difficulty].chip}`}>
+                      {difficulty}
+                    </span>
                   </div>
                   <p className="mt-2 text-[14px] font-semibold leading-relaxed text-neutral-900">
                     {q.prompt}
@@ -351,9 +499,9 @@ export default function ConquestDetailPage() {
                   )}
                 </motion.li>
               ))}
-              {pending.length > 40 && (
+              {pendingShown.length > 40 && (
                 <li className="py-2 text-center text-[12px] font-semibold text-neutral-400">
-                  외 {pending.length - 40}문항 — 정복 복습에서 이어집니다
+                  외 {pendingShown.length - 40}문항 — 정복 복습에서 이어집니다
                 </li>
               )}
             </ul>
