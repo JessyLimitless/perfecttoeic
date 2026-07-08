@@ -50,6 +50,22 @@ export const TRACKS: Track[] = [
     emoji: "🎶",
     grad: "from-violet-500 to-indigo-600",
   },
+  {
+    id: "her",
+    by: "OST",
+    label: "Her (2013)",
+    src: "/music/her.mp3",
+    emoji: "🌆",
+    grad: "from-teal-500 to-emerald-600",
+  },
+  {
+    id: "hankang",
+    by: "한강",
+    label: "노벨상 수상 연설",
+    src: "/music/hankang.mp3",
+    emoji: "🕯️",
+    grad: "from-rose-500 to-red-600",
+  },
 ];
 
 const MUTE_PREFIXES = ["/listening", "/lc-match", "/warmup", "/tts", "/diagnostic", "/mock"];
