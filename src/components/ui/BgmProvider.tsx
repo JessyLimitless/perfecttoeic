@@ -78,10 +78,16 @@ interface BgmValue {
   muted: boolean;
   trackId: string;
   track: Track;
+  /** 현재 볼륨(0~1) */
+  volume: number;
   /** 재생/정지 토글 */
   toggle: () => void;
   /** 트랙 선택(+재생) */
   setTrack: (id: string) => void;
+  /** 볼륨 설정(0~1 clamp) */
+  setVolume: (v: number) => void;
+  /** 승리 연출 — 음악이 켜져 있을 때만 승리 테마(rocky)로 전환·재생 */
+  celebrate: () => void;
 }
 
 const Ctx = createContext<BgmValue | null>(null);
@@ -97,6 +103,7 @@ export default function BgmProvider({ children }: { children: React.ReactNode })
   const [enabled, setEnabled] = useState(false);
   const [trackId, setTrackId] = useState("jennie");
   const [playing, setPlaying] = useState(false);
+  const [volume, setVolumeState] = useState(VOLUME);
 
   const track = TRACKS.find((t) => t.id === trackId) ?? TRACKS[0];
   const muted = MUTE_PREFIXES.some((p) => pathname.startsWith(p));
@@ -106,9 +113,12 @@ export default function BgmProvider({ children }: { children: React.ReactNode })
     try {
       const raw = localStorage.getItem(KEY);
       if (raw) {
-        const p = JSON.parse(raw) as { enabled?: boolean; track?: string };
+        const p = JSON.parse(raw) as { enabled?: boolean; track?: string; volume?: number };
         setEnabled(p.enabled !== false);
         setTrackId(TRACKS.some((t) => t.id === p.track) ? p.track! : "jennie");
+        if (typeof p.volume === "number" && p.volume >= 0 && p.volume <= 1) {
+          setVolumeState(p.volume);
+        }
       } else {
         setEnabled(true);
       }
@@ -122,18 +132,24 @@ export default function BgmProvider({ children }: { children: React.ReactNode })
   useEffect(() => {
     if (!ready) return;
     try {
-      localStorage.setItem(KEY, JSON.stringify({ enabled, track: trackId }));
+      localStorage.setItem(KEY, JSON.stringify({ enabled, track: trackId, volume }));
     } catch {
       /* 무시 */
     }
-  }, [enabled, trackId, ready]);
+  }, [enabled, trackId, volume, ready]);
 
   const tryPlay = useCallback(() => {
     const el = audioRef.current;
     if (!el) return;
-    el.volume = VOLUME;
+    el.volume = volume;
     el.play().then(() => setPlaying(true)).catch(() => setPlaying(false));
-  }, []);
+  }, [volume]);
+
+  // 볼륨 변경 시 오디오 요소에 즉시 반영
+  useEffect(() => {
+    const el = audioRef.current;
+    if (el) el.volume = volume;
+  }, [volume]);
 
   // 코어: 트랙 로드 + enabled·라우트에 따른 재생/정지
   useEffect(() => {
@@ -172,13 +188,13 @@ export default function BgmProvider({ children }: { children: React.ReactNode })
     setEnabled(next);
     if (!el) return;
     if (next) {
-      el.volume = VOLUME;
+      el.volume = volume;
       el.play().then(() => setPlaying(true)).catch(() => setPlaying(false));
     } else {
       el.pause();
       setPlaying(false);
     }
-  }, [muted, enabled, playing]);
+  }, [muted, enabled, playing, volume]);
 
   const setTrack = useCallback(
     (id: string) => {
@@ -188,14 +204,29 @@ export default function BgmProvider({ children }: { children: React.ReactNode })
     [],
   );
 
+  const setVolume = useCallback((v: number) => {
+    setVolumeState(Math.min(1, Math.max(0, v)));
+  }, []);
+
+  // 승리 연출 — 음악이 켜져 있을 때만 승리 테마(rocky)로 전환·재생.
+  // 꺼둔 사용자는 존중(아무 것도 안 함). 이미 rocky면 재생만 보장.
+  const celebrate = useCallback(() => {
+    if (!enabled) return;
+    setTrackId("rocky");
+    setEnabled(true);
+  }, [enabled]);
+
   const value: BgmValue = {
     ready,
     playing: playing && !muted,
     muted,
     trackId,
     track,
+    volume,
     toggle,
     setTrack,
+    setVolume,
+    celebrate,
   };
 
   return (
@@ -215,7 +246,7 @@ function FloatingControl() {
   const bgm = useBgm()!;
   const [open, setOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
-  const { playing, muted, track, toggle, setTrack } = bgm;
+  const { playing, muted, track, volume, toggle, setTrack, setVolume } = bgm;
 
   // 접힘 상태 로드/저장 (사용자가 배너를 치우면 유지)
   useEffect(() => {
@@ -296,6 +327,26 @@ function FloatingControl() {
                 </button>
               );
             })}
+
+            {/* 볼륨 슬라이더 */}
+            <div className="mt-1 flex items-center gap-2.5 border-t border-white/10 px-3 pb-1 pt-3">
+              <span className="text-[15px]" aria-hidden>
+                {volume === 0 ? "🔇" : volume < 0.5 ? "🔈" : "🔊"}
+              </span>
+              <input
+                type="range"
+                min={0}
+                max={1}
+                step={0.01}
+                value={volume}
+                onChange={(e) => setVolume(Number(e.target.value))}
+                aria-label="볼륨"
+                className="h-1.5 flex-1 cursor-pointer appearance-none rounded-full bg-white/15 accent-fuchsia-500"
+              />
+              <span className="w-8 shrink-0 text-right text-[11px] font-bold tabular-nums text-white/50">
+                {Math.round(volume * 100)}%
+              </span>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

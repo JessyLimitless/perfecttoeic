@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
 import { loadDiagnosticResult, type DiagnosticResult } from "@/game/diagnostic";
 import MasteryBoard from "@/components/progression/MasteryBoard";
+import ListeningProgressCard from "@/components/listening/ListeningProgressCard";
 import JennyOriginalArt from "@/components/match/JennyOriginalArt";
 import { JENNY } from "@/game/match/jenny";
 import { useBgm } from "@/components/ui/BgmProvider";
@@ -228,6 +229,11 @@ export default function LandingPage() {
         >
           <MasteryBoard />
         </motion.div>
+
+        {/* 리스닝 세트 진행 요약 (진행 있을 때만 렌더) */}
+        <div className="mt-4 sm:mt-5">
+          <ListeningProgressCard />
+        </div>
       </section>
 
       {/* ── 그 외 학습 콘텐츠 ───────────────────────── */}

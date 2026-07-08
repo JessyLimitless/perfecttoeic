@@ -18,7 +18,7 @@ const VALID_TYPES: LcType[] = [
 export default async function ListeningPage({
   searchParams,
 }: {
-  searchParams: { part?: string; type?: string; review?: string };
+  searchParams: { part?: string; type?: string; review?: string; diff?: string };
 }) {
   const sets = await loadListeningSets();
   const cards: ListeningCard[] = sets.map((s) => ({
@@ -41,6 +41,11 @@ export default async function ListeningPage({
     ? (searchParams.type as LcType)
     : "ALL";
   const initialReview = searchParams.review === "1";
+  const initialDiff: "EASY" | "MEDIUM" | "HARD" | "ALL" = (
+    ["EASY", "MEDIUM", "HARD"] as const
+  ).includes(searchParams.diff as "EASY" | "MEDIUM" | "HARD")
+    ? (searchParams.diff as "EASY" | "MEDIUM" | "HARD")
+    : "ALL";
 
   return (
     <ListeningHome
@@ -48,6 +53,7 @@ export default async function ListeningPage({
       initialPart={initialPart}
       initialType={initialType}
       initialReview={initialReview}
+      initialDiff={initialDiff}
     />
   );
 }

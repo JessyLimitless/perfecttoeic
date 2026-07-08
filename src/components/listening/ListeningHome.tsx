@@ -46,6 +46,13 @@ const PART_META: Record<number, { label: string; desc: string; tint: string }> =
 };
 
 type PartFilter = 2 | 3 | 4 | "ALL";
+type DiffFilter = "ALL" | "EASY" | "MEDIUM" | "HARD";
+const DIFF_ORDER = ["EASY", "MEDIUM", "HARD"] as const;
+const DIFF_LABEL: Record<"EASY" | "MEDIUM" | "HARD", string> = {
+  EASY: "EASY",
+  MEDIUM: "MEDIUM",
+  HARD: "HARD",
+};
 
 interface CardView extends ListeningCard {
   status: SetConquestStatus;
@@ -59,16 +66,19 @@ export default function ListeningHome({
   initialPart = null,
   initialType = "ALL",
   initialReview = false,
+  initialDiff = "ALL",
 }: {
   cards: ListeningCard[];
   initialPart?: 2 | 3 | 4 | null;
   initialType?: LcTypeFilter;
   initialReview?: boolean;
+  initialDiff?: DiffFilter;
 }) {
   const router = useRouter();
   const [part, setPart] = useState<PartFilter>(initialPart ?? "ALL");
   const [type, setType] = useState<LcTypeFilter>(initialType);
   const [review, setReview] = useState(initialReview);
+  const [diff, setDiff] = useState<DiffFilter>(initialDiff);
 
   // 클라이언트 진행/정복 상태 (마운트 후 로드 → 하이드레이션 안전)
   const [mastery, setMastery] = useState<MasteryState | null>(null);
@@ -111,6 +121,16 @@ export default function ListeningHome({
 
   const availableTypes = LC_TYPE_ORDER.filter((t) => typeCounts[t] > 0);
 
+  // 현재 파트 범위에서 난이도별 세트 수
+  const diffCounts = useMemo(() => {
+    const c = { EASY: 0, MEDIUM: 0, HARD: 0 } as Record<"EASY" | "MEDIUM" | "HARD", number>;
+    for (const card of partScoped) {
+      const d = card.difficulty as "EASY" | "MEDIUM" | "HARD";
+      if (d in c) c[d] += 1;
+    }
+    return c;
+  }, [partScoped]);
+
   // 파트 범위 정복 요약 (유형 필터 이전 기준)
   const summary = useMemo(() => {
     let mastered = 0,
@@ -124,12 +144,13 @@ export default function ListeningHome({
     return { mastered, pending, untouched };
   }, [partScoped]);
 
-  // 최종 필터: 파트 + 유형 (+ 복습 모드면 미정복만)
+  // 최종 필터: 파트 + 유형 + 난이도 (+ 복습 모드면 미정복만)
   const filtered = useMemo(() => {
     let arr = partScoped.filter((c) => type === "ALL" || c.types.includes(type));
+    if (diff !== "ALL") arr = arr.filter((c) => c.difficulty === diff);
     if (review) arr = arr.filter((c) => c.status !== "mastered");
     return arr;
-  }, [partScoped, type, review]);
+  }, [partScoped, type, diff, review]);
 
   const totalQuestions = filtered.reduce((n, c) => n + c.count, 0);
   const byPart = [2, 3, 4]
@@ -204,6 +225,20 @@ export default function ListeningHome({
         ))}
       </div>
 
+      {/* ── 난이도 필터 ── */}
+      <div className="mt-2.5 flex flex-wrap gap-1.5">
+        <DiffChip active={diff === "ALL"} onClick={() => setDiff("ALL")} label="전체 난이도" />
+        {DIFF_ORDER.map((d) => (
+          <DiffChip
+            key={d}
+            active={diff === d}
+            onClick={() => setDiff((v) => (v === d ? "ALL" : d))}
+            label={DIFF_LABEL[d]}
+            count={diffCounts[d]}
+          />
+        ))}
+      </div>
+
       {/* ── 정복 요약 + 복습 모드 토글 ── */}
       <div className="mt-4 flex flex-wrap items-center gap-2 rounded-2xl bg-white/70 px-3.5 py-3 ring-1 ring-neutral-900/[0.05] backdrop-blur-sm">
         <StatPill emoji="👑" label="정복" value={summary.mastered} tone="emerald" />
@@ -229,6 +264,7 @@ export default function ListeningHome({
       <p className="mt-3 text-[12.5px] text-neutral-400">
         {filtered.length}세트 · {totalQuestions}문항
         {type !== "ALL" && <span className="text-cyan-500"> · {lcTypeLabel(type)} 포함</span>}
+        {diff !== "ALL" && <span className="text-cyan-500"> · {diff}</span>}
         {review && <span className="text-amber-500"> · 복습 대기 세트만 표시</span>}
       </p>
 
@@ -375,6 +411,35 @@ function TypeChip({
       {label}
       {typeof count === "number" && (
         <span className={`ml-1 ${active ? "text-white/70" : "text-neutral-400"}`}>{count}</span>
+      )}
+    </button>
+  );
+}
+
+function DiffChip({
+  active,
+  onClick,
+  label,
+  count,
+}: {
+  active: boolean;
+  onClick: () => void;
+  label: string;
+  count?: number;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`rounded-full px-3 py-1.5 text-[12px] font-bold uppercase tracking-wide transition active:scale-95 ${
+        active
+          ? "bg-gradient-to-r from-teal-500 to-cyan-500 text-white shadow-sm"
+          : "bg-white text-neutral-500 ring-1 ring-neutral-200 hover:ring-teal-300 hover:text-teal-600"
+      }`}
+    >
+      {label}
+      {typeof count === "number" && (
+        <span className={`ml-1 tabnum ${active ? "text-white/70" : "text-neutral-400"}`}>{count}</span>
       )}
     </button>
   );

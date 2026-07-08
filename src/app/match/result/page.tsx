@@ -13,6 +13,7 @@ import RematchTimer, {
 import JennyAvatar from "@/components/match/JennyAvatar";
 import { Confetti, JennyCutin } from "@/components/match/JennyFx";
 import PassageTranslation from "@/components/result/PassageTranslation";
+import { useBgm } from "@/components/ui/BgmProvider";
 import { useMatchStore } from "@/game/match/matchStore";
 import { CREDIT_WIN } from "@/game/match/types";
 import { JENNY, jennyReactionForGrade, jennyCutsceneForGrade } from "@/game/match/jenny";
@@ -51,6 +52,7 @@ async function fetchGrandTotal(): Promise<number> {
 
 export default function MatchResultPage() {
   const router = useRouter();
+  const bgm = useBgm();
 
   const status = useMatchStore((s) => s.status);
   const part = useMatchStore((s) => s.part);
@@ -78,6 +80,8 @@ export default function MatchResultPage() {
     if (status !== "result" || appliedRef.current) return;
     appliedRef.current = true;
     const won = user.rank === 1;
+    // 승리 시 배경음악을 승리 테마(rocky)로 연출 (음악이 켜져 있을 때만)
+    if (won) bgm?.celebrate?.();
     // 대결에서 맞힌 문항을 정복도에 충전(정복도만 — 정답률 통계는 연습·리스닝 전용)
     const entries = userHistory
       .filter((r) => r.question?.id)

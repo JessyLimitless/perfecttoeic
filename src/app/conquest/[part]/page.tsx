@@ -227,8 +227,12 @@ export default function ConquestDetailPage() {
       practiceConquest({ part: part as 5 | 6 | 7, sets: src });
       router.push("/game");
     } else {
-      // 복습 대기 세트가 있으면 복습 모드로 진입
-      router.push(`/listening?part=${part}${pv.pending > 0 ? "&review=1" : ""}`);
+      // 복습 대기 세트가 있으면 복습 모드로, 난이도 선택 시 그 난이도로 필터해 진입
+      const q =
+        `/listening?part=${part}` +
+        (pv.pending > 0 ? "&review=1" : "") +
+        (diff !== "ALL" ? `&diff=${diff}` : "");
+      router.push(q);
     }
   };
 
