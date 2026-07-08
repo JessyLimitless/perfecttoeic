@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
 import { loadDiagnosticResult, type DiagnosticResult } from "@/game/diagnostic";
-import LevelHud from "@/components/progression/LevelHud";
 import MasteryBoard from "@/components/progression/MasteryBoard";
 import JennyOriginalArt from "@/components/match/JennyOriginalArt";
 import { JENNY } from "@/game/match/jenny";
@@ -91,18 +90,6 @@ export default function LandingPage() {
         </div>
       </header>
 
-      {/* ── 레벨 HUD (진행 시 표시 · 프로필 바로가기) ── */}
-      <div className="container-app relative z-10">
-        <button
-          type="button"
-          onClick={() => router.push("/profile")}
-          aria-label="내 프로필 열기"
-          className="mx-auto mt-1 block w-full max-w-md text-left transition active:scale-[0.99]"
-        >
-          <LevelHud variant="bar" />
-        </button>
-      </div>
-
       {/* ── 히어로 ─────────────────────────────────── */}
       <section className="container-app relative z-10 pt-8 text-center sm:pt-12 lg:pt-14">
         {/* 제니 브랜드 히어로 (최상단 전면 + 음악 통합) */}
@@ -122,8 +109,8 @@ export default function LandingPage() {
         >
           토익을 게임처럼,
           <br />
-          <span className="text-gradient">풀수록 랭크</span>가
-          <br className="sm:hidden" /> 오른다
+          <span className="text-gradient">풀수록 정복</span>이
+          <br className="sm:hidden" /> 쌓인다
         </motion.h1>
 
         <motion.p
@@ -131,9 +118,9 @@ export default function LandingPage() {
           className="mx-auto mt-6 max-w-xl px-2 text-[15px] leading-relaxed text-neutral-500 sm:px-0 sm:text-[17px]"
         >
           라이벌 <b className="font-bold text-neutral-700">빌류킹</b>을 이기며
-          브론즈에서 <b className="font-bold text-neutral-700">마스터</b>까지.
-          문제를 풀수록 RP가 오르고 티어가 올라가는, 나만의 토익 모험이
-          시작됩니다.
+          루키에서 <b className="font-bold text-neutral-700">그랜드마스터</b>까지.
+          6개 영역의 모든 문항을 하나씩 정복해 실전 만점에 달려가는, 나만의 토익
+          모험이 시작됩니다.
         </motion.p>
 
         {/* 핵심 CTA */}
@@ -192,23 +179,23 @@ export default function LandingPage() {
             {/* 좌: 카피 */}
             <div>
               <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3.5 py-1.5 text-[12px] font-bold text-white/90 ring-1 ring-white/15">
-                ⚔️ 메인 모드 · RANKED
+                ⚔️ 메인 모드 · CONQUEST
               </span>
               <h2 className="mt-5 text-[28px] font-black leading-[1.1] tracking-tight text-white sm:text-[38px]">
                 문제를 풀수록{" "}
-                <span className="text-gradient-rose">랭크</span>가 오른다
+                <span className="text-gradient-rose">정복</span>이 쌓인다
               </h2>
               <p className="mt-4 max-w-md text-[14px] leading-relaxed text-white/60 sm:text-[15px]">
                 토익 문제풀이를 완전히 게임화한 퍼펙토익의 시그니처 모드.
-                정답마다 RP를 얻고 티어를 올려 챔피언 빌류킹에게 도전하세요.
-                빌류킹은 내 랭크에 맞춰 점점 강해집니다.
+                맞힌 문항을 하나씩 정복해 정복 등급을 올리고 챔피언 빌류킹에게
+                도전하세요. 빌류킹은 내 정복 진척에 맞춰 점점 강해집니다.
               </p>
 
               <ul className="mt-6 grid gap-2.5 sm:grid-cols-2">
-                <RankPoint icon="📈" text="RP·티어 상승 시스템" />
+                <RankPoint icon="📈" text="정복도·등급 상승 시스템" />
                 <RankPoint icon="💗" text="라이벌 빌류킹과의 스토리 대결" />
-                <RankPoint icon="🗺️" text="브론즈→마스터 여정" />
-                <RankPoint icon="✨" text="대결 종료 후 레벨업·보상" />
+                <RankPoint icon="🗺️" text="루키→그랜드마스터 여정" />
+                <RankPoint icon="✨" text="대결마다 정복도 충전" />
               </ul>
 
               <button
@@ -301,49 +288,13 @@ export default function LandingPage() {
             gradient="from-amber-500 to-orange-600"
           />
           <QuickCard
-            index={4}
+            index={5}
             reduce={!!reduce}
             onClick={() => router.push("/tts")}
             emoji="🔊"
             title="발음 듣기"
             sub="원어민 TTS"
             gradient="from-emerald-500 to-teal-600"
-          />
-          <QuickCard
-            index={5}
-            reduce={!!reduce}
-            onClick={() => router.push("/snake")}
-            emoji="⚡"
-            title="스피드 스네이크"
-            sub="훈련 · 엔드리스"
-            gradient="from-lime-500 via-emerald-500 to-teal-600"
-          />
-          <QuickCard
-            index={6}
-            reduce={!!reduce}
-            onClick={() => router.push("/match")}
-            emoji="🤖"
-            title="AI 대결 (캐주얼)"
-            sub="1:1 속도전 · 랭크 미반영"
-            gradient="from-neutral-700 to-neutral-900"
-          />
-          <QuickCard
-            index={7}
-            reduce={!!reduce}
-            onClick={() => router.push("/missions")}
-            emoji="🎯"
-            title="일일 미션"
-            sub="매일 새 목표 · 보상"
-            gradient="from-violet-500 to-fuchsia-600"
-          />
-          <QuickCard
-            index={8}
-            reduce={!!reduce}
-            onClick={() => router.push("/shop")}
-            emoji="🛒"
-            title="상점"
-            sub="코인으로 아이템 교환"
-            gradient="from-amber-500 to-orange-600"
           />
         </div>
       </section>
@@ -377,8 +328,8 @@ export default function LandingPage() {
             reduce={!!reduce}
             index={2}
             icon="⚡"
-            title="랭크로 경쟁하는 재미"
-            desc="풀수록 RP·티어가 오르는 랭크 대결로 매일 순위를 겨루고, XP 레벨업·스피드 스네이크까지 지루할 틈이 없습니다."
+            title="정복으로 경쟁하는 재미"
+            desc="맞힌 문항이 곧 정복도가 되는 대결로 라이벌 빌류킹에게 도전하며, 6개 영역을 하나씩 정복해 실전 만점까지 달려갑니다."
           />
         </div>
       </section>
@@ -708,9 +659,9 @@ function MiniPause() {
   );
 }
 
-/** 마스터로 가는 길 — 브론즈에서 시작해 정상의 챔피언 제니까지. (가상 랭커 없음, 나의 여정) */
+/** 정복의 길 — 루키에서 시작해 정상의 그랜드마스터(실전 만점)까지. 빌류킹은 정상의 최종 상대. */
 function RoadToMaster({ reduce }: { reduce: boolean }) {
-  // 정상(마스터)부터 아래로
+  // 정상(그랜드마스터)부터 아래로
   const steps: {
     tier: string;
     emoji: string;
@@ -719,19 +670,19 @@ function RoadToMaster({ reduce }: { reduce: boolean }) {
     boss?: boolean;
     me?: boolean;
   }[] = [
-    { tier: "마스터", emoji: "👑", who: "빌류킹 · 챔피언", grad: "from-fuchsia-500 to-violet-600", boss: true },
-    { tier: "다이아", emoji: "💎", grad: "from-sky-400 to-indigo-500" },
-    { tier: "플래티넘", emoji: "💠", grad: "from-cyan-400 to-teal-500" },
-    { tier: "골드", emoji: "🥇", grad: "from-amber-400 to-yellow-500" },
-    { tier: "실버", emoji: "🥈", grad: "from-slate-400 to-slate-500" },
-    { tier: "브론즈", emoji: "🥉", who: "여기서 시작", grad: "from-amber-700 to-orange-800", me: true },
+    { tier: "그랜드마스터", emoji: "🏆", who: "실전 만점 · 빌류킹 격파", grad: "from-amber-300 to-yellow-500", boss: true },
+    { tier: "엘리트", emoji: "🔥", grad: "from-amber-400 to-orange-500" },
+    { tier: "프로", emoji: "⚡", grad: "from-indigo-400 to-violet-500" },
+    { tier: "컨텐더", emoji: "🏃", grad: "from-sky-400 to-cyan-500" },
+    { tier: "챌린저", emoji: "🎽", grad: "from-teal-400 to-emerald-500" },
+    { tier: "루키", emoji: "🥾", who: "여기서 시작", grad: "from-slate-400 to-slate-500", me: true },
   ];
 
   return (
     <div className="rounded-3xl bg-white/[0.06] p-6 ring-1 ring-white/10 backdrop-blur-sm">
       <div className="flex items-center justify-between">
         <span className="text-[12px] font-bold uppercase tracking-[0.15em] text-white/40">
-          Road to Master
+          Road to Grandmaster
         </span>
         <span className="rounded-full bg-white/10 px-2.5 py-1 text-[11px] font-bold text-white/70">
           나 vs 빌류킹
@@ -770,7 +721,7 @@ function RoadToMaster({ reduce }: { reduce: boolean }) {
         ))}
       </div>
       <p className="mt-4 text-center text-[12px] font-semibold text-white/50">
-        빌류킹을 이기며 한 계단씩 — 정상까지
+        영역을 정복하며 한 계단씩 — 실전 만점까지
       </p>
     </div>
   );

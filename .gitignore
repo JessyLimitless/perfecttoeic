@@ -37,3 +37,5 @@ next-env.d.ts
 
 # 배경음악 원본 영상(오디오는 public/music/*.mp3로 추출해 커밋)
 /*.mp4
+
+/JP.png

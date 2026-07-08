@@ -11,7 +11,7 @@ import PassagePanel from "@/components/game/PassagePanel";
 import IdentitySettings from "@/components/match/IdentitySettings";
 import Matchmaking from "@/components/match/Matchmaking";
 import { useMatchStore } from "@/game/match/matchStore";
-import { armRankedMatch } from "@/game/rank/store";
+import { armConquest } from "@/game/conquest";
 import { PART_META, PART_ORDER } from "@/game/parts";
 import type { Difficulty, Part, PassageSet } from "@/game/types";
 
@@ -86,7 +86,7 @@ function Lobby() {
     const sp = new URLSearchParams(window.location.search);
     if (sp.get("ranked") !== "1") return;
     rankedArmed.current = true;
-    const { difficulty: d } = armRankedMatch();
+    const { difficulty: d } = armConquest();
     const pRaw = Number(sp.get("part"));
     const p = (pRaw === 5 || pRaw === 6 || pRaw === 7 ? pRaw : 7) as Part;
     setPart(p);

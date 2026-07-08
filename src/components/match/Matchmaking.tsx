@@ -8,8 +8,9 @@ import { PART_META } from "@/game/parts";
 import type { Difficulty, Part } from "@/game/types";
 import PlayerAvatar from "./PlayerAvatar";
 import JennyAvatar from "./JennyAvatar";
-import { JENNY, jennyChapterForRp } from "@/game/match/jenny";
-import { loadRank } from "@/game/rank/store";
+import { JENNY, jennyChapterForGrade } from "@/game/match/jenny";
+import { gradeFromCoverage, type GradeId } from "@/game/conquest";
+import { loadMastery, masteredTotalOf } from "@/game/mastery";
 
 /**
  * 매치메이킹 긴박감 연출.
@@ -40,12 +41,26 @@ export default function Matchmaking({
   const profile = BOT_PROFILE[difficulty];
   const accuracyPct = Math.round(profile.accuracy * 100);
 
-  // 내 랭크에 맞는 제니 스토리 챕터
-  const [rp, setRp] = useState(0);
+  // 내 정복 등급에 맞는 빌류킹 스토리 챕터
+  const [gradeId, setGradeId] = useState<GradeId>("ROOKIE");
   useEffect(() => {
-    setRp(loadRank().rp);
+    (async () => {
+      let grand = 0;
+      try {
+        const r = await fetch("/api/part-totals");
+        if (r.ok) {
+          const { totals } = (await r.json()) as { totals: Record<string, number> };
+          grand = Object.values(totals ?? {}).reduce((n, v) => n + (typeof v === "number" ? v : 0), 0);
+        }
+      } catch {
+        /* 무시 */
+      }
+      const mastered = masteredTotalOf(loadMastery());
+      const cov = grand > 0 ? (mastered / grand) * 100 : 0;
+      setGradeId(gradeFromCoverage(cov).id);
+    })();
   }, []);
-  const chapter = jennyChapterForRp(rp);
+  const chapter = jennyChapterForGrade(gradeId);
 
   useEffect(() => {
     const timers: ReturnType<typeof setTimeout>[] = [];

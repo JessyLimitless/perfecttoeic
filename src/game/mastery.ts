@@ -88,22 +88,35 @@ export interface AnswerEntry {
   correct: boolean;
 }
 
-/** 한 세션의 답변들을 누적 정복도에 합치고 저장한다 (기록 지점에서 배치 호출) */
-export function recordAnswers(entries: AnswerEntry[]): MasteryState {
+/**
+ * 한 세션의 답변들을 누적 정복도에 합치고 저장한다 (기록 지점에서 배치 호출).
+ * - 기본(연습·리스닝): 정복도(고유 정답) + 정답률(solved/correct) 모두 기록.
+ * - `coverageOnly`(빌류킹 대결 등 속도전): 정복도만 채우고 정답률 통계는 건드리지 않음
+ *   → "차분히 풀 때의 실력(정답률)" 신호를 깨끗하게 유지.
+ */
+export function recordAnswers(
+  entries: AnswerEntry[],
+  opts: { coverageOnly?: boolean } = {},
+): MasteryState {
   const s = loadMastery();
   if (entries.length === 0) return s;
   for (const e of entries) {
     const bucket = s.parts[e.part];
     if (!bucket) continue;
-    bucket.solved += 1;
+    if (!opts.coverageOnly) bucket.solved += 1;
     if (e.correct) {
-      bucket.correct += 1;
+      if (!opts.coverageOnly) bucket.correct += 1;
       if (!bucket.masteredIds.includes(e.id)) bucket.masteredIds.push(e.id);
     }
   }
   s.updatedAt = new Date().toISOString();
   save(s);
   return s;
+}
+
+/** 전 파트 정복(고유 정답) 문항 총수 — totals 없이 계산 가능(등급/봇 스케일링용) */
+export function masteredTotalOf(state: MasteryState = loadMastery()): number {
+  return MASTERY_PARTS.reduce((n, p) => n + state.parts[p].masteredIds.length, 0);
 }
 
 export function resetMastery(): MasteryState {

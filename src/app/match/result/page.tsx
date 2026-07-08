@@ -10,17 +10,18 @@ import ResultBanner from "@/components/match/ResultBanner";
 import RematchTimer, {
   isRematchExpired,
 } from "@/components/match/RematchTimer";
-import RankResultOverlay from "@/components/rank/RankResultOverlay";
-import LevelUpOverlay from "@/components/progression/LevelUpOverlay";
 import JennyAvatar from "@/components/match/JennyAvatar";
 import { Confetti, JennyCutin } from "@/components/match/JennyFx";
 import { useMatchStore } from "@/game/match/matchStore";
 import { CREDIT_WIN } from "@/game/match/types";
-import { JENNY, jennyReaction, jennyCutsceneForRp } from "@/game/match/jenny";
-import { applyRankedOutcome, loadRank } from "@/game/rank/store";
-import type { RankChange } from "@/game/rank/types";
-import { grantXp } from "@/game/progression/store";
-import { XP_BY_PART, type LevelUpResult } from "@/game/progression/types";
+import { JENNY, jennyReactionForGrade, jennyCutsceneForGrade } from "@/game/match/jenny";
+import {
+  recordAnswers,
+  masteredTotalOf,
+  loadMastery,
+  type MasteryPart,
+} from "@/game/mastery";
+import { takePendingConquest, gradeFromCoverage, type GradeMeta } from "@/game/conquest";
 import type { PassageSet } from "@/game/types";
 
 /** /api/sets 기출 은행 로드 (실패 시 null → 스토어 로컬 폴백) */
@@ -32,6 +33,18 @@ async function fetchBank(): Promise<PassageSet[] | undefined> {
     return Array.isArray(sets) && sets.length > 0 ? sets : undefined;
   } catch {
     return undefined;
+  }
+}
+
+/** 전 파트 총 문항 수(정복도 분모) */
+async function fetchGrandTotal(): Promise<number> {
+  try {
+    const r = await fetch("/api/part-totals");
+    if (!r.ok) return 0;
+    const { totals } = (await r.json()) as { totals: Record<string, number> };
+    return Object.values(totals ?? {}).reduce((n, v) => n + (typeof v === "number" ? v : 0), 0);
+  } catch {
+    return 0;
   }
 }
 
@@ -53,11 +66,10 @@ export default function MatchResultPage() {
   const [expired, setExpired] = useState(() => isRematchExpired(rematchDeadline));
   const [busy, setBusy] = useState(false);
 
-  // 랭크 RP 반영 + XP 적립 — 결과 진입 시 1회만(중복 반영 방지).
+  // 정복도 충전 + 등급 상승 감지 — 결과 진입 시 1회만(중복 반영 방지).
   const appliedRef = useRef(false);
-  const [rankChange, setRankChange] = useState<RankChange | null>(null);
-  const [rankDismissed, setRankDismissed] = useState(false);
-  const [levelUp, setLevelUp] = useState<LevelUpResult | null>(null);
+  const [gradeUp, setGradeUp] = useState<{ before: GradeMeta; after: GradeMeta } | null>(null);
+  const [masteredGain, setMasteredGain] = useState(0);
   const [jennyLine, setJennyLine] = useState<string | null>(null);
   const [cutinClosed, setCutinClosed] = useState(false);
 
@@ -65,19 +77,24 @@ export default function MatchResultPage() {
     if (status !== "result" || appliedRef.current) return;
     appliedRef.current = true;
     const won = user.rank === 1;
-    const perfect = missions.includes("전 문항 정답");
-    const correct = user.results.filter(Boolean).length;
-    const scoreDiff = user.score - ai.score;
-    // 랭크 매치(장전됨)면 RP 반영, 캐주얼이면 null
-    const rc = applyRankedOutcome({ won, perfect, scoreDiff, correct });
-    // 제니의 승/패 반응 (챕터는 대결 당시 랭크 기준)
-    const rpForLine = rc ? rc.before.rp : loadRank().rp;
-    setJennyLine(jennyReaction(rpForLine, won));
-    // 문제 풀이 XP(계정 성장) — 맞힌 수 × 파트 XP + 승리 보너스
-    const xp = correct * XP_BY_PART[part] + (won ? 40 : 12);
-    const { levelUp: lu } = grantXp(xp, { correct });
-    if (rc) setRankChange(rc);
-    setLevelUp(lu);
+    // 대결에서 맞힌 문항을 정복도에 충전(정복도만 — 정답률 통계는 연습·리스닝 전용)
+    const entries = userHistory
+      .filter((r) => r.question?.id)
+      .map((r) => ({ part: part as MasteryPart, id: r.question.id, correct: r.isCorrect }));
+    const pending = takePendingConquest();
+    const beforeCount = pending ? pending.masteredBefore : masteredTotalOf(loadMastery());
+    recordAnswers(entries, { coverageOnly: true });
+    const afterCount = masteredTotalOf(loadMastery());
+    (async () => {
+      const grand = await fetchGrandTotal();
+      const covBefore = grand > 0 ? (beforeCount / grand) * 100 : 0;
+      const covAfter = grand > 0 ? (afterCount / grand) * 100 : 0;
+      const gBefore = gradeFromCoverage(covBefore);
+      const gAfter = gradeFromCoverage(covAfter);
+      setJennyLine(jennyReactionForGrade(gAfter.id, won));
+      setMasteredGain(Math.max(0, afterCount - beforeCount));
+      if (pending && gAfter.index > gBefore.index) setGradeUp({ before: gBefore, after: gAfter });
+    })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status]);
 
@@ -150,7 +167,19 @@ export default function MatchResultPage() {
               missions={missions}
             />
 
-            {/* 라이벌 제니의 한마디 — 제니 관점 표정(내가 지면 제니는 승리 표정) */}
+            {/* 정복도 충전 배지 */}
+            {masteredGain > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex items-center justify-between rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 px-4 py-3 text-white shadow-[0_10px_24px_-12px_rgba(13,148,136,0.8)]"
+              >
+                <span className="text-[13px] font-bold">🎯 정복 진행</span>
+                <span className="text-[15px] font-black">+{masteredGain}문항 정복</span>
+              </motion.div>
+            )}
+
+            {/* 라이벌 빌류킹의 한마디 — 빌류킹 관점 표정(내가 지면 빌류킹은 승리 표정) */}
             {jennyLine && (
               <div className="flex items-center gap-3 rounded-2xl bg-white/95 px-4 py-3 ring-1 ring-fuchsia-900/10 shadow-sm">
                 <JennyAvatar
@@ -165,8 +194,8 @@ export default function MatchResultPage() {
               </div>
             )}
 
-            {/* 승급 시 제니 스토리 컷신 (순차 노출) */}
-            {rankChange && (rankChange.promoted || rankChange.tierPromoted) && (
+            {/* 등급 상승 시 빌류킹 스토리 컷신 (순차 노출) */}
+            {gradeUp && (
               <motion.div
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -176,11 +205,11 @@ export default function MatchResultPage() {
                 <div className="mb-2 flex items-center gap-2">
                   <JennyAvatar size={30} variant="idle" />
                   <span className="text-[12px] font-black text-fuchsia-600">
-                    빌류킹 · 승급 컷신
+                    빌류킹 · {gradeUp.after.label} 등급 달성
                   </span>
                 </div>
                 <div className="space-y-1">
-                  {jennyCutsceneForRp(rankChange.after.rp).map((l, i) => (
+                  {jennyCutsceneForGrade(gradeUp.after.id).map((l, i) => (
                     <motion.p
                       key={i}
                       initial={{ opacity: 0, x: -8 }}
@@ -328,31 +357,18 @@ export default function MatchResultPage() {
         </div>
       </div>
 
-      {/* 랭크 매치 연출(있으면) → 닫으면 레벨업 연출 */}
-      {rankChange && !rankDismissed && (
-        <RankResultOverlay
-          change={rankChange}
-          onClose={() => setRankDismissed(true)}
-        />
-      )}
-      {(rankDismissed || !rankChange) && levelUp && (
-        <LevelUpOverlay result={levelUp} onClose={() => setLevelUp(null)} />
-      )}
-
       {/* 승리 컨페티 */}
       <Confetti trigger={user.rank === 1} />
 
-      {/* 제니 컷인 — 랭크/레벨 오버레이가 정리된 뒤 노출 */}
-      {jennyLine &&
-        !cutinClosed &&
-        !((rankChange && !rankDismissed) || levelUp) && (
-          <JennyCutin
-            open
-            expression={user.rank === 1 ? "lose" : "win"}
-            line={jennyLine}
-            onClose={() => setCutinClosed(true)}
-          />
-        )}
+      {/* 빌류킹 컷인 */}
+      {jennyLine && !cutinClosed && (
+        <JennyCutin
+          open
+          expression={user.rank === 1 ? "lose" : "win"}
+          line={jennyLine}
+          onClose={() => setCutinClosed(true)}
+        />
+      )}
     </main>
   );
 }

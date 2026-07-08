@@ -17,23 +17,24 @@ import {
   type BotPlan,
 } from "@/game/lcmatch/build";
 import { MATCH_LENGTH } from "@/game/match/types";
-import { armRankedMatch, applyRankedOutcome, loadRank } from "@/game/rank/store";
+import { armConquest, takePendingConquest, gradeFromCoverage, type GradeMeta } from "@/game/conquest";
+import {
+  recordAnswers,
+  masteredTotalOf,
+  loadMastery,
+  type MasteryPart,
+} from "@/game/mastery";
 import type { Difficulty } from "@/game/types";
-import type { RankChange } from "@/game/rank/types";
-import { grantXp } from "@/game/progression/store";
-import { XP_LISTENING, type LevelUpResult } from "@/game/progression/types";
 import {
   JENNY,
-  jennyReaction,
-  jennyCutsceneForRp,
+  jennyReactionForGrade,
+  jennyCutsceneForGrade,
   jennyGreetingForDomain,
   MATCH_DOMAINS,
 } from "@/game/match/jenny";
 import CountdownIntro from "@/components/match/CountdownIntro";
 import JennyAvatar from "@/components/match/JennyAvatar";
 import PlayerAvatar from "@/components/match/PlayerAvatar";
-import RankResultOverlay from "@/components/rank/RankResultOverlay";
-import LevelUpOverlay from "@/components/progression/LevelUpOverlay";
 import { Confetti, JennyCutin } from "@/components/match/JennyFx";
 import { loadIdentity } from "@/game/match/persist";
 import { ArrowLeft } from "@/components/warmup/icons";
@@ -47,6 +48,17 @@ interface Answered {
 }
 
 const LC = MATCH_DOMAINS.lc;
+
+async function fetchGrandTotal(): Promise<number> {
+  try {
+    const r = await fetch("/api/part-totals");
+    if (!r.ok) return 0;
+    const { totals } = (await r.json()) as { totals: Record<string, number> };
+    return Object.values(totals ?? {}).reduce((n, v) => n + (typeof v === "number" ? v : 0), 0);
+  } catch {
+    return 0;
+  }
+}
 
 async function fetchListening(): Promise<ListeningSet[]> {
   try {
@@ -75,7 +87,7 @@ export default function LcMatchPage() {
     const pRaw = Number(sp.get("part"));
     const p = (pRaw === 2 || pRaw === 3 || pRaw === 4 ? pRaw : 3) as ListeningPart;
     setPart(p);
-    const { difficulty: d } = armRankedMatch();
+    const { difficulty: d } = armConquest();
     setDifficulty(d);
     (async () => {
       const sets = await fetchListening();
@@ -198,7 +210,7 @@ function LcMatchmaking({
             animate={{ opacity: 1, y: 0 }}
             className="relative mx-auto mt-2 max-w-xs text-[13px] leading-snug text-white/60"
           >
-            “{jennyGreetingForDomain(loadRank().rp, "lc")}”
+            “{jennyGreetingForDomain("lc")}”
           </motion.p>
         )}
       </div>
@@ -522,9 +534,8 @@ function LcResult({
 }) {
   const router = useRouter();
   const applied = useRef(false);
-  const [rankChange, setRankChange] = useState<RankChange | null>(null);
-  const [rankDismissed, setRankDismissed] = useState(false);
-  const [levelUp, setLevelUp] = useState<LevelUpResult | null>(null);
+  const [gradeUp, setGradeUp] = useState<{ before: GradeMeta; after: GradeMeta } | null>(null);
+  const [masteredGain, setMasteredGain] = useState(0);
   const [jennyLine, setJennyLine] = useState<string | null>(null);
   const [cutinClosed, setCutinClosed] = useState(false);
   const [reviewing, setReviewing] = useState(false);
@@ -532,19 +543,24 @@ function LcResult({
   useEffect(() => {
     if (applied.current) return;
     applied.current = true;
-    const scoreDiff = data.userScore - data.botScore;
-    const rc = applyRankedOutcome({
-      won: data.won,
-      perfect: data.perfect,
-      scoreDiff,
-      correct: data.correct,
-    });
-    const rpForLine = rc ? rc.before.rp : loadRank().rp;
-    setJennyLine(jennyReaction(rpForLine, data.won));
-    const xp = data.correct * XP_LISTENING + (data.won ? 40 : 12);
-    const { levelUp: lu } = grantXp(xp, { correct: data.correct });
-    if (rc) setRankChange(rc);
-    setLevelUp(lu);
+    // 대결에서 맞힌 문항을 정복도에 충전(정복도만 — 정답률 통계는 리스닝 학습 전용)
+    const entries = data.history
+      .filter((h) => h.item?.key)
+      .map((h) => ({ part: h.item.part as MasteryPart, id: h.item.key, correct: h.correct }));
+    const pending = takePendingConquest();
+    const beforeCount = pending ? pending.masteredBefore : masteredTotalOf(loadMastery());
+    recordAnswers(entries, { coverageOnly: true });
+    const afterCount = masteredTotalOf(loadMastery());
+    (async () => {
+      const grand = await fetchGrandTotal();
+      const covBefore = grand > 0 ? (beforeCount / grand) * 100 : 0;
+      const covAfter = grand > 0 ? (afterCount / grand) * 100 : 0;
+      const gBefore = gradeFromCoverage(covBefore);
+      const gAfter = gradeFromCoverage(covAfter);
+      setJennyLine(jennyReactionForGrade(gAfter.id, data.won));
+      setMasteredGain(Math.max(0, afterCount - beforeCount));
+      if (pending && gAfter.index > gBefore.index) setGradeUp({ before: gBefore, after: gAfter });
+    })();
   }, [data]);
 
   const wrong = data.history.filter((h) => !h.correct);
@@ -645,22 +661,22 @@ function LcResult({
         </section>
       )}
 
-      {/* 랭크 → 레벨업 연출 */}
-      {rankChange && !rankDismissed && (
-        <RankResultOverlay change={rankChange} onClose={() => setRankDismissed(true)} />
-      )}
-      {(rankDismissed || !rankChange) && levelUp && (
-        <LevelUpOverlay result={levelUp} onClose={() => setLevelUp(null)} />
+      {/* 정복도 충전 */}
+      {masteredGain > 0 && (
+        <div className="flex items-center justify-between rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 px-4 py-3 text-white shadow-[0_10px_24px_-12px_rgba(13,148,136,0.8)]">
+          <span className="text-[13px] font-bold">🎯 정복 진행</span>
+          <span className="text-[15px] font-black">+{masteredGain}문항 정복</span>
+        </div>
       )}
 
-      {/* 승급 컷신 */}
-      {rankChange && (rankChange.promoted || rankChange.tierPromoted) && rankDismissed && (
+      {/* 등급 상승 컷신 */}
+      {gradeUp && (
         <div className="rounded-2xl bg-gradient-to-br from-rose-50 to-fuchsia-50 p-4 ring-1 ring-fuchsia-900/10">
           <div className="mb-2 flex items-center gap-2">
             <JennyAvatar size={30} variant="idle" />
-            <span className="text-[12px] font-black text-fuchsia-600">빌류킹 · 승급 컷신</span>
+            <span className="text-[12px] font-black text-fuchsia-600">빌류킹 · {gradeUp.after.label} 등급 달성</span>
           </div>
-          {jennyCutsceneForRp(rankChange.after.rp).map((l, i) => (
+          {jennyCutsceneForGrade(gradeUp.after.id).map((l, i) => (
             <p key={i} className="text-[13px] font-semibold leading-snug text-neutral-700">
               “{l}”
             </p>
@@ -669,7 +685,7 @@ function LcResult({
       )}
 
       <Confetti trigger={data.won} />
-      {jennyLine && !cutinClosed && !((rankChange && !rankDismissed) || levelUp) && (
+      {jennyLine && !cutinClosed && (
         <JennyCutin
           open
           expression={data.won ? "lose" : "win"}

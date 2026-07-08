@@ -6,8 +6,8 @@ import { ArrowLeft } from "@/components/warmup/icons";
 import RankHome from "@/components/rank/RankHome";
 
 /**
- * 랭크 대결 허브 — RP 래더를 오르는 경쟁형 코어.
- * 문제를 풀어 승리하면 RP가 오르고 티어/디비전이 상승한다.
+ * 랭크 대결 허브 — 정복(Conquest) 진행축의 경쟁형 코어.
+ * 맞힌 문항을 정복해 정복도가 오르고 정복 등급(루키→그랜드마스터)이 상승한다.
  */
 export default function RankPage() {
   const router = useRouter();
