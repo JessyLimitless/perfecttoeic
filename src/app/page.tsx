@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
 import { loadDiagnosticResult, type DiagnosticResult } from "@/game/diagnostic";
 import LevelHud from "@/components/progression/LevelHud";
+import MasteryBoard from "@/components/progression/MasteryBoard";
 import JennyOriginalArt from "@/components/match/JennyOriginalArt";
 import { JENNY } from "@/game/match/jenny";
 import { useBgm } from "@/components/ui/BgmProvider";
@@ -112,7 +113,7 @@ export default function LandingPage() {
           className="mt-8 inline-flex items-center gap-2 rounded-full bg-white/70 px-4 py-1.5 text-[12px] font-semibold text-indigo-600 ring-1 ring-indigo-500/15 backdrop-blur-sm"
         >
           <span className="h-1.5 w-1.5 animate-glow-pulse rounded-full bg-indigo-500" />
-          나 vs 제니 · 마스터까지 가는 토익 모험
+          나 vs 빌류킹 · 마스터까지 가는 토익 모험
         </motion.span>
 
         <motion.h1
@@ -129,7 +130,7 @@ export default function LandingPage() {
           {...rise(0.12)}
           className="mx-auto mt-6 max-w-xl px-2 text-[15px] leading-relaxed text-neutral-500 sm:px-0 sm:text-[17px]"
         >
-          라이벌 <b className="font-bold text-neutral-700">제니</b>를 이기며
+          라이벌 <b className="font-bold text-neutral-700">빌류킹</b>을 이기며
           브론즈에서 <b className="font-bold text-neutral-700">마스터</b>까지.
           문제를 풀수록 RP가 오르고 티어가 올라가는, 나만의 토익 모험이
           시작됩니다.
@@ -199,13 +200,13 @@ export default function LandingPage() {
               </h2>
               <p className="mt-4 max-w-md text-[14px] leading-relaxed text-white/60 sm:text-[15px]">
                 토익 문제풀이를 완전히 게임화한 퍼펙토익의 시그니처 모드.
-                정답마다 RP를 얻고 티어를 올려 챔피언 제니에게 도전하세요.
-                제니는 내 랭크에 맞춰 점점 강해집니다.
+                정답마다 RP를 얻고 티어를 올려 챔피언 빌류킹에게 도전하세요.
+                빌류킹은 내 랭크에 맞춰 점점 강해집니다.
               </p>
 
               <ul className="mt-6 grid gap-2.5 sm:grid-cols-2">
                 <RankPoint icon="📈" text="RP·티어 상승 시스템" />
-                <RankPoint icon="💗" text="라이벌 제니와의 스토리 대결" />
+                <RankPoint icon="💗" text="라이벌 빌류킹과의 스토리 대결" />
                 <RankPoint icon="🗺️" text="브론즈→마스터 여정" />
                 <RankPoint icon="✨" text="대결 종료 후 레벨업·보상" />
               </ul>
@@ -227,6 +228,18 @@ export default function LandingPage() {
               <RoadToMaster reduce={!!reduce} />
             </div>
           </div>
+        </motion.div>
+      </section>
+
+      {/* ── 정복 현황 (파트별 모니터링) ──────────────── */}
+      <section className="container-app relative z-10 mt-16 sm:mt-24">
+        <motion.div
+          initial={reduce ? { opacity: 0 } : { opacity: 0, y: 24 }}
+          whileInView={reduce ? { opacity: 1 } : { opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 0.55, ease: EASE }}
+        >
+          <MasteryBoard />
         </motion.div>
       </section>
 
@@ -632,7 +645,7 @@ function JennyBrandHero({ reduce }: { reduce: boolean }) {
       </div>
 
       <p className="mt-4 text-[15px] font-black tracking-tight text-neutral-900">
-        라이벌 <span className="text-gradient-rose">제니</span>
+        라이벌 <span className="text-gradient-rose">빌류킹</span>
       </p>
 
       {/* 배경음악 컨트롤 — 제니 테마곡 */}
@@ -706,7 +719,7 @@ function RoadToMaster({ reduce }: { reduce: boolean }) {
     boss?: boolean;
     me?: boolean;
   }[] = [
-    { tier: "마스터", emoji: "👑", who: "제니 · 챔피언", grad: "from-fuchsia-500 to-violet-600", boss: true },
+    { tier: "마스터", emoji: "👑", who: "빌류킹 · 챔피언", grad: "from-fuchsia-500 to-violet-600", boss: true },
     { tier: "다이아", emoji: "💎", grad: "from-sky-400 to-indigo-500" },
     { tier: "플래티넘", emoji: "💠", grad: "from-cyan-400 to-teal-500" },
     { tier: "골드", emoji: "🥇", grad: "from-amber-400 to-yellow-500" },
@@ -721,7 +734,7 @@ function RoadToMaster({ reduce }: { reduce: boolean }) {
           Road to Master
         </span>
         <span className="rounded-full bg-white/10 px-2.5 py-1 text-[11px] font-bold text-white/70">
-          나 vs 제니
+          나 vs 빌류킹
         </span>
       </div>
       <div className="mt-4 space-y-1.5">
@@ -757,7 +770,7 @@ function RoadToMaster({ reduce }: { reduce: boolean }) {
         ))}
       </div>
       <p className="mt-4 text-center text-[12px] font-semibold text-white/50">
-        제니를 이기며 한 계단씩 — 정상까지
+        빌류킹을 이기며 한 계단씩 — 정상까지
       </p>
     </div>
   );

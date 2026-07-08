@@ -176,7 +176,7 @@ export default function Matchmaking({
                     transition={{ duration: 1.6, times: [0, 0.2, 0.7, 1], ease: "easeOut" }}
                     className="pointer-events-none absolute -top-3 left-1/2 z-20 -translate-x-1/2 whitespace-nowrap rounded-full bg-gradient-to-r from-rose-500 to-fuchsia-600 px-3 py-1 text-[11px] font-black text-white shadow-[0_8px_20px_-6px_rgba(217,70,239,0.9)] ring-1 ring-white/25"
                   >
-                    제니 등장!
+                    빌류킹 등장!
                   </motion.span>
 
                   <motion.span

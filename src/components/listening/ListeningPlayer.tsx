@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import type { ListeningSet } from "@/game/listening";
 import { audioSrc } from "@/game/listening";
+import { recordAnswers } from "@/game/mastery";
+import type { MasteryPart } from "@/game/mastery";
 import { ArrowLeft } from "../warmup/icons";
 
 const LETTERS = ["A", "B", "C", "D"];
@@ -118,7 +120,10 @@ function Part2View({ set }: { set: ListeningSet }) {
   const pick = (i: number) => {
     if (revealed) return;
     setPicked(i);
-    if (i === item.answerIndex) setScore((s) => s + 1);
+    const isCorrect = i === item.answerIndex;
+    if (isCorrect) setScore((s) => s + 1);
+    // 파트별 정복도 기록 (item 단위, 답한 순간 1회)
+    recordAnswers([{ part: 2, id: item.id, correct: isCorrect }]);
   };
   const next = () => {
     if (idx + 1 >= items.length) setDone(true);
@@ -230,6 +235,18 @@ function Part34View({ set }: { set: ListeningSet }) {
 
   const answeredCount = answers.filter((a) => a !== null).length;
 
+  const reveal = () => {
+    setRevealed(true);
+    // 파트별 정복도 기록 (제출 시점, 문항별 1회)
+    recordAnswers(
+      questions.map((q, i) => ({
+        part: set.part as MasteryPart,
+        id: q.id,
+        correct: answers[i] === q.answerIndex,
+      })),
+    );
+  };
+
   return (
     <div className="lg:grid lg:grid-cols-[minmax(0,340px)_minmax(0,1fr)] lg:items-start lg:gap-6">
       {/* 좌: 오디오 + 진행 (데스크탑에서 sticky) */}
@@ -314,7 +331,7 @@ function Part34View({ set }: { set: ListeningSet }) {
       {!revealed ? (
         <button
           type="button"
-          onClick={() => setRevealed(true)}
+          onClick={reveal}
           disabled={!allAnswered}
           className="mt-5 min-h-[52px] w-full rounded-2xl bg-gradient-to-r from-cyan-500 to-sky-600 text-[15px] font-bold text-white shadow-md transition active:scale-95 disabled:from-neutral-300 disabled:to-neutral-300 disabled:shadow-none"
         >

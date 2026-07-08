@@ -39,7 +39,7 @@ export default function JennyOriginalArt({
       viewBox="0 0 100 100"
       className={className}
       role="img"
-      aria-label="제니 캐릭터"
+      aria-label="빌류킹 캐릭터"
     >
       <defs>
         <linearGradient id="jenny-bg" x1="0" y1="0" x2="1" y2="1">

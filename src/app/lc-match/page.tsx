@@ -406,7 +406,7 @@ function LcPlaying({
             {LC.emoji} Part {item.part}
           </span>
           {botDone && !answered && (
-            <span className="text-[11px] font-bold text-fuchsia-500">제니 응답 완료 — 서둘러요!</span>
+            <span className="text-[11px] font-bold text-fuchsia-500">빌류킹 응답 완료 — 서둘러요!</span>
           )}
         </div>
 
@@ -658,7 +658,7 @@ function LcResult({
         <div className="rounded-2xl bg-gradient-to-br from-rose-50 to-fuchsia-50 p-4 ring-1 ring-fuchsia-900/10">
           <div className="mb-2 flex items-center gap-2">
             <JennyAvatar size={30} variant="idle" />
-            <span className="text-[12px] font-black text-fuchsia-600">제니 · 승급 컷신</span>
+            <span className="text-[12px] font-black text-fuchsia-600">빌류킹 · 승급 컷신</span>
           </div>
           {jennyCutsceneForRp(rankChange.after.rp).map((l, i) => (
             <p key={i} className="text-[13px] font-semibold leading-snug text-neutral-700">

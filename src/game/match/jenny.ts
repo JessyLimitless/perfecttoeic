@@ -6,24 +6,24 @@ import { rankFromRp, type RankTierId } from "@/game/rank/types";
 
 /** 제니 기본 페르소나 */
 export const JENNY = {
-  name: "제니",
-  en: "JENNY",
+  name: "빌류킹",
+  en: "BILLYUKING",
   /** 이미지 폴백용 이모지 */
   emoji: "👩‍🏫",
-  /** 제니 테마 그라데이션 (로즈·푸시아) */
+  /** 빌류킹 테마 그라데이션 (로즈·푸시아) */
   gradient: "from-rose-400 to-fuchsia-500",
   images: {
-    idle: "/jeny.png",
-    // 제니가 이긴 표정(웃는 얼굴). 없으면 idle로 폴백.
-    win: "/jeny2.png",
-    // 제니가 진 표정. 전용 이미지 없으면 idle로 폴백.
-    lose: "/jeny.png",
+    idle: "/jp.png",
+    // 빌류킹이 이긴 표정. 전용 이미지 없으면 idle로 폴백.
+    win: "/jp.png",
+    // 빌류킹이 진 표정. 전용 이미지 없으면 idle로 폴백.
+    lose: "/jp.png",
   },
   /** 소개 한 줄 (실서버 챔피언 컨셉) */
   intro: "퍼펙토익 랭크의 챔피언. 듣기·읽기 모두 만점인 라이벌.",
   /** 통합 스토리 시놉시스 — 랭크홈 배너/온보딩용 */
   synopsis:
-    "제니는 리스닝과 리딩 모두 완벽한 챔피언. 그녀를 넘어서려면 듣기·읽기 어느 하나도 약해선 안 돼요. 두 무대에서 모두 이겨 정상에 오르세요.",
+    "빌류킹은 리스닝과 리딩 모두 완벽한 챔피언. 그를 넘어서려면 듣기·읽기 어느 하나도 약해선 안 돼요. 두 무대에서 모두 이겨 정상에 오르세요.",
 } as const;
 
 export type JennyOutcomeVariant = "idle" | "win" | "lose";
@@ -59,7 +59,7 @@ export const JENNY_CHAPTERS: Record<RankTierId, JennyChapter> = {
     no: 1,
     tier: "BRONZE",
     title: "첫 만남",
-    tagline: "챔피언 제니가 당신을 시험합니다",
+    tagline: "챔피언 빌류킹이 당신을 시험합니다",
     greeting: "도전자가 왔네요? 귀엽게 봐줄게요 😌",
     onPlayerWin: "…어라, 제법인데요? 운이 좋았을 뿐이에요.",
     onPlayerLose: "후훗, 아직 멀었어요. 다시 도전해요.",
@@ -72,8 +72,8 @@ export const JENNY_CHAPTERS: Record<RankTierId, JennyChapter> = {
   SILVER: {
     no: 2,
     tier: "SILVER",
-    title: "제니의 관심",
-    tagline: "제니가 당신을 기억하기 시작했습니다",
+    title: "빌류킹의 관심",
+    tagline: "빌류킹이 당신을 기억하기 시작했습니다",
     greeting: "또 왔어요? 이번엔 조금 진지하게 해볼까요.",
     onPlayerWin: "실력이 늘었네요. …인정할게요, 조금은.",
     onPlayerLose: "아직이에요. 기초를 더 다져와요.",
@@ -87,7 +87,7 @@ export const JENNY_CHAPTERS: Record<RankTierId, JennyChapter> = {
     no: 3,
     tier: "GOLD",
     title: "본격 대결",
-    tagline: "제니가 진심을 내기 시작합니다",
+    tagline: "빌류킹이 진심을 내기 시작합니다",
     greeting: "이제 슬슬 진심 좀 내볼게요. 각오됐죠?",
     onPlayerWin: "…좋아요. 이건 진짜 실력이네요.",
     onPlayerLose: "봐요, 제 진심은 이 정도예요.",
@@ -101,7 +101,7 @@ export const JENNY_CHAPTERS: Record<RankTierId, JennyChapter> = {
     no: 4,
     tier: "PLATINUM",
     title: "인정",
-    tagline: "제니가 당신을 맞수로 인정합니다",
+    tagline: "빌류킹이 당신을 맞수로 인정합니다",
     greeting: "당신… 생각보다 만만치 않네요.",
     onPlayerWin: "정말 강해졌군요. 다음엔 안 봐줘요.",
     onPlayerLose: "아쉽네요. 정상은 멀어요.",
@@ -156,7 +156,7 @@ export function jennyReaction(rp: number, playerWon: boolean): string {
 /** 난이도/티어 느낌의 제니 등급 라벨 */
 export function jennyGrade(rp: number): string {
   const ch = jennyChapterForRp(rp);
-  return `제니 · CH.${ch.no} ${ch.title}`;
+  return `빌류킹 · CH.${ch.no} ${ch.title}`;
 }
 
 /** 승급 컷신 대사 — 새로 진입한 티어(=승급 후 RP)에 해당하는 서사 라인 */

@@ -10,6 +10,8 @@ import type {
 import { normalizeCategory, type TypeFilter } from "./questionTypes";
 import { partOf } from "./parts";
 import { recordSession } from "./progress";
+import { recordAnswers } from "./mastery";
+import type { MasteryPart } from "./mastery";
 import { getFallbackSets } from "@/lib/questions";
 
 export type PracticeStatus = "idle" | "active" | "ended";
@@ -257,6 +259,14 @@ export const usePracticeStore = create<PracticeState>((set, get) => ({
     // 세션 종료 시 누적 진도에 기록 (세션당 정확히 한 번 호출됨)
     const s = get();
     recordSession(s.history, s.bestStreak);
+    // 파트별 정복도(고유 정답 문항) 누적 — RC(5·6·7)
+    recordAnswers(
+      s.history.map((r) => ({
+        part: r.part as MasteryPart,
+        id: r.question.id,
+        correct: r.isCorrect,
+      })),
+    );
     set({ status: "ended" });
   },
 

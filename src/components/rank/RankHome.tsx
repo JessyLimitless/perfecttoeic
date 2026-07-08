@@ -247,7 +247,7 @@ export default function RankHome() {
         <p className="text-center text-[12px] leading-relaxed text-neutral-500">
           듣기·읽기 모두 풀수록 RP가 오르고 티어가 올라갑니다.
           <br className="sm:hidden" />
-          제니를 이기려면 두 무대 다 정복해야 해요.
+          빌류킹을 이기려면 두 무대 다 정복해야 해요.
         </p>
       </section>
 
@@ -265,7 +265,7 @@ export default function RankHome() {
               </span>
             </div>
             <h3 className="mt-1 text-[17px] font-black tracking-[-0.01em] text-neutral-900">
-              제니와의 대결 · {chapter.title}
+              빌류킹과의 대결 · {chapter.title}
             </h3>
             <p className="mt-0.5 text-[12.5px] text-neutral-500">
               {chapter.tagline}
@@ -273,7 +273,7 @@ export default function RankHome() {
           </div>
         </div>
         <p className="mt-3 rounded-2xl bg-white/80 px-4 py-3 text-[13px] font-semibold leading-snug text-neutral-700 ring-1 ring-fuchsia-900/[0.05]">
-          <span className="text-fuchsia-600">제니</span>: “{chapter.greeting}”
+          <span className="text-fuchsia-600">빌류킹</span>: “{chapter.greeting}”
         </p>
       </section>
 

@@ -176,7 +176,7 @@ export default function MatchResultPage() {
                 <div className="mb-2 flex items-center gap-2">
                   <JennyAvatar size={30} variant="idle" />
                   <span className="text-[12px] font-black text-fuchsia-600">
-                    제니 · 승급 컷신
+                    빌류킹 · 승급 컷신
                   </span>
                 </div>
                 <div className="space-y-1">

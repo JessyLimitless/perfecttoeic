@@ -28,7 +28,7 @@ export interface Track {
 export const TRACKS: Track[] = [
   {
     id: "jennie",
-    by: "제니",
+    by: "빌류킹",
     label: "Like Jennie",
     src: "/music/jennie.mp3",
     emoji: "💗",
