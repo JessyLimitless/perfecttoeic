@@ -177,7 +177,7 @@ export const useMatchStore = create<MatchState>((set, get) => {
         },
         userHistory: [
           ...s.userHistory,
-          { question: q, selected: choice, isCorrect },
+          { question: q, selected: choice, isCorrect, passageLines: item.passageLines },
         ],
       });
       // 자동 진행 안 함 — 화면이 next()를 호출한다.
@@ -205,14 +205,18 @@ export const useMatchStore = create<MatchState>((set, get) => {
 
       if (remaining <= 0 && !s.answered) {
         // 시간초과 미응답 → 오답(선택 null) 자동 기록
-        const q = s.items[s.qIndex]?.question;
+        const timedOutItem = s.items[s.qIndex];
+        const q = timedOutItem?.question;
         set({
           remaining: 0,
           answered: true,
           selected: null,
           user: { ...s.user, results: [...s.user.results, false] },
           userHistory: q
-            ? [...s.userHistory, { question: q, selected: null, isCorrect: false }]
+            ? [
+                ...s.userHistory,
+                { question: q, selected: null, isCorrect: false, passageLines: timedOutItem?.passageLines },
+              ]
             : s.userHistory,
         });
         return;

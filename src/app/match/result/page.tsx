@@ -12,6 +12,7 @@ import RematchTimer, {
 } from "@/components/match/RematchTimer";
 import JennyAvatar from "@/components/match/JennyAvatar";
 import { Confetti, JennyCutin } from "@/components/match/JennyFx";
+import PassageTranslation from "@/components/result/PassageTranslation";
 import { useMatchStore } from "@/game/match/matchStore";
 import { CREDIT_WIN } from "@/game/match/types";
 import { JENNY, jennyReactionForGrade, jennyCutsceneForGrade } from "@/game/match/jenny";
@@ -335,8 +336,12 @@ export default function MatchResultPage() {
                           </span>
                         </p>
                       </div>
+                      <div className="px-3">
+                        <PassageTranslation lines={rec.passageLines} tone="teal" />
+                      </div>
                       {q.explanation && (
                         <p className="m-3 mt-2 rounded-lg bg-white px-2.5 py-2 text-[12px] leading-relaxed text-neutral-600 ring-1 ring-neutral-900/[0.05]">
+                          <span className="mr-1 font-bold text-neutral-700">해설</span>
                           {q.explanation}
                         </p>
                       )}

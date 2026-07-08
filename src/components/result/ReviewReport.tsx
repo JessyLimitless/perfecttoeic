@@ -1,65 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import type { PracticeRecord } from "@/game/store";
-import type { SentencePair } from "@/game/types";
 import { normalizeCategory, QUESTION_TYPE_META } from "@/game/questionTypes";
+import PassageTranslation from "./PassageTranslation";
 
 const LETTERS = ["A", "B", "C", "D"] as const;
-
-/** 오답노트용 지문 전체 번역 패널 — Part 6·7 지문 맥락을 EN+한글로 복습 (접이식). */
-function PassageTranslation({ lines }: { lines: SentencePair[] }) {
-  const [open, setOpen] = useState(false);
-  if (!lines || lines.length === 0) return null;
-
-  return (
-    <div className="mt-4 overflow-hidden rounded-xl border border-indigo-100 bg-indigo-50/40">
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center justify-between gap-2 px-3.5 py-2.5 text-left transition hover:bg-indigo-50"
-      >
-        <span className="flex items-center gap-1.5 text-[13px] font-bold text-indigo-700">
-          <span aria-hidden>📖</span> 지문 전체 · 번역
-        </span>
-        <span
-          className={`text-[12px] font-semibold text-indigo-400 transition-transform ${
-            open ? "rotate-180" : ""
-          }`}
-          aria-hidden
-        >
-          ▾
-        </span>
-      </button>
-      <AnimatePresence initial={false}>
-        {open && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-          >
-            <div className="space-y-2.5 border-t border-indigo-100 px-3.5 py-3">
-              {lines.map((ln, i) => (
-                <div key={i} className="space-y-0.5">
-                  <p className="text-[13.5px] leading-relaxed text-neutral-800">
-                    {ln.en}
-                  </p>
-                  {ln.ko && (
-                    <p className="text-[12.5px] leading-relaxed text-indigo-500/90">
-                      {ln.ko}
-                    </p>
-                  )}
-                </div>
-              ))}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-}
 
 export default function ReviewReport({
   history,

@@ -87,6 +87,8 @@ export interface MatchRecord {
   question: PassageQuestion;
   selected: ChoiceIndex | null; // 시간초과 미응답이면 null
   isCorrect: boolean;
+  /** 이 문항이 딸린 지문(영/한). Part 5는 [] — 오답 REVIEW 지문 번역용(옵셔널·비파괴 추가). */
+  passageLines?: SentencePair[];
 }
 
 /** 아바타 프리셋 ID (이모지+색상 조합). persist에 저장되어 HUD/결과에 반영. */
