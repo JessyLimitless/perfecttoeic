@@ -6,11 +6,12 @@ import type {
   Part,
   PassageQuestion,
   PassageSet,
+  SentencePair,
 } from "./types";
 import { normalizeCategory, type TypeFilter } from "./questionTypes";
 import { partOf } from "./parts";
 import { recordSession } from "./progress";
-import { recordAnswers, masteredIdSet, loadMastery } from "./mastery";
+import { recordAnswers, masteredIdSet, unmasteredIdSet, loadMastery } from "./mastery";
 import type { MasteryPart } from "./mastery";
 import { getFallbackSets } from "@/lib/questions";
 
@@ -22,6 +23,8 @@ export interface PracticeRecord {
   question: PassageQuestion;
   selected: ChoiceIndex;
   isCorrect: boolean;
+  /** 이 문항이 딸린 지문(영/한). Part 5는 빈 배열 — 오답노트 지문 번역용. */
+  passageLines: SentencePair[];
 }
 
 function shuffle<T>(arr: readonly T[]): T[] {
@@ -38,6 +41,22 @@ function cycleFill(pool: PassageSet[], count: number): PassageSet[] {
   if (pool.length === 0) return [];
   const out: PassageSet[] = [];
   while (out.length < count) out.push(...shuffle(pool));
+  return out.slice(0, count);
+}
+
+/**
+ * 정복 드릴 초기 큐 — 오답/미정복(pending) 세트를 먼저, 그다음 미착수 세트.
+ * 첫 패스는 우선 세트를 앞에 두고(그룹 내 셔플), 이후는 전체를 순환한다.
+ */
+function priorityFill(
+  prio: PassageSet[],
+  rest: PassageSet[],
+  count: number,
+): PassageSet[] {
+  const all = [...prio, ...rest];
+  if (all.length === 0) return [];
+  const out: PassageSet[] = [...shuffle(prio), ...shuffle(rest)];
+  while (out.length < count) out.push(...shuffle(all));
   return out.slice(0, count);
 }
 
@@ -210,7 +229,9 @@ export const usePracticeStore = create<PracticeState>((set, get) => ({
           ? s.source
           : getFallbackSets();
     // 이 파트에서 이미 정복(연속 2회 정답)한 문항은 드릴에서 제외 → 미정복만 반복
-    const mastered = masteredIdSet(part as MasteryPart, loadMastery());
+    const st = loadMastery();
+    const mastered = masteredIdSet(part as MasteryPart, st);
+    const pending = unmasteredIdSet(part as MasteryPart, st); // 봤지만 미정복(오답 포함)
     let pool = source
       .filter((x) => partOf(x) === part)
       .map((x) => ({
@@ -222,6 +243,9 @@ export const usePracticeStore = create<PracticeState>((set, get) => ({
     const conquest = pool.length > 0;
     if (!conquest) pool = source.filter((x) => partOf(x) === part);
     if (pool.length === 0) return; // 그 파트 콘텐츠 자체가 없음
+    // 오답/미정복 우선: pending 문항이 든 세트를 앞으로
+    const prio = pool.filter((x) => x.questions.some((q) => pending.has(q.id)));
+    const rest = pool.filter((x) => !x.questions.some((q) => pending.has(q.id)));
     set({
       status: "active",
       source,
@@ -229,8 +253,8 @@ export const usePracticeStore = create<PracticeState>((set, get) => ({
       typeFilter: "ALL",
       ...FRESH,
       conquest,
-      pool,
-      queue: cycleFill(pool, INITIAL_POOL_SIZE),
+      pool: [...prio, ...rest],
+      queue: priorityFill(prio, rest, INITIAL_POOL_SIZE),
     });
   },
 
@@ -259,6 +283,7 @@ export const usePracticeStore = create<PracticeState>((set, get) => ({
           question: q,
           selected: choice,
           isCorrect,
+          passageLines: set0.passageLines ?? [],
         },
       ],
     });
