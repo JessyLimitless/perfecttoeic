@@ -18,7 +18,7 @@ const VALID_TYPES: LcType[] = [
 export default async function ListeningPage({
   searchParams,
 }: {
-  searchParams: { part?: string; type?: string };
+  searchParams: { part?: string; type?: string; review?: string };
 }) {
   const sets = await loadListeningSets();
   const cards: ListeningCard[] = sets.map((s) => ({
@@ -28,6 +28,11 @@ export default async function ListeningPage({
     passageType: s.passageType,
     count: s.part === 2 ? s.items?.length ?? 0 : s.questions?.length ?? 0,
     types: typesInSet(s),
+    // 세트 정복 상태 파생용 문항 ID (Part2=items, Part3/4=questions)
+    questionIds:
+      s.part === 2
+        ? (s.items ?? []).map((i) => i.id)
+        : (s.questions ?? []).map((q) => q.id),
   }));
 
   const rawPart = Number(searchParams.part);
@@ -35,6 +40,14 @@ export default async function ListeningPage({
   const initialType: LcTypeFilter = VALID_TYPES.includes(searchParams.type as LcType)
     ? (searchParams.type as LcType)
     : "ALL";
+  const initialReview = searchParams.review === "1";
 
-  return <ListeningHome cards={cards} initialPart={initialPart} initialType={initialType} />;
+  return (
+    <ListeningHome
+      cards={cards}
+      initialPart={initialPart}
+      initialType={initialType}
+      initialReview={initialReview}
+    />
+  );
 }

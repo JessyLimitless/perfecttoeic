@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { ArrowLeft } from "../warmup/icons";
@@ -11,6 +11,13 @@ import {
   type LcType,
   type LcTypeFilter,
 } from "@/game/listeningTypes";
+import { loadMastery, type MasteryState, type MasteryPart } from "@/game/mastery";
+import {
+  loadListeningProgress,
+  setConquestStatus,
+  type ListeningProgressState,
+  type SetConquestStatus,
+} from "@/game/listeningProgress";
 
 export interface ListeningCard {
   id: string;
@@ -21,7 +28,16 @@ export interface ListeningCard {
   count: number;
   /** 세트가 포함한 표준 유형 */
   types: LcType[];
+  /** 세트 문항 ID (정복 상태 파생용) */
+  questionIds: string[];
 }
+
+/** 정복 상태 정렬 우선순위: 복습 대기 → 미착수 → 정복 완료 */
+const STATUS_ORDER: Record<SetConquestStatus, number> = {
+  pending: 0,
+  untouched: 1,
+  mastered: 2,
+};
 
 const PART_META: Record<number, { label: string; desc: string; tint: string }> = {
   2: { label: "Part 2", desc: "질문-응답 · 오디오만 듣고 A/B/C", tint: "from-cyan-500 to-teal-500" },
@@ -31,23 +47,58 @@ const PART_META: Record<number, { label: string; desc: string; tint: string }> =
 
 type PartFilter = 2 | 3 | 4 | "ALL";
 
+interface CardView extends ListeningCard {
+  status: SetConquestStatus;
+  masteredQ: number;
+  bestCorrect: number | null;
+  attempts: number;
+}
+
 export default function ListeningHome({
   cards,
   initialPart = null,
   initialType = "ALL",
+  initialReview = false,
 }: {
   cards: ListeningCard[];
   initialPart?: 2 | 3 | 4 | null;
   initialType?: LcTypeFilter;
+  initialReview?: boolean;
 }) {
   const router = useRouter();
   const [part, setPart] = useState<PartFilter>(initialPart ?? "ALL");
   const [type, setType] = useState<LcTypeFilter>(initialType);
+  const [review, setReview] = useState(initialReview);
+
+  // 클라이언트 진행/정복 상태 (마운트 후 로드 → 하이드레이션 안전)
+  const [mastery, setMastery] = useState<MasteryState | null>(null);
+  const [progress, setProgress] = useState<ListeningProgressState>({});
+  useEffect(() => {
+    setMastery(loadMastery());
+    setProgress(loadListeningProgress());
+  }, []);
+
+  // 각 카드에 정복 상태·최고점 부여
+  const cardViews = useMemo<CardView[]>(() => {
+    return cards.map((c) => {
+      const { status, mastered } = mastery
+        ? setConquestStatus(c.questionIds, c.part as MasteryPart, mastery)
+        : { status: "untouched" as SetConquestStatus, mastered: 0 };
+      const p = progress[c.id];
+      return {
+        ...c,
+        status,
+        masteredQ: mastered,
+        bestCorrect: p ? p.bestCorrect : null,
+        attempts: p?.attempts ?? 0,
+      };
+    });
+  }, [cards, mastery, progress]);
 
   // 파트 필터 적용된 세트 (유형 칩 카운트 산정용)
   const partScoped = useMemo(
-    () => (part === "ALL" ? cards : cards.filter((c) => c.part === part)),
-    [cards, part],
+    () => (part === "ALL" ? cardViews : cardViews.filter((c) => c.part === part)),
+    [cardViews, part],
   );
 
   // 현재 파트 범위에서 등장하는 유형별 세트 수
@@ -60,15 +111,35 @@ export default function ListeningHome({
 
   const availableTypes = LC_TYPE_ORDER.filter((t) => typeCounts[t] > 0);
 
-  // 최종 필터: 파트 + 유형
-  const filtered = useMemo(
-    () => partScoped.filter((c) => type === "ALL" || c.types.includes(type)),
-    [partScoped, type],
-  );
+  // 파트 범위 정복 요약 (유형 필터 이전 기준)
+  const summary = useMemo(() => {
+    let mastered = 0,
+      pending = 0,
+      untouched = 0;
+    for (const c of partScoped) {
+      if (c.status === "mastered") mastered += 1;
+      else if (c.status === "pending") pending += 1;
+      else untouched += 1;
+    }
+    return { mastered, pending, untouched };
+  }, [partScoped]);
+
+  // 최종 필터: 파트 + 유형 (+ 복습 모드면 미정복만)
+  const filtered = useMemo(() => {
+    let arr = partScoped.filter((c) => type === "ALL" || c.types.includes(type));
+    if (review) arr = arr.filter((c) => c.status !== "mastered");
+    return arr;
+  }, [partScoped, type, review]);
 
   const totalQuestions = filtered.reduce((n, c) => n + c.count, 0);
   const byPart = [2, 3, 4]
-    .map((p) => ({ part: p, sets: filtered.filter((c) => c.part === p) }))
+    .map((p) => ({
+      part: p,
+      // 복습 대기 → 미착수 → 정복 순으로 정렬 (복습 타깃을 위로)
+      sets: filtered
+        .filter((c) => c.part === p)
+        .sort((a, b) => STATUS_ORDER[a.status] - STATUS_ORDER[b.status]),
+    }))
     .filter((g) => g.sets.length > 0);
 
   const partTabs: PartFilter[] = ["ALL", 2, 3, 4];
@@ -133,9 +204,32 @@ export default function ListeningHome({
         ))}
       </div>
 
+      {/* ── 정복 요약 + 복습 모드 토글 ── */}
+      <div className="mt-4 flex flex-wrap items-center gap-2 rounded-2xl bg-white/70 px-3.5 py-3 ring-1 ring-neutral-900/[0.05] backdrop-blur-sm">
+        <StatPill emoji="👑" label="정복" value={summary.mastered} tone="emerald" />
+        <StatPill emoji="🔁" label="복습 대기" value={summary.pending} tone="amber" />
+        <StatPill emoji="○" label="미착수" value={summary.untouched} tone="neutral" />
+        <div className="ml-auto">
+          <button
+            type="button"
+            onClick={() => setReview((v) => !v)}
+            aria-pressed={review}
+            disabled={summary.pending === 0 && !review}
+            className={`rounded-full px-3.5 py-2 text-[12.5px] font-bold transition active:scale-95 disabled:opacity-40 ${
+              review
+                ? "bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-sm"
+                : "bg-white text-neutral-500 ring-1 ring-neutral-200 hover:ring-amber-300 hover:text-amber-600"
+            }`}
+          >
+            {review ? "🔁 복습 대기만" : "🔁 복습 대기 우선"}
+          </button>
+        </div>
+      </div>
+
       <p className="mt-3 text-[12.5px] text-neutral-400">
         {filtered.length}세트 · {totalQuestions}문항
         {type !== "ALL" && <span className="text-cyan-500"> · {lcTypeLabel(type)} 포함</span>}
+        {review && <span className="text-amber-500"> · 복습 대기 세트만 표시</span>}
       </p>
 
       {/* ── 세트 목록 ── */}
@@ -162,19 +256,29 @@ export default function ListeningHome({
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: Math.min(i * 0.03, 0.3) }}
                     onClick={() => router.push(`/listening/${c.id}`)}
-                    className="card-elevated group flex flex-col gap-2 px-4 py-3.5 text-left transition hover:-translate-y-0.5"
+                    className={`card-elevated group relative flex flex-col gap-2 px-4 py-3.5 text-left transition hover:-translate-y-0.5 ${
+                      c.status === "mastered" ? "ring-1 ring-emerald-500/25" : ""
+                    }`}
                   >
                     <div className="flex items-center gap-3">
-                      <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${PART_META[p].tint} text-[18px] text-white shadow-sm`}>
+                      <div className={`relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${PART_META[p].tint} text-[18px] text-white shadow-sm`}>
                         🎧
+                        {c.status === "mastered" && (
+                          <span className="absolute -right-1.5 -top-1.5 grid h-5 w-5 place-items-center rounded-full bg-emerald-500 text-[10px] shadow ring-2 ring-white">
+                            👑
+                          </span>
+                        )}
                       </div>
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-[14.5px] font-bold text-neutral-900">{c.passageType ?? c.id}</p>
                         <p className="text-[12px] text-neutral-400">
                           {c.count}문항 · {c.difficulty}
+                          {c.bestCorrect !== null && (
+                            <span className="ml-1.5 font-semibold text-neutral-500">· 최고 {c.bestCorrect}/{c.count}</span>
+                          )}
                         </p>
                       </div>
-                      <span className="text-cyan-400 transition group-hover:translate-x-0.5">→</span>
+                      <StatusBadge status={c.status} />
                     </div>
                     {c.types.length > 0 && (
                       <div className="flex flex-wrap gap-1">
@@ -201,6 +305,50 @@ export default function ListeningHome({
       </div>
     </main>
   );
+}
+
+function StatPill({
+  emoji,
+  label,
+  value,
+  tone,
+}: {
+  emoji: string;
+  label: string;
+  value: number;
+  tone: "emerald" | "amber" | "neutral";
+}) {
+  const c =
+    tone === "emerald"
+      ? "text-emerald-600"
+      : tone === "amber"
+        ? "text-amber-600"
+        : "text-neutral-400";
+  return (
+    <div className="flex items-center gap-1.5">
+      <span className="text-[13px]">{emoji}</span>
+      <span className={`text-[15px] font-extrabold tabnum ${c}`}>{value}</span>
+      <span className="text-[11.5px] font-semibold text-neutral-400">{label}</span>
+    </div>
+  );
+}
+
+function StatusBadge({ status }: { status: SetConquestStatus }) {
+  if (status === "mastered") {
+    return (
+      <span className="shrink-0 rounded-full bg-emerald-500/12 px-2 py-0.5 text-[10.5px] font-bold text-emerald-600">
+        정복
+      </span>
+    );
+  }
+  if (status === "pending") {
+    return (
+      <span className="shrink-0 rounded-full bg-amber-500/15 px-2 py-0.5 text-[10.5px] font-bold text-amber-600">
+        복습 대기
+      </span>
+    );
+  }
+  return <span className="shrink-0 text-cyan-400 transition group-hover:translate-x-0.5">→</span>;
 }
 
 function TypeChip({

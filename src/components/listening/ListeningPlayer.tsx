@@ -7,6 +7,7 @@ import type { ListeningSet } from "@/game/listening";
 import { audioSrc } from "@/game/listening";
 import { recordAnswers } from "@/game/mastery";
 import type { MasteryPart } from "@/game/mastery";
+import { recordSetResult } from "@/game/listeningProgress";
 import { ArrowLeft } from "../warmup/icons";
 
 const LETTERS = ["A", "B", "C", "D"];
@@ -100,6 +101,12 @@ function Part2View({ set }: { set: ListeningSet }) {
 
   const item = items[idx];
   const revealed = picked !== null;
+
+  // 세트 완료 시 세트별 진행·최고점 1회 기록
+  useEffect(() => {
+    if (done) recordSetResult(set.id, score, items.length);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [done]);
 
   if (done) {
     return (
@@ -245,6 +252,8 @@ function Part34View({ set }: { set: ListeningSet }) {
         correct: answers[i] === q.answerIndex,
       })),
     );
+    // 세트별 진행·최고점 기록
+    recordSetResult(set.id, correctCount, questions.length);
   };
 
   return (

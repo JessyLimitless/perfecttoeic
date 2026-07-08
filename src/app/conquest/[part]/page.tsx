@@ -19,6 +19,13 @@ import {
 import { usePracticeStore } from "@/game/store";
 import { partOf } from "@/game/parts";
 import type { PassageSet, PassageQuestion } from "@/game/types";
+import type { ListeningSet } from "@/game/listening";
+import {
+  loadListeningProgress,
+  setConquestStatus,
+  type ListeningProgressState,
+  type SetConquestStatus,
+} from "@/game/listeningProgress";
 
 const VALID: MasteryPart[] = [2, 3, 4, 5, 6, 7];
 const PART_LABEL: Record<MasteryPart, string> = {
@@ -37,6 +44,15 @@ interface PendingQ {
   passageType: string;
 }
 
+interface PendingLcSet {
+  id: string;
+  passageType: string;
+  status: SetConquestStatus;
+  mastered: number;
+  total: number;
+  bestCorrect: number | null;
+}
+
 export default function ConquestDetailPage() {
   const params = useParams();
   const router = useRouter();
@@ -45,6 +61,8 @@ export default function ConquestDetailPage() {
 
   const [total, setTotal] = useState(0);
   const [sets, setSets] = useState<PassageSet[] | null>(null);
+  const [lcSets, setLcSets] = useState<ListeningSet[] | null>(null);
+  const [progress, setProgress] = useState<ListeningProgressState>({});
   const [state, setState] = useState<MasteryState | null>(null);
   const practiceConquest = usePracticeStore((s) => s.practiceConquest);
 
@@ -66,6 +84,12 @@ export default function ConquestDetailPage() {
         .then((r) => (r.ok ? r.json() : null))
         .then((d) => setSets(Array.isArray(d?.sets) ? d.sets : []))
         .catch(() => setSets([]));
+    } else {
+      setProgress(loadListeningProgress());
+      fetch("/api/listening")
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => setLcSets(Array.isArray(d?.sets) ? d.sets : []))
+        .catch(() => setLcSets([]));
     }
   }, [part, router]);
 
@@ -92,6 +116,32 @@ export default function ConquestDetailPage() {
     return out.sort((a, b) => a.streak - b.streak);
   }, [state, sets, part]);
 
+  // 복습 대기 세트 (LC) — 미정복(복습 대기·미착수) 세트, 복습 대기 우선
+  const lcPending = useMemo<PendingLcSet[]>(() => {
+    if (!state || !part || part >= 5 || !lcSets) return [];
+    const out: PendingLcSet[] = [];
+    for (const s of lcSets) {
+      if (s.part !== part) continue;
+      const ids =
+        s.part === 2
+          ? (s.items ?? []).map((i) => i.id)
+          : (s.questions ?? []).map((q) => q.id);
+      const { status, mastered, total } = setConquestStatus(ids, part, state);
+      // 복습 대기 = 시도했지만 미정복(pending)만. 미착수·정복 완료는 제외(RC 문항목록과 동일 의미).
+      if (status !== "pending") continue;
+      const p = progress[s.id];
+      out.push({
+        id: s.id,
+        passageType: s.passageType ?? s.id,
+        status,
+        mastered,
+        total,
+        bestCorrect: p ? p.bestCorrect : null,
+      });
+    }
+    return out;
+  }, [state, lcSets, progress, part]);
+
   if (!part || !pv) {
     return (
       <main className="container-narrow flex min-h-dvh items-center justify-center">
@@ -109,7 +159,8 @@ export default function ConquestDetailPage() {
       practiceConquest({ part: part as 5 | 6 | 7, sets: sets ?? undefined });
       router.push("/game");
     } else {
-      router.push(`/listening?part=${part}`);
+      // 복습 대기 세트가 있으면 복습 모드로 진입
+      router.push(`/listening?part=${part}${pv.pending > 0 ? "&review=1" : ""}`);
     }
   };
 
@@ -171,9 +222,78 @@ export default function ConquestDetailPage() {
             ? pv.pending > 0
               ? `🎯 복습 대기 ${pv.pending}문항 정복하기`
               : "🎯 정복 복습 시작 · 미정복만 반복"
-            : "🎧 리스닝으로 정복 복습"}
+            : pv.pending > 0
+              ? "🎧 복습 대기 세트 풀기"
+              : "🎧 리스닝으로 새 세트 풀기"}
         </button>
       </section>
+
+      {/* 복습 대기 세트 (LC) */}
+      {!isRc && (
+        <section className="mt-5">
+          <div className="mb-2.5 flex items-center gap-2 px-1">
+            <p className="label">복습 대기 세트</p>
+            {lcSets === null ? (
+              <span className="text-[12px] text-neutral-400">불러오는 중…</span>
+            ) : (
+              <span className="inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-amber-500 px-1.5 text-[11px] font-bold tabnum text-white">
+                {lcPending.length}
+              </span>
+            )}
+          </div>
+
+          {lcSets !== null && lcPending.length === 0 ? (
+            <div className="card px-6 py-10 text-center">
+              <div className="text-3xl">🎉</div>
+              <p className="mt-2 font-bold text-neutral-900">복습 대기 세트가 없어요</p>
+              <p className="mt-1 text-[13px] text-neutral-500">
+                {pv.attempted === 0
+                  ? "아직 이 파트를 풀지 않았어요. 리스닝으로 시작해보세요."
+                  : "지금까지 푼 세트는 모두 정복했습니다. 새 세트를 이어가세요."}
+              </p>
+            </div>
+          ) : (
+            <ul className="space-y-2.5">
+              {lcPending.map((s, i) => (
+                <motion.li
+                  key={s.id}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: Math.min(i * 0.02, 0.2), duration: 0.18, ease: EASE }}
+                >
+                  <button
+                    type="button"
+                    onClick={() => router.push(`/listening/${s.id}`)}
+                    className="card flex w-full items-center gap-3 p-4 text-left transition hover:-translate-y-0.5"
+                  >
+                    <span
+                      className={`shrink-0 rounded-md px-1.5 py-0.5 text-[10px] font-black ${
+                        s.status === "pending"
+                          ? "bg-amber-500/15 text-amber-600"
+                          : "bg-cyan-500/12 text-cyan-600"
+                      }`}
+                    >
+                      {s.status === "pending" ? "복습 대기" : "미착수"}
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-[14px] font-semibold text-neutral-900">
+                        {s.passageType}
+                      </span>
+                      <span className="block text-[12px] text-neutral-400">
+                        정복 {s.mastered}/{s.total} 문항
+                        {s.bestCorrect !== null && (
+                          <span className="ml-1.5">· 최고 {s.bestCorrect}/{s.total}</span>
+                        )}
+                      </span>
+                    </span>
+                    <span className="shrink-0 text-cyan-400">→</span>
+                  </button>
+                </motion.li>
+              ))}
+            </ul>
+          )}
+        </section>
+      )}
 
       {/* 복습 대기 문항 (RC) */}
       {isRc && (
