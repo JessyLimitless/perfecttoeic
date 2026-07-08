@@ -1,6 +1,6 @@
 // 리스닝 랭크 대결 — 배틀 문항 빌더 + 봇 시뮬레이션.
 // RC 대결(match/*)의 동결 계약은 건드리지 않고, 리스닝 전용 경량 레이어를 따로 둔다.
-// 랭크 RP·XP 연동은 rank/store · progression/store 를 그대로 재사용한다(도메인 무관).
+// 정복(Conquest) 연동은 game/conquest(armConquest/takePendingConquest)를 그대로 재사용한다(도메인 무관).
 
 import type { ListeningSet, ListeningPart } from "@/game/listening";
 import { audioSrc } from "@/game/listening";

@@ -10,6 +10,7 @@ export default function PracticeHeader({ onEnd }: { onEnd: () => void }) {
   const streak = usePracticeStore((s) => s.streak);
   const typeFilter = usePracticeStore((s) => s.typeFilter);
   const part = usePracticeStore((s) => s.part);
+  const conquest = usePracticeStore((s) => s.conquest);
   const subtitle =
     part === 7
       ? `Part 7 · ${typeLabel(typeFilter)}`
@@ -24,6 +25,11 @@ export default function PracticeHeader({ onEnd }: { onEnd: () => void }) {
           <span className="text-[15px] font-extrabold tracking-tight text-neutral-900">
             토익 RC<span className="text-gradient">.</span>
           </span>
+          {conquest && (
+            <span className="shrink-0 rounded-full bg-gradient-to-r from-emerald-500 to-teal-600 px-2.5 py-0.5 text-[11px] font-black text-white shadow-sm">
+              🎯 정복 복습
+            </span>
+          )}
           <span className="hidden truncate rounded-full bg-indigo-50 px-2.5 py-0.5 text-[11px] font-semibold text-indigo-500 sm:inline">
             {subtitle}
           </span>

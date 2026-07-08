@@ -4,7 +4,7 @@
 // 정복도(고유 정답 문항 %) + 정답률(실력)을 파트별로 보여주고, 전체 정복도로 만점까지의 여정을 시각화.
 // mastery.ts(localStorage) + /api/part-totals(분모)를 결합. 하이드레이션 안전(마운트 후 렌더).
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
@@ -14,6 +14,19 @@ import {
   type PartTotals,
   type MasteryPart,
 } from "@/game/mastery";
+import { usePracticeStore } from "@/game/store";
+import type { PassageSet } from "@/game/types";
+
+async function fetchRcSets(): Promise<PassageSet[] | undefined> {
+  try {
+    const r = await fetch("/api/sets");
+    if (!r.ok) return undefined;
+    const { sets } = (await r.json()) as { sets: PassageSet[] };
+    return Array.isArray(sets) && sets.length > 0 ? sets : undefined;
+  } catch {
+    return undefined;
+  }
+}
 
 const PART_LABEL: Record<MasteryPart, string> = {
   2: "Part 2 · 응답",
@@ -26,13 +39,27 @@ const PART_LABEL: Record<MasteryPart, string> = {
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
-function routeForPart(p: MasteryPart): string {
-  return p <= 4 ? `/listening?part=${p}` : "/learn";
-}
-
 export default function MasteryBoard() {
   const router = useRouter();
   const [view, setView] = useState<MasteryView | null>(null);
+  const [drilling, setDrilling] = useState(false);
+  const practiceConquest = usePracticeStore((s) => s.practiceConquest);
+
+  // 파트 진입 — RC(5·6·7)는 미정복 문항 정복 드릴, LC(2·3·4)는 리스닝 복습
+  const openPart = useCallback(
+    async (p: MasteryPart) => {
+      if (p <= 4) {
+        router.push(`/listening?part=${p}`);
+        return;
+      }
+      if (drilling) return;
+      setDrilling(true);
+      const sets = await fetchRcSets();
+      practiceConquest({ part: p as 5 | 6 | 7, sets });
+      router.push("/game");
+    },
+    [drilling, practiceConquest, router],
+  );
 
   useEffect(() => {
     let alive = true;
@@ -53,7 +80,7 @@ export default function MasteryBoard() {
 
   if (!view) return null;
 
-  const { overallCoverage, masteredTotal, grandTotal, conqueredParts, remaining } = view;
+  const { overallCoverage, masteredTotal, grandTotal, conqueredParts, remaining, pendingTotal } = view;
   const allConquered = conqueredParts === 6 && grandTotal > 0;
 
   return (
@@ -80,7 +107,7 @@ export default function MasteryBoard() {
             <p className="mt-2 max-w-md text-[13.5px] leading-relaxed text-white/55">
               {allConquered
                 ? "여섯 파트를 모두 100% 정복했어요. 빌류킹을 넘어선 진짜 만점 실력입니다."
-                : `각 파트의 모든 문항을 한 번씩 맞혀 나가세요. 여섯 파트를 전부 정복하면 빌류킹을 넘어 만점에 도달합니다.`}
+                : `문항을 연속 2번 맞혀야 정복 확정 — 틀리면 다시. 복습 대기를 0으로 줄여 여섯 파트를 전부 정복하면 만점에 도달합니다.`}
             </p>
           </div>
 
@@ -92,6 +119,9 @@ export default function MasteryBoard() {
         <div className="mt-6 flex flex-wrap gap-2.5">
           <SummaryChip label="정복한 문항" value={`${masteredTotal.toLocaleString()} / ${grandTotal.toLocaleString()}`} />
           <SummaryChip label="정복한 파트" value={`${conqueredParts} / 6`} />
+          {pendingTotal > 0 && (
+            <SummaryChip label="복습 대기" value={`${pendingTotal.toLocaleString()}문항`} tone="amber" />
+          )}
           <SummaryChip label="만점까지" value={`${remaining.toLocaleString()}문항`} highlight />
         </div>
 
@@ -101,7 +131,7 @@ export default function MasteryBoard() {
             <motion.button
               key={p.part}
               type="button"
-              onClick={() => router.push(routeForPart(p.part))}
+              onClick={() => openPart(p.part)}
               initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -145,7 +175,12 @@ export default function MasteryBoard() {
               </div>
 
               <div className="mt-2 flex items-center justify-between text-[11.5px]">
-                <span className="font-bold text-white/70">{p.coverage}% 정복</span>
+                <span className="font-bold text-white/70">
+                  {p.coverage}% 정복
+                  {p.pending > 0 && (
+                    <span className="ml-1.5 font-semibold text-amber-300/90">· 복습 {p.pending}</span>
+                  )}
+                </span>
                 <span className="text-white/40">
                   {p.accuracy === null ? "미응시" : `정답률 ${p.accuracy}%`}
                 </span>
@@ -200,19 +235,30 @@ function SummaryChip({
   label,
   value,
   highlight = false,
+  tone,
 }: {
   label: string;
   value: string;
   highlight?: boolean;
+  tone?: "amber";
 }) {
+  const amber = tone === "amber";
   return (
     <div
       className={`rounded-xl px-3.5 py-2 ring-1 ${
-        highlight ? "bg-emerald-400/15 ring-emerald-300/25" : "bg-white/[0.06] ring-white/10"
+        amber
+          ? "bg-amber-400/15 ring-amber-300/25"
+          : highlight
+            ? "bg-emerald-400/15 ring-emerald-300/25"
+            : "bg-white/[0.06] ring-white/10"
       }`}
     >
       <p className="text-[10.5px] font-semibold uppercase tracking-wider text-white/40">{label}</p>
-      <p className={`mt-0.5 text-[15px] font-black ${highlight ? "text-emerald-200" : "text-white"}`}>
+      <p
+        className={`mt-0.5 text-[15px] font-black ${
+          amber ? "text-amber-200" : highlight ? "text-emerald-200" : "text-white"
+        }`}
+      >
         {value}
       </p>
     </div>

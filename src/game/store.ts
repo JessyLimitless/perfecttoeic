@@ -10,7 +10,7 @@ import type {
 import { normalizeCategory, type TypeFilter } from "./questionTypes";
 import { partOf } from "./parts";
 import { recordSession } from "./progress";
-import { recordAnswers } from "./mastery";
+import { recordAnswers, masteredIdSet, loadMastery } from "./mastery";
 import type { MasteryPart } from "./mastery";
 import { getFallbackSets } from "@/lib/questions";
 
@@ -111,6 +111,8 @@ interface PracticeState {
   part: Part;
   /** 현재 학습 중인 빈출 유형 */
   typeFilter: TypeFilter;
+  /** 정복 복습 드릴 세션인가(미정복 문항만 반복) */
+  conquest: boolean;
 
   /** 이번 세션 학습 풀 (파트·유형 필터 적용 후) */
   pool: PassageSet[];
@@ -134,6 +136,8 @@ interface PracticeState {
   start: (opts: StartOptions) => void;
   /** 결과 화면에서 약점 유형만 다시 풀기 (보관된 source 재사용) */
   practiceFocus: (opts: FocusOptions) => void;
+  /** 정복 복습 드릴 — 아직 정복(연속 2회) 못한 문항만 뽑아 반복 (RC 5·6·7) */
+  practiceConquest: (opts: { part: Part; sets?: PassageSet[] }) => void;
   answer: (choice: ChoiceIndex) => void;
   next: () => void;
   end: () => void;
@@ -141,6 +145,7 @@ interface PracticeState {
 }
 
 const FRESH = {
+  conquest: false,
   pool: [] as PassageSet[],
   queue: [] as PassageSet[],
   qIndex: 0,
@@ -191,6 +196,39 @@ export const usePracticeStore = create<PracticeState>((set, get) => ({
       part,
       typeFilter: rawCategory ? "ALL" : (type ?? "ALL"),
       ...FRESH,
+      pool,
+      queue: cycleFill(pool, INITIAL_POOL_SIZE),
+    });
+  },
+
+  practiceConquest: ({ part, sets: sourceSets }) => {
+    const s = get();
+    const source =
+      sourceSets && sourceSets.length > 0
+        ? sourceSets
+        : s.source.length > 0
+          ? s.source
+          : getFallbackSets();
+    // 이 파트에서 이미 정복(연속 2회 정답)한 문항은 드릴에서 제외 → 미정복만 반복
+    const mastered = masteredIdSet(part as MasteryPart, loadMastery());
+    let pool = source
+      .filter((x) => partOf(x) === part)
+      .map((x) => ({
+        ...x,
+        questions: x.questions.filter((q) => !mastered.has(q.id)),
+      }))
+      .filter((x) => x.questions.length > 0);
+    // 전부 정복했으면(드릴 대상 없음) 전체 복습으로 폴백
+    const conquest = pool.length > 0;
+    if (!conquest) pool = source.filter((x) => partOf(x) === part);
+    if (pool.length === 0) return; // 그 파트 콘텐츠 자체가 없음
+    set({
+      status: "active",
+      source,
+      part,
+      typeFilter: "ALL",
+      ...FRESH,
+      conquest,
       pool,
       queue: cycleFill(pool, INITIAL_POOL_SIZE),
     });
