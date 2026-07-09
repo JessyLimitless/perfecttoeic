@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import PracticeHeader from "@/components/practice/PracticeHeader";
@@ -10,6 +10,7 @@ import ChoiceButtons from "@/components/game/ChoiceButtons";
 import FeedbackPanel from "@/components/practice/FeedbackPanel";
 import { usePracticeStore } from "@/game/store";
 import { partOf } from "@/game/parts";
+import { loadMastery, streakOf, type MasteryPart } from "@/game/mastery";
 
 export default function PracticePage() {
   const router = useRouter();
@@ -19,6 +20,9 @@ export default function PracticePage() {
   const answered = usePracticeStore((s) => s.answered);
   const set = usePracticeStore((s) => s.queue[0]);
   const end = usePracticeStore((s) => s.end);
+
+  // 정복 뱃지용 — 세션 진입 시점의 문항별 연속 정답 수(기록은 세션 종료 시 갱신되므로 세션 내 고정)
+  const [masterySnap] = useState(() => loadMastery());
 
   useEffect(() => {
     if (status === "idle") router.replace("/");
@@ -34,6 +38,7 @@ export default function PracticePage() {
   const part = partOf(set);
   // Part 5(단문 빈칸)는 지문이 없다
   const hasPassage = part !== 5 && set.passageLines.length > 0;
+  const masteryStreak = streakOf(part as MasteryPart, question.id, masterySnap);
 
   return (
     <>
@@ -75,6 +80,7 @@ export default function PracticePage() {
                   index={qIndex}
                   total={total}
                   part={part}
+                  masteryStreak={masteryStreak}
                   flat
                 />
                 <ChoiceButtons question={question} />
@@ -83,6 +89,7 @@ export default function PracticePage() {
                     question={question}
                     isLastInSet={isLastInSet}
                     part={part}
+                    masteryStreak={masteryStreak}
                   />
                 )}
 

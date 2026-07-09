@@ -18,6 +18,7 @@ export default function QuestionPanel({
   part,
   hideKo = false,
   hideTypeBadge = false,
+  masteryStreak = 0,
   flat = false,
 }: {
   question: PassageQuestion;
@@ -28,11 +29,25 @@ export default function QuestionPanel({
   hideKo?: boolean;
   /** true면 우측 유형 뱃지(예: 준동사)를 숨긴다 (대결 모드 실전성) */
   hideTypeBadge?: boolean;
+  /** 이 문항의 현재 연속 정답 수(0~2) — 완료/정복 뱃지 표시용 */
+  masteryStreak?: number;
   /** true면 자체 카드 크롬을 제거하고 시험 용지(sheet) 안에 평면으로 배치 */
   flat?: boolean;
 }) {
   const unit = part === 5 || part === 6 ? "빈칸" : "문항";
   const label = hideTypeBadge ? "" : badgeLabel(question, part);
+
+  // 정복 상태 칩 — 연속 2회 정답이면 정복 완료, 한 번 맞혔으면 "정복까지 한 번 더"
+  const masteryChip =
+    masteryStreak >= 2 ? (
+      <span className="inline-flex shrink-0 items-center rounded-full bg-emerald-50 px-2 py-0.5 text-[10.5px] font-bold text-emerald-600 ring-1 ring-emerald-500/20">
+        👑 정복 완료
+      </span>
+    ) : masteryStreak === 1 ? (
+      <span className="inline-flex shrink-0 items-center rounded-full bg-amber-50 px-2 py-0.5 text-[10.5px] font-bold text-amber-600 ring-1 ring-amber-500/20">
+        ✓ 정복까지 1번!
+      </span>
+    ) : null;
 
   const inner = (
     <>
@@ -55,10 +70,15 @@ export default function QuestionPanel({
             />
           ))}
         </div>
-        {label && (
-          <span className="ml-auto inline-flex shrink-0 items-center rounded-full bg-indigo-50 px-2.5 py-0.5 text-[10.5px] font-semibold text-indigo-500 ring-1 ring-indigo-500/10">
-            {label}
-          </span>
+        {(label || masteryChip) && (
+          <div className="ml-auto flex shrink-0 items-center gap-1.5">
+            {masteryChip}
+            {label && (
+              <span className="inline-flex shrink-0 items-center rounded-full bg-indigo-50 px-2.5 py-0.5 text-[10.5px] font-semibold text-indigo-500 ring-1 ring-indigo-500/10">
+                {label}
+              </span>
+            )}
+          </div>
         )}
       </div>
 

@@ -10,10 +10,13 @@ export default function FeedbackPanel({
   question,
   isLastInSet,
   part,
+  masteryStreak = 0,
 }: {
   question: PassageQuestion;
   isLastInSet: boolean;
   part: Part;
+  /** 이 문항의 (이번 세션 진입 시점) 연속 정답 수 — 정복 달성 연출용 */
+  masteryStreak?: number;
 }) {
   const selected = usePracticeStore((s) => s.selected);
   const streak = usePracticeStore((s) => s.streak);
@@ -22,6 +25,16 @@ export default function FeedbackPanel({
   if (selected === null) return null;
   const isCorrect = selected === question.answerIndex;
   const correctIdx = question.answerIndex;
+
+  // 정복 진행 연출: 맞히면 연속 정답 +1 → 2 도달 시 정복, 1이면 "한 번 더"
+  const nextStreak = isCorrect ? Math.min(masteryStreak + 1, 2) : 0;
+  const conquestNote = isCorrect
+    ? nextStreak >= 2
+      ? { text: masteryStreak >= 2 ? "👑 정복 유지 — 완벽해요!" : "👑 정복 성공! 이 문항을 정복했어요", tone: "master" as const }
+      : { text: "✓ 한 번 더 맞히면 정복! 복습에 다시 나와요", tone: "progress" as const }
+    : masteryStreak >= 2
+      ? { text: "정복이 풀렸어요 · 다시 복습에 담겼어요", tone: "reset" as const }
+      : null;
 
   const headline = isCorrect
     ? streak >= 3
@@ -70,6 +83,23 @@ export default function FeedbackPanel({
             {headline}
           </span>
         </div>
+
+        {conquestNote && (
+          <motion.div
+            initial={{ opacity: 0, y: 6, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ type: "spring", stiffness: 500, damping: 20, delay: 0.06 }}
+            className={`mt-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[12.5px] font-bold ${
+              conquestNote.tone === "master"
+                ? "bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-sm"
+                : conquestNote.tone === "progress"
+                  ? "bg-amber-50 text-amber-600 ring-1 ring-amber-500/20"
+                  : "bg-rose-50 text-rose-500 ring-1 ring-rose-500/20"
+            }`}
+          >
+            {conquestNote.text}
+          </motion.div>
+        )}
 
         <div className="mt-3.5 rounded-xl bg-emerald-50/70 px-3.5 py-3 ring-1 ring-emerald-500/10">
           <p className="text-[14.5px] leading-relaxed text-neutral-800">
