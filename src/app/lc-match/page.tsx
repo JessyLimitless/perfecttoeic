@@ -653,6 +653,26 @@ function LcResult({
                         {it.explanation}
                       </p>
                     )}
+                    {it.scriptLines && it.scriptLines.length > 0 && (
+                      <div className="mt-2 rounded-lg bg-sky-50/70 px-2.5 py-2 ring-1 ring-sky-100">
+                        <p className="mb-1 text-[11px] font-bold text-sky-700">📄 스크립트 · 번역</p>
+                        <div className="space-y-1.5">
+                          {it.scriptLines.map((ln, j) => (
+                            <div key={j}>
+                              <p className="text-[12.5px] leading-relaxed text-neutral-800">
+                                {it.part === 3 && (
+                                  <span className="mr-1 font-bold text-sky-600">
+                                    {ln.speaker.startsWith("W") ? "여" : "남"}:
+                                  </span>
+                                )}
+                                {ln.en}
+                              </p>
+                              <p className="text-[11.5px] leading-relaxed text-neutral-400">{ln.ko}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </li>
                 );
               })}

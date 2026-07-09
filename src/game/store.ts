@@ -231,7 +231,14 @@ export const usePracticeStore = create<PracticeState>((set, get) => ({
     // 이 파트에서 이미 정복(연속 2회 정답)한 문항은 드릴에서 제외 → 미정복만 반복
     const st = loadMastery();
     const mastered = masteredIdSet(part as MasteryPart, st);
-    const pending = unmasteredIdSet(part as MasteryPart, st); // 봤지만 미정복(오답 포함)
+    const pending = unmasteredIdSet(part as MasteryPart, st); // 봤지만 미정복(streak 0~1)
+    // 실제로 틀린 문항(streak 0) — 복습에서 최우선
+    const streaks = st.parts[part as MasteryPart]?.streaks ?? {};
+    const wrong = new Set(
+      Object.entries(streaks)
+        .filter(([, v]) => v === 0)
+        .map(([id]) => id),
+    );
     let pool = source
       .filter((x) => partOf(x) === part)
       .map((x) => ({
@@ -243,8 +250,12 @@ export const usePracticeStore = create<PracticeState>((set, get) => ({
     const conquest = pool.length > 0;
     if (!conquest) pool = source.filter((x) => partOf(x) === part);
     if (pool.length === 0) return; // 그 파트 콘텐츠 자체가 없음
-    // 오답/미정복 우선: pending 문항이 든 세트를 앞으로
-    const prio = pool.filter((x) => x.questions.some((q) => pending.has(q.id)));
+    // 복습 우선순위: ① 틀린 문항(streak 0) 든 세트 → ② 나머지 미정복(streak 1) 든 세트 → ③ 그 외
+    const prioWrong = pool.filter((x) => x.questions.some((q) => wrong.has(q.id)));
+    const prioPending = pool.filter(
+      (x) => !x.questions.some((q) => wrong.has(q.id)) && x.questions.some((q) => pending.has(q.id)),
+    );
+    const prio = [...prioWrong, ...prioPending];
     const rest = pool.filter((x) => !x.questions.some((q) => pending.has(q.id)));
     set({
       status: "active",

@@ -11,12 +11,15 @@ import type { SentencePair } from "@/game/types";
 export default function PassageTranslation({
   lines,
   tone = "indigo",
+  defaultOpen = true,
 }: {
   lines?: SentencePair[];
   /** 표면 색조 — 연습(indigo) / 대결(teal) */
   tone?: "indigo" | "teal";
+  /** 기본 펼침 여부 — 오답노트에선 전체 지문 독해를 바로 보이게(true) */
+  defaultOpen?: boolean;
 }) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(defaultOpen);
   if (!lines || lines.length === 0) return null;
 
   const t =
@@ -46,7 +49,7 @@ export default function PassageTranslation({
         className={`flex w-full items-center justify-between gap-2 px-3.5 py-2.5 text-left transition ${t.hover}`}
       >
         <span className={`flex items-center gap-1.5 text-[13px] font-bold ${t.title}`}>
-          <span aria-hidden>📖</span> 지문 전체 · 번역
+          <span aria-hidden>📖</span> 전체 지문 독해 · 번역
         </span>
         <span
           className={`text-[12px] font-semibold transition-transform ${t.chev} ${

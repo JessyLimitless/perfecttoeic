@@ -227,7 +227,8 @@ function Part34View({ set }: { set: ListeningSet }) {
   const questions = set.questions ?? [];
   const [answers, setAnswers] = useState<(number | null)[]>(() => questions.map(() => null));
   const [revealed, setRevealed] = useState(false);
-  const [showKo, setShowKo] = useState(false);
+  // 리뷰(제출 후)에선 스크립트 번역을 기본으로 보이게 — RC 지문 번역과 동일.
+  const [showKo, setShowKo] = useState(true);
 
   const allAnswered = answers.every((a) => a !== null);
   const correctCount = useMemo(

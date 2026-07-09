@@ -486,7 +486,7 @@ export default function ConquestDetailPage() {
                           : "bg-amber-500/15 text-amber-600"
                       }`}
                     >
-                      {streak === 0 ? "다시 풀어야 함" : `정복까지 ${MASTER_STREAK - streak}회`}
+                      {streak === 0 ? "다시 풀어야 함" : "만점 세트로 정복"}
                     </span>
                     <span className="rounded-md bg-violet-50 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-violet-500">
                       {part === 7 ? passageType : `Part ${part}`}
