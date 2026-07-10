@@ -17,7 +17,7 @@ interface Counts {
   lc: number;
   warmup: number;
 }
-const FALLBACK: Counts = { rc: 830, lc: 330, warmup: 600 };
+const FALLBACK: Counts = { rc: 2050, lc: 851, warmup: 600 };
 
 async function fetchCounts(): Promise<Counts> {
   const out = { ...FALLBACK };
