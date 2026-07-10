@@ -14,6 +14,7 @@ import {
   type PartTotals,
   type MasteryPart,
 } from "@/game/mastery";
+import { useCharacter, josa } from "@/game/match/characters";
 
 const PART_LABEL: Record<MasteryPart, string> = {
   2: "Part 2 · 응답",
@@ -28,6 +29,7 @@ const EASE = [0.22, 1, 0.36, 1] as const;
 
 export default function MasteryBoard() {
   const router = useRouter();
+  const character = useCharacter();
   const [view, setView] = useState<MasteryView | null>(null);
 
   // 파트 진입 — 파트별 정복 상세 페이지
@@ -83,7 +85,7 @@ export default function MasteryBoard() {
             </h2>
             <p className="mt-2 max-w-md text-[13.5px] leading-relaxed text-white/55">
               {allConquered
-                ? "여섯 파트를 모두 100% 정복했어요. 빌류킹을 넘어선 진짜 만점 실력입니다."
+                ? `여섯 파트를 모두 100% 정복했어요. ${josa(character.name, "을", "를")} 넘어선 진짜 만점 실력입니다.`
                 : `문항을 연속 2번 맞혀야 정복 확정 — 틀리면 다시. 복습 대기를 0으로 줄여 여섯 파트를 전부 정복하면 만점에 도달합니다.`}
             </p>
           </div>

@@ -15,7 +15,8 @@ import { Confetti, JennyCutin } from "@/components/match/JennyFx";
 import PassageTranslation from "@/components/result/PassageTranslation";
 import { useMatchStore } from "@/game/match/matchStore";
 import { CREDIT_WIN } from "@/game/match/types";
-import { JENNY, jennyReactionForGrade, jennyCutsceneForGrade } from "@/game/match/jenny";
+import { jennyReactionForGrade, jennyCutsceneForGrade } from "@/game/match/jenny";
+import { useCharacter } from "@/game/match/characters";
 import {
   recordAnswers,
   masteredTotalOf,
@@ -51,6 +52,7 @@ async function fetchGrandTotal(): Promise<number> {
 
 export default function MatchResultPage() {
   const router = useRouter();
+  const character = useCharacter();
 
   const status = useMatchStore((s) => s.status);
   const part = useMatchStore((s) => s.part);
@@ -190,7 +192,7 @@ export default function MatchResultPage() {
                   glow
                 />
                 <p className="text-[13px] font-semibold leading-snug text-neutral-800">
-                  <span className="text-fuchsia-600">{JENNY.name}</span>: “{jennyLine}”
+                  <span className="text-fuchsia-600">{character.name}</span>: “{jennyLine}”
                 </p>
               </div>
             )}
@@ -206,7 +208,7 @@ export default function MatchResultPage() {
                 <div className="mb-2 flex items-center gap-2">
                   <JennyAvatar size={30} variant="idle" />
                   <span className="text-[12px] font-black text-fuchsia-600">
-                    빌류킹 · {gradeUp.after.label} 등급 달성
+                    {character.name} · {gradeUp.after.label} 등급 달성
                   </span>
                 </div>
                 <div className="space-y-1">

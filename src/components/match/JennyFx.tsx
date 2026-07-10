@@ -8,7 +8,8 @@ import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import JennyAvatar from "./JennyAvatar";
-import { JENNY, type JennyOutcomeVariant } from "@/game/match/jenny";
+import { type JennyOutcomeVariant } from "@/game/match/jenny";
+import { useCharacter } from "@/game/match/characters";
 
 /** 컨페티 조각 색 (로즈·푸시아·앰버·에메랄드·인디고) */
 const CONFETTI_COLORS = [
@@ -119,6 +120,7 @@ export function JennyCutin({
   autoMs?: number;
 }) {
   const reduce = useReducedMotion();
+  const character = useCharacter();
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
@@ -151,7 +153,7 @@ export function JennyCutin({
           <motion.button
             type="button"
             onClick={() => onClose?.()}
-            aria-label={`${JENNY.name} 닫기`}
+            aria-label={`${character.name} 닫기`}
             initial={
               reduce
                 ? { opacity: 0 }
@@ -203,7 +205,7 @@ export function JennyCutin({
                 <span
                   className={`inline-block h-1.5 w-1.5 rounded-full bg-gradient-to-r ${accent}`}
                 />
-                {JENNY.name} · {label}
+                {character.name} · {label}
               </p>
               <p className="mt-1.5 text-[13.5px] font-bold leading-snug text-white">
                 “{line}”

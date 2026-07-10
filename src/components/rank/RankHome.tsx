@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import ResetButton from "@/components/warmup/ResetButton";
 import JennyAvatar from "@/components/match/JennyAvatar";
 import { jennyChapterForGrade, MATCH_DOMAINS, type MatchDomain } from "@/game/match/jenny";
+import { useCharacter, withCharName } from "@/game/match/characters";
 import {
   loadMastery,
   buildMasteryView,
@@ -47,6 +48,7 @@ const EASE = [0.22, 1, 0.36, 1] as const;
 
 export default function RankHome() {
   const router = useRouter();
+  const character = useCharacter();
   const [view, setView] = useState<MasteryView | null>(null);
   const [domain, setDomain] = useState<MatchDomain>("rc");
   const [part, setPart] = useState<number>(7);
@@ -130,7 +132,7 @@ export default function RankHome() {
             <h2 className="mt-1.5 text-[26px] font-black tracking-[-0.02em] text-white">
               {grade.label}
             </h2>
-            <p className="text-[13px] font-bold text-white/50">{grade.tagline}</p>
+            <p className="text-[13px] font-bold text-white/50">{withCharName(grade.tagline, character.name)}</p>
           </div>
         </div>
 
@@ -304,7 +306,7 @@ export default function RankHome() {
         </button>
 
         <p className="text-center text-[12px] leading-relaxed text-neutral-500">
-          빌류킹과 겨루며 맞힌 문항이 그대로 정복도로 쌓입니다.
+          {character.name}에게 도전하며 맞힌 문항이 그대로 정복도로 쌓입니다.
           <br className="sm:hidden" />
           듣기·읽기 모든 영역을 정복해야 정상에 오릅니다.
         </p>
@@ -322,13 +324,13 @@ export default function RankHome() {
               <span className="text-[11px] font-bold text-neutral-400">{chapter.gradeLabel} 챕터</span>
             </div>
             <h3 className="mt-1 text-[17px] font-black tracking-[-0.01em] text-neutral-900">
-              빌류킹과의 대결 · {chapter.title}
+              {character.name} 대결 · {chapter.title}
             </h3>
-            <p className="mt-0.5 text-[12.5px] text-neutral-500">{chapter.tagline}</p>
+            <p className="mt-0.5 text-[12.5px] text-neutral-500">{withCharName(chapter.tagline, character.name)}</p>
           </div>
         </div>
         <p className="mt-3 rounded-2xl bg-white/80 px-4 py-3 text-[13px] font-semibold leading-snug text-neutral-700 ring-1 ring-fuchsia-900/[0.05]">
-          <span className="text-fuchsia-600">빌류킹</span>: “{chapter.greeting}”
+          <span className="text-fuchsia-600">{character.name}</span>: “{chapter.greeting}”
         </p>
       </section>
 
@@ -358,7 +360,7 @@ export default function RankHome() {
                     {g.label}
                   </span>
                   <span className={`block text-[11px] ${isCurrent ? "text-white/60" : "text-neutral-400"}`}>
-                    정복도 {g.minCoverage}%+ · {g.tagline}
+                    정복도 {g.minCoverage}%+ · {withCharName(g.tagline, character.name)}
                   </span>
                 </span>
                 {isCurrent && (

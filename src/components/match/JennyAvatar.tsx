@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { JENNY, type JennyOutcomeVariant } from "@/game/match/jenny";
+import { type JennyOutcomeVariant } from "@/game/match/jenny";
+import { useCharacter } from "@/game/match/characters";
 import JennyOriginalArt from "./JennyOriginalArt";
 
 /** 모션 프리셋 — 살아있는 느낌(호흡)·승리(방방)·패배(흔들) */
@@ -45,12 +46,18 @@ export default function JennyAvatar({
   /** 뒤에 은은한 컬러 오라 */
   glow?: boolean;
 }) {
+  const character = useCharacter();
   const candidates =
     variant === "idle"
-      ? [JENNY.images.idle]
-      : [JENNY.images[variant], JENNY.images.idle];
+      ? [character.images.idle]
+      : [character.images[variant], character.images.idle];
   const [idx, setIdx] = useState(0);
   const [broken, setBroken] = useState(false);
+  // 캐릭터가 바뀌면 이미지 로딩 상태 초기화
+  useEffect(() => {
+    setIdx(0);
+    setBroken(false);
+  }, [character.id]);
 
   const inner = broken ? (
     <JennyOriginalArt
@@ -62,7 +69,7 @@ export default function JennyAvatar({
     // eslint-disable-next-line @next/next/no-img-element
     <img
       src={candidates[idx]}
-      alt={JENNY.name}
+      alt={character.name}
       width={size}
       height={size}
       onError={() => {
@@ -83,7 +90,7 @@ export default function JennyAvatar({
       {glow && (
         <motion.span
           aria-hidden
-          className={`pointer-events-none absolute -inset-2 rounded-full bg-gradient-to-br ${JENNY.gradient} opacity-40 blur-lg`}
+          className={`pointer-events-none absolute -inset-2 rounded-full bg-gradient-to-br ${character.gradient} opacity-40 blur-lg`}
           animate={{ opacity: [0.25, 0.5, 0.25], scale: [0.95, 1.08, 0.95] }}
           transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
         />

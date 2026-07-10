@@ -26,12 +26,12 @@ import {
 } from "@/game/mastery";
 import type { Difficulty } from "@/game/types";
 import {
-  JENNY,
   jennyReactionForGrade,
   jennyCutsceneForGrade,
   jennyGreetingForDomain,
   MATCH_DOMAINS,
 } from "@/game/match/jenny";
+import { useCharacter } from "@/game/match/characters";
 import CountdownIntro from "@/components/match/CountdownIntro";
 import JennyAvatar from "@/components/match/JennyAvatar";
 import PlayerAvatar from "@/components/match/PlayerAvatar";
@@ -152,6 +152,7 @@ function LcMatchmaking({
   difficulty: Difficulty;
   onReady: () => void;
 }) {
+  const character = useCharacter();
   const [revealed, setRevealed] = useState(false);
   useEffect(() => {
     const t1 = setTimeout(() => setRevealed(true), 1600);
@@ -198,7 +199,7 @@ function LcMatchmaking({
         <p className="relative mt-6 text-[15px] font-bold text-white">
           {revealed ? (
             <>
-              <span className="text-fuchsia-300">{JENNY.name}</span> 등장!
+              <span className="text-fuchsia-300">{character.name}</span> 등장!
             </>
           ) : (
             "상대를 찾는 중…"
@@ -232,6 +233,7 @@ function LcPlaying({
   difficulty: Difficulty;
   onExit: () => void;
 }) {
+  const character = useCharacter();
   const router = useRouter();
   const limit = LC_SECONDS_BY_PART[part];
 
@@ -395,7 +397,7 @@ function LcPlaying({
           </div>
           <div className="flex items-center gap-2.5">
             <div className="text-right leading-tight">
-              <p className="text-[12px] font-bold text-white">{JENNY.name}</p>
+              <p className="text-[12px] font-bold text-white">{character.name}</p>
               <p className="tabnum text-[15px] font-black text-fuchsia-300">{botScore}</p>
             </div>
             <JennyAvatar size={38} variant="idle" motionPreset={botDone ? "win" : "idle"} />
@@ -418,7 +420,7 @@ function LcPlaying({
             {LC.emoji} Part {item.part}
           </span>
           {botDone && !answered && (
-            <span className="text-[11px] font-bold text-fuchsia-500">빌류킹 응답 완료 — 서둘러요!</span>
+            <span className="text-[11px] font-bold text-fuchsia-500">{character.name} 응답 완료 — 서둘러요!</span>
           )}
         </div>
 
@@ -532,6 +534,7 @@ function LcResult({
   onExit: () => void;
   onRematch: () => void;
 }) {
+  const character = useCharacter();
   const router = useRouter();
   const applied = useRef(false);
   const [gradeUp, setGradeUp] = useState<{ before: GradeMeta; after: GradeMeta } | null>(null);
@@ -583,7 +586,7 @@ function LcResult({
           </div>
           <span className="text-white/30">:</span>
           <div>
-            <p className="text-[11px] font-semibold text-white/40">{JENNY.name}</p>
+            <p className="text-[11px] font-semibold text-white/40">{character.name}</p>
             <p className="tabnum text-[26px] font-black text-fuchsia-300">{data.botScore}</p>
           </div>
         </div>
@@ -598,7 +601,7 @@ function LcResult({
         <div className="flex items-center gap-3 rounded-2xl bg-gradient-to-br from-rose-50 to-fuchsia-50 px-4 py-3 ring-1 ring-fuchsia-900/10">
           <JennyAvatar size={44} variant={data.won ? "lose" : "win"} motionPreset={data.won ? "lose" : "win"} glow />
           <p className="text-[13px] font-semibold leading-snug text-neutral-800">
-            <span className="text-fuchsia-600">{JENNY.name}</span>: “{jennyLine}”
+            <span className="text-fuchsia-600">{character.name}</span>: “{jennyLine}”
           </p>
         </div>
       )}
@@ -694,7 +697,7 @@ function LcResult({
         <div className="rounded-2xl bg-gradient-to-br from-rose-50 to-fuchsia-50 p-4 ring-1 ring-fuchsia-900/10">
           <div className="mb-2 flex items-center gap-2">
             <JennyAvatar size={30} variant="idle" />
-            <span className="text-[12px] font-black text-fuchsia-600">빌류킹 · {gradeUp.after.label} 등급 달성</span>
+            <span className="text-[12px] font-black text-fuchsia-600">{character.name} · {gradeUp.after.label} 등급 달성</span>
           </div>
           {jennyCutsceneForGrade(gradeUp.after.id).map((l, i) => (
             <p key={i} className="text-[13px] font-semibold leading-snug text-neutral-700">

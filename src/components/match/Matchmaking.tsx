@@ -8,7 +8,8 @@ import { PART_META } from "@/game/parts";
 import type { Difficulty, Part } from "@/game/types";
 import PlayerAvatar from "./PlayerAvatar";
 import JennyAvatar from "./JennyAvatar";
-import { JENNY, jennyChapterForGrade } from "@/game/match/jenny";
+import { jennyChapterForGrade } from "@/game/match/jenny";
+import { useCharacter, withCharName } from "@/game/match/characters";
 import { gradeFromCoverage, type GradeId } from "@/game/conquest";
 import { loadMastery, masteredTotalOf } from "@/game/mastery";
 
@@ -61,6 +62,7 @@ export default function Matchmaking({
     })();
   }, []);
   const chapter = jennyChapterForGrade(gradeId);
+  const character = useCharacter();
 
   useEffect(() => {
     const timers: ReturnType<typeof setTimeout>[] = [];
@@ -191,7 +193,7 @@ export default function Matchmaking({
                     transition={{ duration: 1.6, times: [0, 0.2, 0.7, 1], ease: "easeOut" }}
                     className="pointer-events-none absolute -top-3 left-1/2 z-20 -translate-x-1/2 whitespace-nowrap rounded-full bg-gradient-to-r from-rose-500 to-fuchsia-600 px-3 py-1 text-[11px] font-black text-white shadow-[0_8px_20px_-6px_rgba(217,70,239,0.9)] ring-1 ring-white/25"
                   >
-                    빌류킹 등장!
+                    {character.name} 등장!
                   </motion.span>
 
                   <motion.span
@@ -212,9 +214,9 @@ export default function Matchmaking({
                   </motion.span>
                   <div className="space-y-0.5 text-center">
                     <p className="text-[14px] font-extrabold tracking-[-0.01em] text-white">
-                      {JENNY.name}{" "}
+                      {character.name}{" "}
                       <span className="text-[11px] font-semibold text-fuchsia-200/80">
-                        {JENNY.en}
+                        {character.en}
                       </span>
                     </p>
                     <p className="text-[10.5px] font-semibold uppercase tracking-[0.1em] text-fuchsia-200/90">
@@ -253,7 +255,7 @@ export default function Matchmaking({
                 className="space-y-1"
               >
                 <p className="text-[13.5px] font-semibold leading-snug text-white/90">
-                  {JENNY.name}: “{chapter.greeting}”
+                  {character.name}: “{chapter.greeting}”
                 </p>
                 <p className="text-[12px] font-bold text-emerald-300">
                   예상 정답률 {accuracyPct}%

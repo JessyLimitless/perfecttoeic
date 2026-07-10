@@ -8,7 +8,7 @@ import MasteryBoard from "@/components/progression/MasteryBoard";
 import ListeningProgressCard from "@/components/listening/ListeningProgressCard";
 import BackupCard from "@/components/ui/BackupCard";
 import JennyOriginalArt from "@/components/match/JennyOriginalArt";
-import { JENNY } from "@/game/match/jenny";
+import { useCharacter, CHARACTERS, saveCharacterId, josa, hasBatchim } from "@/game/match/characters";
 import { useBgm } from "@/components/ui/BgmProvider";
 
 /** 실전 문항 수 라이브 집계 (실패 시 정적 폴백) */
@@ -48,6 +48,7 @@ const EASE = [0.22, 1, 0.36, 1] as const;
 export default function LandingPage() {
   const router = useRouter();
   const reduce = useReducedMotion();
+  const character = useCharacter();
   const [counts, setCounts] = useState<Counts>(FALLBACK);
   const [diag, setDiag] = useState<DiagnosticResult | null>(null);
 
@@ -102,7 +103,7 @@ export default function LandingPage() {
           className="mt-8 inline-flex items-center gap-2 rounded-full bg-white/70 px-4 py-1.5 text-[12px] font-semibold text-indigo-600 ring-1 ring-indigo-500/15 backdrop-blur-sm"
         >
           <span className="h-1.5 w-1.5 animate-glow-pulse rounded-full bg-indigo-500" />
-          나 vs 빌류킹 · 마스터까지 가는 토익 모험
+          나 vs {character.name} · 마스터까지 가는 토익 모험
         </motion.span>
 
         <motion.h1
@@ -119,7 +120,7 @@ export default function LandingPage() {
           {...rise(0.12)}
           className="mx-auto mt-6 max-w-xl px-2 text-[15px] leading-relaxed text-neutral-500 sm:px-0 sm:text-[17px]"
         >
-          라이벌 <b className="font-bold text-neutral-700">빌류킹</b>을 이기며
+          라이벌 <b className="font-bold text-neutral-700">{character.name}</b>{hasBatchim(character.name) ? "을" : "를"} 이기며
           루키에서 <b className="font-bold text-neutral-700">그랜드마스터</b>까지.
           6개 영역의 모든 문항을 하나씩 정복해 실전 만점에 달려가는, 나만의 토익
           모험이 시작됩니다.
@@ -189,13 +190,13 @@ export default function LandingPage() {
               </h2>
               <p className="mt-4 max-w-md text-[14px] leading-relaxed text-white/60 sm:text-[15px]">
                 토익 문제풀이를 완전히 게임화한 퍼펙토익의 시그니처 모드.
-                맞힌 문항을 하나씩 정복해 정복 등급을 올리고 챔피언 빌류킹에게
-                도전하세요. 빌류킹은 내 정복 진척에 맞춰 점점 강해집니다.
+                맞힌 문항을 하나씩 정복해 정복 등급을 올리고 챔피언 {character.name}에게
+                도전하세요. {josa(character.name, "은", "는")} 내 정복 진척에 맞춰 점점 강해집니다.
               </p>
 
               <ul className="mt-6 grid gap-2.5 sm:grid-cols-2">
                 <RankPoint icon="📈" text="정복도·등급 상승 시스템" />
-                <RankPoint icon="💗" text="라이벌 빌류킹과의 스토리 대결" />
+                <RankPoint icon="💗" text={`라이벌 ${josa(character.name, "과", "와")}의 스토리 대결`} />
                 <RankPoint icon="🗺️" text="루키→그랜드마스터 여정" />
                 <RankPoint icon="✨" text="대결마다 정복도 충전" />
               </ul>
@@ -341,7 +342,7 @@ export default function LandingPage() {
             index={2}
             icon="⚡"
             title="정복으로 경쟁하는 재미"
-            desc="맞힌 문항이 곧 정복도가 되는 대결로 라이벌 빌류킹에게 도전하며, 6개 영역을 하나씩 정복해 실전 만점까지 달려갑니다."
+            desc={`맞힌 문항이 곧 정복도가 되는 대결로 라이벌 ${character.name}에게 도전하며, 6개 영역을 하나씩 정복해 실전 만점까지 달려갑니다.`}
           />
         </div>
       </section>
@@ -552,7 +553,9 @@ function RankPoint({ icon, text }: { icon: string; text: string }) {
 
 /** 라이벌 제니 브랜드 히어로 — 랜딩 최상단 전면. 대형 이미지 + 배경음악 컨트롤 통합. */
 function JennyBrandHero({ reduce }: { reduce: boolean }) {
+  const character = useCharacter();
   const [broken, setBroken] = useState(false);
+  useEffect(() => setBroken(false), [character.id]);
   const bgm = useBgm();
   const playing = !!bgm?.playing;
   const muted = !!bgm?.muted;
@@ -568,7 +571,7 @@ function JennyBrandHero({ reduce }: { reduce: boolean }) {
         {/* 뒤 글로우 */}
         <span
           aria-hidden
-          className={`pointer-events-none absolute -inset-8 rounded-full bg-gradient-to-br ${JENNY.gradient} opacity-40 blur-3xl`}
+          className={`pointer-events-none absolute -inset-8 rounded-full bg-gradient-to-br ${character.gradient} opacity-40 blur-3xl`}
         />
         {/* 회전 링 */}
         {!reduce && (
@@ -586,8 +589,8 @@ function JennyBrandHero({ reduce }: { reduce: boolean }) {
           ) : (
             // eslint-disable-next-line @next/next/no-img-element
             <img
-              src={JENNY.images.idle}
-              alt={`라이벌 ${JENNY.name}`}
+              src={character.images.idle}
+              alt={`라이벌 ${character.name}`}
               onError={() => setBroken(true)}
               className="h-full w-full object-cover"
             />
@@ -608,8 +611,34 @@ function JennyBrandHero({ reduce }: { reduce: boolean }) {
       </div>
 
       <p className="mt-4 text-[15px] font-black tracking-tight text-neutral-900">
-        라이벌 <span className="text-gradient-rose">빌류킹</span>
+        라이벌 <span className="text-gradient-rose">{character.name}</span>
       </p>
+
+      {/* 캐릭터 선택 — 빌류킹 / 제니 */}
+      <div className="mt-3 flex items-center gap-2 rounded-full bg-white/70 p-1 shadow-sm ring-1 ring-neutral-900/[0.06] backdrop-blur-sm">
+        {CHARACTERS.map((c) => {
+          const active = c.id === character.id;
+          return (
+            <button
+              key={c.id}
+              type="button"
+              onClick={() => saveCharacterId(c.id)}
+              aria-pressed={active}
+              className={`flex items-center gap-1.5 rounded-full py-1 pl-1 pr-3 text-[12px] font-bold transition ${
+                active
+                  ? `bg-gradient-to-r ${c.gradient} text-white shadow-sm`
+                  : "text-neutral-500 hover:bg-neutral-900/[0.04]"
+              }`}
+            >
+              <span className="h-6 w-6 overflow-hidden rounded-full ring-1 ring-white/50">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={c.images.idle} alt={c.name} className="h-full w-full object-cover" />
+              </span>
+              {c.name}
+            </button>
+          );
+        })}
+      </div>
 
       {/* 배경음악 컨트롤 — 제니 테마곡 */}
       {bgm && (
@@ -673,6 +702,7 @@ function MiniPause() {
 
 /** 정복의 길 — 루키에서 시작해 정상의 그랜드마스터(실전 만점)까지. 빌류킹은 정상의 최종 상대. */
 function RoadToMaster({ reduce }: { reduce: boolean }) {
+  const character = useCharacter();
   // 정상(그랜드마스터)부터 아래로
   const steps: {
     tier: string;
@@ -682,7 +712,7 @@ function RoadToMaster({ reduce }: { reduce: boolean }) {
     boss?: boolean;
     me?: boolean;
   }[] = [
-    { tier: "그랜드마스터", emoji: "🏆", who: "실전 만점 · 빌류킹 격파", grad: "from-amber-300 to-yellow-500", boss: true },
+    { tier: "그랜드마스터", emoji: "🏆", who: `실전 만점 · ${character.name} 격파`, grad: "from-amber-300 to-yellow-500", boss: true },
     { tier: "엘리트", emoji: "🔥", grad: "from-amber-400 to-orange-500" },
     { tier: "프로", emoji: "⚡", grad: "from-indigo-400 to-violet-500" },
     { tier: "컨텐더", emoji: "🏃", grad: "from-sky-400 to-cyan-500" },
@@ -697,7 +727,7 @@ function RoadToMaster({ reduce }: { reduce: boolean }) {
           Road to Grandmaster
         </span>
         <span className="rounded-full bg-white/10 px-2.5 py-1 text-[11px] font-bold text-white/70">
-          나 vs 빌류킹
+          나 vs {character.name}
         </span>
       </div>
       <div className="mt-4 space-y-1.5">
