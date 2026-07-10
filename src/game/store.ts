@@ -165,7 +165,7 @@ interface PracticeState {
   start: (opts: StartOptions) => void;
   /** 결과 화면에서 약점 유형만 다시 풀기 (보관된 source 재사용) */
   practiceFocus: (opts: FocusOptions) => void;
-  /** 정복 복습 드릴 — 아직 정복(연속 2회) 못한 문항만 뽑아 반복 (RC 5·6·7) */
+  /** 정복 복습 드릴 — 아직 정복 못한(안 푼·틀린) 문항만 뽑아 반복 (RC 5·6·7) */
   practiceConquest: (opts: { part: Part; sets?: PassageSet[] }) => void;
   answer: (choice: ChoiceIndex) => void;
   next: () => void;
