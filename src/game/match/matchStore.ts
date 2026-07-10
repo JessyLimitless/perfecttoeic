@@ -13,7 +13,6 @@ import {
   CREDIT_LOSE,
   CREDIT_PERFECT_MISSION,
   CREDIT_WIN,
-  MATCH_LENGTH,
   PER_QUESTION_SECONDS,
   REMATCH_WINDOW_SECONDS,
   secondsForPart,
@@ -190,7 +189,8 @@ export const useMatchStore = create<MatchState>((set, get) => {
       finalizeBot();
 
       const nextIndex = s.qIndex + 1;
-      if (nextIndex >= MATCH_LENGTH || nextIndex >= s.items.length) {
+      // 이번 판 총 문항 = items.length(가변: Part5=5, Part6·7=지문 하나 3~5)
+      if (nextIndex >= s.items.length) {
         get().finish();
         return;
       }
@@ -248,7 +248,7 @@ export const useMatchStore = create<MatchState>((set, get) => {
       const aiRank: 1 | 2 = userWins ? 2 : 1;
 
       const allCorrect =
-        s.user.results.length === MATCH_LENGTH && s.user.results.every(Boolean);
+        s.user.results.length === s.items.length && s.user.results.every(Boolean);
 
       let earned = userRank === 1 ? CREDIT_WIN : CREDIT_LOSE;
       const missions: string[] = [];

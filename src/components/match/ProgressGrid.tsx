@@ -1,13 +1,12 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { MATCH_LENGTH } from "@/game/match/types";
 import type { MatchPlayer } from "@/game/match/types";
 
-function Tiles({ results }: { results: boolean[] }) {
+function Tiles({ results, total }: { results: boolean[]; total: number }) {
   return (
     <div className="grid grid-cols-5 gap-1.5">
-      {Array.from({ length: MATCH_LENGTH }).map((_, i) => {
+      {Array.from({ length: total }).map((_, i) => {
         const played = i < results.length;
         const correct = played && results[i];
         const wrong = played && !results[i];
@@ -43,6 +42,8 @@ export default function ProgressGrid({
   user: MatchPlayer;
   ai: MatchPlayer;
 }) {
+  // 이번 판 총 문항 수는 가변(Part5=5, Part6·7=지문 하나 3~5) → 결과 길이에서 도출
+  const total = Math.max(user.results.length, ai.results.length, 1);
   return (
     <div className="rounded-2xl bg-white/95 p-3 ring-1 ring-teal-900/10 shadow-sm sm:p-4">
       <h3 className="mb-3 text-center text-[13px] font-extrabold tracking-wide text-teal-800">
@@ -62,11 +63,11 @@ export default function ProgressGrid({
                 <span className="shrink-0 tabnum font-extrabold text-teal-600">
                   {got}
                   <span className="font-semibold text-neutral-400">
-                    /{MATCH_LENGTH}
+                    /{total}
                   </span>
                 </span>
               </span>
-              <Tiles results={p.results} />
+              <Tiles results={p.results} total={total} />
             </div>
           );
         })}

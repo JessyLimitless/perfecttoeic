@@ -122,8 +122,8 @@ function Lobby() {
           <span className="text-gradient">AI 챌린저</span>와 1:1 속도전
         </h1>
         <p className="mx-auto mt-3 max-w-sm text-[14px] leading-relaxed text-neutral-500">
-          파트·난이도를 고르고 방을 개설하면 AI 봇과 10문항 대결이 시작돼요.
-          빠르고 정확하게 풀어 점수를 앞서세요.
+          파트·난이도를 고르고 방을 개설하면 AI 봇과 속도전이 시작돼요.
+          Part 5는 5문항, Part 6·7은 지문 하나로 짧고 굵게. 빠르고 정확하게 풀어 점수를 앞서세요.
         </p>
       </motion.div>
 

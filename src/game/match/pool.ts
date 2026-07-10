@@ -3,7 +3,10 @@
 
 import { partOf } from "@/game/parts";
 import type { Difficulty, Part, PassageSet } from "@/game/types";
-import { MATCH_LENGTH, type MatchItem } from "./types";
+import { type MatchItem } from "./types";
+
+/** Part 5 대결 문항 수(단문). 리딩 대결은 짧고 굵게 — 10 → 5. */
+const PART5_MATCH_LENGTH = 5;
 
 /** 작은 Fisher–Yates 셔플 (store.ts의 private 셔플을 끌어쓰지 않고 자체 구현) */
 function shuffle<T>(arr: readonly T[]): T[] {
@@ -26,17 +29,14 @@ function toItem(s: PassageSet, question: PassageSet["questions"][number]): Match
 }
 
 /**
- * 이번 판의 10문항을 만든다.
+ * 이번 판의 문항을 만든다. 길이는 파트별로 다르다(가변):
+ * - **Part 5(단문)**: 서로 독립 → 개별 셔플로 **정확히 5문항**(PART5_MATCH_LENGTH).
+ * - **Part 6·7(지문형)**: 실제 토익처럼 **"지문 1개 = 한 판"**. 셔플한 지문 중 하나를
+ *   골라 그 지문에 딸린 문항들(1→n)을 **원래 순서 그대로** 낸다(보통 3~5문항).
+ *   문항을 개별 셔플하면 같은 지문이 뒤죽박죽 되므로 절대 flat 셔플하지 않는다.
  *
- * ⚠️ 파트별 구조 차이를 반드시 존중한다:
- * - **Part 5(단문)**: 문항이 서로 독립 → 개별로 셔플해 다양하게 뽑는다.
- * - **Part 6·7(지문형)**: 실제 토익처럼 "지문 1개 + 그 지문에 딸린 문항들(1→n)"이
- *   **한 덩어리로, 원래 순서 그대로** 나와야 한다. 그래서 문항을 개별 셔플하면 안 되고,
- *   **지문(세트) 단위로만 셔플**한 뒤 각 지문 안 문항은 배열 순서(=출제 순서)대로 이어붙인다.
- *   (예전엔 모든 문항을 flat 셔플해서 같은 지문의 문항이 뒤죽박죽/역순으로 나오는 버그가 있었음.)
- *
- * MATCH_LENGTH에 맞춰 지문을 이어붙이다 마지막 지문이 잘릴 수 있으나(뒤쪽 문항 일부 생략),
- * 노출되는 문항들은 항상 지문별로 묶이고 순서가 보존된다.
+ * 반환 배열 길이가 곧 이번 판 문항 수 → 엔진(matchStore)·HUD·결과 그리드는
+ * MATCH_LENGTH 상수 대신 items.length를 총수로 쓴다.
  *
  * difficulty는 현재 풀 구성에 직접 쓰지 않지만(은행이 이미 난이도별로 들어옴)
  * 계약 시그니처를 맞추기 위해 받는다. 추후 난이도 필터 확장 지점.
@@ -51,29 +51,18 @@ export function buildMatchItems(
   const byPart = sets.filter((s) => partOf(s) === part);
   if (byPart.length === 0) return [];
 
-  // ── Part 5: 개별 문항 셔플(단문은 독립적이라 섞어야 다양함) ──
+  // ── Part 5: 개별 문항 셔플 후 정확히 5문항(단문은 독립적이라 섞어야 다양함) ──
   if (part === 5) {
     const flat = shuffle(byPart.flatMap((s) => s.questions.map((q) => toItem(s, q))));
     if (flat.length === 0) return [];
     const out: MatchItem[] = [];
-    while (out.length < MATCH_LENGTH) out.push(flat[out.length % flat.length]);
+    while (out.length < PART5_MATCH_LENGTH) out.push(flat[out.length % flat.length]);
     return out;
   }
 
-  // ── Part 6·7: 지문(세트) 단위 셔플 + 지문 안 문항은 원래 순서 유지 ──
+  // ── Part 6·7: 지문 하나 = 한 판. 셔플한 지문 중 첫 지문의 문항을 순서대로 ──
   const passages = shuffle(byPart).filter((s) => s.questions.length > 0);
   if (passages.length === 0) return [];
-
-  const out: MatchItem[] = [];
-  let gi = 0;
-  // 지문을 순환하며 문항을 순서대로 이어붙여 정확히 MATCH_LENGTH개를 채운다.
-  while (out.length < MATCH_LENGTH) {
-    const s = passages[gi % passages.length];
-    for (const q of s.questions) {
-      out.push(toItem(s, q));
-      if (out.length >= MATCH_LENGTH) break;
-    }
-    gi++;
-  }
-  return out.slice(0, MATCH_LENGTH);
+  const chosen = passages[0];
+  return chosen.questions.map((q) => toItem(chosen, q));
 }

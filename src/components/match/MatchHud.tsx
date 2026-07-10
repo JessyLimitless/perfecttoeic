@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import AnimatedNumber from "@/components/ui/AnimatedNumber";
 import { useMatchStore } from "@/game/match/matchStore";
 import { loadIdentity } from "@/game/match/persist";
-import { MATCH_LENGTH, secondsForPart, type AvatarPresetId } from "@/game/match/types";
+import { secondsForPart, type AvatarPresetId } from "@/game/match/types";
 import PlayerAvatar from "./PlayerAvatar";
 import JennyAvatar from "./JennyAvatar";
 
@@ -23,6 +23,7 @@ export default function MatchHud() {
   const aiName = useMatchStore((s) => s.ai.name);
   const aiProgress = useMatchStore((s) => s.aiProgress);
   const qIndex = useMatchStore((s) => s.qIndex);
+  const total = useMatchStore((s) => s.items.length);
   const remaining = useMatchStore((s) => s.remaining);
   const answered = useMatchStore((s) => s.answered);
   const part = useMatchStore((s) => s.part);
@@ -92,7 +93,7 @@ export default function MatchHud() {
         {/* ── 우측 상단: 심플 타이머 ── */}
         <div className="flex shrink-0 items-center gap-2.5">
           <span className="hidden text-[11px] font-semibold tabnum text-neutral-400 sm:inline">
-            문항 {Math.min(qIndex + 1, MATCH_LENGTH)}<span className="text-neutral-300">/{MATCH_LENGTH}</span>
+            문항 {Math.min(qIndex + 1, total)}<span className="text-neutral-300">/{total}</span>
           </span>
           <motion.span
             animate={danger ? { scale: [1, 1.07, 1] } : { scale: 1 }}
