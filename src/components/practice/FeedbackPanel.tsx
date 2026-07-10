@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { usePracticeStore } from "@/game/store";
+import { MASTER_STREAK } from "@/game/mastery";
 import type { PassageQuestion, Part } from "@/game/types";
 
 const LETTERS = ["A", "B", "C", "D"] as const;
@@ -31,15 +32,16 @@ export default function FeedbackPanel({
   const isCorrect = selected === question.answerIndex;
   const correctIdx = question.answerIndex;
 
-  // 정복 진행 연출: 맞히면 연속 정답 +1 → 2 도달 시 정복, 1이면 "한 번 더"
-  const nextStreak = isCorrect ? Math.min(masteryStreak + 1, 2) : 0;
+  // 정복 연출: 문항 단위 즉시 정복(맞히면 그 문항 정복 → 복습에 다시 안 나옴).
+  // 이미 정복한 문항(전체 복습 폴백에서 재출제)만 "유지/풀림"으로 구분한다.
+  const wasMastered = masteryStreak >= MASTER_STREAK;
   const conquestNote = isCorrect
-    ? nextStreak >= 2
-      ? { text: masteryStreak >= 2 ? "👑 정복 유지 — 완벽해요!" : "👑 정복 성공! 이 문항을 정복했어요", tone: "master" as const }
-      : { text: "✓ 한 번 더 맞히면 정복! 복습에 다시 나와요", tone: "progress" as const }
-    : masteryStreak >= 2
+    ? wasMastered
+      ? { text: "👑 정복 유지 — 완벽해요!", tone: "master" as const }
+      : { text: "👑 정복 성공! 이 문항을 정복했어요 · 다시 안 나와요", tone: "master" as const }
+    : wasMastered
       ? { text: "정복이 풀렸어요 · 다시 복습에 담겼어요", tone: "reset" as const }
-      : null;
+      : { text: "복습에 다시 나와요 · 맞히면 정복돼요", tone: "progress" as const };
 
   const headline = isCorrect
     ? streak >= 3
