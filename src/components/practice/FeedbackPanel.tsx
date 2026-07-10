@@ -21,6 +21,7 @@ export default function FeedbackPanel({
   const selected = usePracticeStore((s) => s.selected);
   const streak = usePracticeStore((s) => s.streak);
   const next = usePracticeStore((s) => s.next);
+  const singlePassage = usePracticeStore((s) => s.singlePassage);
 
   if (selected === null) return null;
   const isCorrect = selected === question.answerIndex;
@@ -126,7 +127,9 @@ export default function FeedbackPanel({
           {part === 5
             ? "다음 문항 →"
             : isLastInSet
-              ? "다음 지문 →"
+              ? singlePassage
+                ? "결과 보기 →"
+                : "다음 지문 →"
               : part === 6
                 ? "다음 빈칸 →"
                 : "다음 문항 →"}

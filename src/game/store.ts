@@ -132,6 +132,8 @@ interface PracticeState {
   typeFilter: TypeFilter;
   /** 정복 복습 드릴 세션인가(미정복 문항만 반복) */
   conquest: boolean;
+  /** 지문 하나만 풀고 종료하는 세션인가 (Part 6·7 "한 지문 = 한 세션") */
+  singlePassage: boolean;
 
   /** 이번 세션 학습 풀 (파트·유형 필터 적용 후) */
   pool: PassageSet[];
@@ -165,6 +167,7 @@ interface PracticeState {
 
 const FRESH = {
   conquest: false,
+  singlePassage: false,
   pool: [] as PassageSet[],
   queue: [] as PassageSet[],
   qIndex: 0,
@@ -192,6 +195,8 @@ export const usePracticeStore = create<PracticeState>((set, get) => ({
       sourceSets && sourceSets.length > 0 ? sourceSets : getFallbackSets();
     // 선택한 파트·유형으로 문항을 필터링한 학습 풀
     const pool = buildPool(source, part, { type });
+    // Part 6·7은 "한 지문 = 한 세션": 지문 하나만 뽑아 풀고 종료. Part 5는 단문 연속.
+    const singlePassage = part === 6 || part === 7;
     set({
       status: "active",
       difficulty,
@@ -199,8 +204,9 @@ export const usePracticeStore = create<PracticeState>((set, get) => ({
       part,
       typeFilter: type,
       ...FRESH,
+      singlePassage,
       pool,
-      queue: cycleFill(pool, INITIAL_POOL_SIZE),
+      queue: cycleFill(pool, singlePassage ? 1 : INITIAL_POOL_SIZE),
     });
   },
 
@@ -313,6 +319,12 @@ export const usePracticeStore = create<PracticeState>((set, get) => ({
         answered: false,
         selected: null,
       });
+      return;
+    }
+
+    // 지문 세트를 끝까지 풀었다 — 단일 지문 세션(Part 6·7)이면 여기서 종료
+    if (s.singlePassage) {
+      get().end();
       return;
     }
 
