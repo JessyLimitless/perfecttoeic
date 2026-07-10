@@ -30,8 +30,24 @@ export default function SummaryPage() {
     router.push("/learn");
   };
 
+  const handleExit = () => {
+    reset();
+    router.push("/");
+  };
+
   return (
     <main className="container-app pb-safe flex min-h-dvh flex-col gap-5 py-8 sm:py-10">
+      {/* 상단 나가기 — 다 풀고 나면 스크롤 없이 바로 종료할 수 있게 */}
+      <div className="flex justify-end">
+        <button
+          type="button"
+          onClick={handleExit}
+          className="inline-flex items-center gap-1.5 rounded-full bg-white px-4 py-2 text-[13px] font-bold text-neutral-500 shadow-sm ring-1 ring-neutral-900/[0.08] transition hover:text-neutral-800 hover:ring-neutral-900/15"
+        >
+          나가기 ✕
+        </button>
+      </div>
+
       <ScoreBoard solved={solved} correct={correct} bestStreak={bestStreak} />
 
       {/* 데스크탑: 유형별 분석(좌) + 복습 리포트(우)를 넓게 병치 */}

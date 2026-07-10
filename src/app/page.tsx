@@ -57,6 +57,10 @@ export default function LandingPage() {
     setDiag(loadDiagnosticResult());
   }, []);
 
+  // 랜딩 대결 CTA → 곧장 리딩 랭크 대결(파트 5·6·7 중 자동). /rank 중간 화면은 별도 메뉴로만.
+  const startRankMatch = () =>
+    router.push(`/match?ranked=1&part=${5 + Math.floor(Math.random() * 3)}`);
+
   const rise = (delay = 0) =>
     reduce
       ? { initial: { opacity: 0 }, animate: { opacity: 1 } }
@@ -133,7 +137,7 @@ export default function LandingPage() {
         >
           <button
             type="button"
-            onClick={() => router.push("/rank")}
+            onClick={startRankMatch}
             className="btn-dark group min-h-[54px] w-full px-8 text-[16px] sm:w-auto"
           >
             <span className="inline-flex items-center gap-2">
@@ -203,7 +207,7 @@ export default function LandingPage() {
 
               <button
                 type="button"
-                onClick={() => router.push("/rank")}
+                onClick={startRankMatch}
                 className="group mt-8 inline-flex min-h-[52px] items-center gap-2 rounded-2xl bg-white px-8 text-[16px] font-bold text-neutral-900 shadow-lg transition hover:shadow-xl active:scale-[0.98]"
               >
                 랭크 대결 시작

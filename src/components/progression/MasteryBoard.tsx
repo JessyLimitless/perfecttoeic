@@ -59,7 +59,7 @@ export default function MasteryBoard() {
 
   if (!view) return null;
 
-  const { overallCoverage, masteredTotal, grandTotal, conqueredParts, remaining, pendingTotal } = view;
+  const { overallCoverage, masteredTotal, grandTotal, conqueredParts, remaining } = view;
   const allConquered = conqueredParts === 6 && grandTotal > 0;
 
   return (
@@ -86,7 +86,7 @@ export default function MasteryBoard() {
             <p className="mt-2 max-w-md text-[13.5px] leading-relaxed text-white/55">
               {allConquered
                 ? `여섯 파트를 모두 100% 정복했어요. ${josa(character.name, "을", "를")} 넘어선 진짜 만점 실력입니다.`
-                : `문항을 연속 2번 맞혀야 정복 확정 — 틀리면 다시. 복습 대기를 0으로 줄여 여섯 파트를 전부 정복하면 만점에 도달합니다.`}
+                : `맞힌 문항은 정복되고, 틀린·안 푼 문항이 계속 나옵니다. 남은 문항을 0으로 줄여 여섯 파트를 전부 정복하면 만점에 도달합니다.`}
             </p>
           </div>
 
@@ -98,10 +98,7 @@ export default function MasteryBoard() {
         <div className="mt-6 flex flex-wrap gap-2.5">
           <SummaryChip label="정복한 문항" value={`${masteredTotal.toLocaleString()} / ${grandTotal.toLocaleString()}`} />
           <SummaryChip label="정복한 파트" value={`${conqueredParts} / 6`} />
-          {pendingTotal > 0 && (
-            <SummaryChip label="복습 대기" value={`${pendingTotal.toLocaleString()}문항`} tone="amber" />
-          )}
-          <SummaryChip label="만점까지" value={`${remaining.toLocaleString()}문항`} highlight />
+          <SummaryChip label="남은 문항" value={`${remaining.toLocaleString()}문항`} highlight />
         </div>
 
         {/* 파트별 진행 바 */}
@@ -156,8 +153,10 @@ export default function MasteryBoard() {
               <div className="mt-2 flex items-center justify-between text-[11.5px]">
                 <span className="font-bold text-white/70">
                   {p.coverage}% 정복
-                  {p.pending > 0 && (
-                    <span className="ml-1.5 font-semibold text-amber-300/90">· 복습 {p.pending}</span>
+                  {p.total - p.mastered > 0 && (
+                    <span className="ml-1.5 font-semibold text-amber-300/90">
+                      · 남은 {(p.total - p.mastered).toLocaleString()}
+                    </span>
                   )}
                 </span>
                 <span className="text-white/40">

@@ -11,9 +11,12 @@ import type {
 import { normalizeCategory, type TypeFilter } from "./questionTypes";
 import { partOf } from "./parts";
 import { recordSession } from "./progress";
-import { recordAnswers, masteredIdSet, unmasteredIdSet, loadMastery } from "./mastery";
-import type { MasteryPart } from "./mastery";
+import { recordAnswers, loadMastery } from "./mastery";
+import type { MasteryPart, MasteryState } from "./mastery";
 import { getFallbackSets } from "@/lib/questions";
+
+/** Part 5 한 세션 문항 수 — 대결(게임)과 동일하게 짧고 굵게(5문항 뒤 종료). */
+const PART5_SESSION_LEN = 5;
 
 export type PracticeStatus = "idle" | "active" | "ended";
 
@@ -47,19 +50,20 @@ function cycleFill(pool: PassageSet[], count: number): PassageSet[] {
 }
 
 /**
- * 정복 드릴 초기 큐 — 오답/미정복(pending) 세트를 먼저, 그다음 미착수 세트.
- * 첫 패스는 우선 세트를 앞에 두고(그룹 내 셔플), 이후는 전체를 순환한다.
+ * 이미 "맞춘/정복한" 문항을 걸러 **안 푼·틀린 문제만 계속** 나오게 한다(소모적 반복 방지).
+ * 모든 파트가 **문항 단위**: 맞힌(정복, streak≥1) 문항은 제외하고 **틀린(streak 0)·안 푼(미시도)**
+ * 문항만 남긴다. Part 6·7도 지문(passageLines)은 그대로 두되 딸린 문제 중 정복 못한 것만 출제한다
+ * (지문은 읽되 이미 맞힌 문제는 다시 안 물음). 세트의 남은 문제가 0이면 그 세트는 빠진다.
+ * 결과가 비면(전부 정복) 호출부에서 전체 풀로 폴백한다.
  */
-function priorityFill(
-  prio: PassageSet[],
-  rest: PassageSet[],
-  count: number,
-): PassageSet[] {
-  const all = [...prio, ...rest];
-  if (all.length === 0) return [];
-  const out: PassageSet[] = [...shuffle(prio), ...shuffle(rest)];
-  while (out.length < count) out.push(...shuffle(all));
-  return out.slice(0, count);
+function dropSolved(pool: PassageSet[], part: number, st: MasteryState): PassageSet[] {
+  const streaks = st.parts[part as MasteryPart]?.streaks ?? {};
+  return pool
+    .map((x) => ({
+      ...x,
+      questions: x.questions.filter((q) => (streaks[q.id] ?? 0) === 0),
+    }))
+    .filter((x) => x.questions.length > 0);
 }
 
 /** 풀 필터 옵션 — 유형(Part 7) 또는 문법 분류(Part 5·6) */
@@ -136,6 +140,8 @@ interface PracticeState {
   conquest: boolean;
   /** 지문 하나만 풀고 종료하는 세션인가 (Part 6·7 "한 지문 = 한 세션") */
   singlePassage: boolean;
+  /** 이번 세션 최대 문항 수(도달 시 종료). null = 무제한. Part 5는 5문항으로 끊음. */
+  sessionLimit: number | null;
 
   /** 이번 세션 학습 풀 (파트·유형 필터 적용 후) */
   pool: PassageSet[];
@@ -170,6 +176,7 @@ interface PracticeState {
 const FRESH = {
   conquest: false,
   singlePassage: false,
+  sessionLimit: null as number | null,
   pool: [] as PassageSet[],
   queue: [] as PassageSet[],
   qIndex: 0,
@@ -196,8 +203,11 @@ export const usePracticeStore = create<PracticeState>((set, get) => ({
     const source =
       sourceSets && sourceSets.length > 0 ? sourceSets : getFallbackSets();
     // 선택한 파트·유형으로 문항을 필터링한 학습 풀
-    const pool = buildPool(source, part, { type });
-    // Part 6·7은 "한 지문 = 한 세션": 지문 하나만 뽑아 풀고 종료. Part 5는 단문 연속.
+    const rawPool = buildPool(source, part, { type });
+    // 맞힌 문항은 다시 안 낸다 — 안 푼·틀린 문제만 계속. 전부 정복하면 전체 복습 폴백.
+    const filtered = dropSolved(rawPool, part, loadMastery());
+    const pool = filtered.length > 0 ? filtered : rawPool;
+    // Part 6·7은 "한 지문 = 한 세션": 지문 하나만 뽑아 풀고 종료. Part 5는 5문항 뒤 종료(게임 길이).
     const singlePassage = part === 6 || part === 7;
     set({
       status: "active",
@@ -207,6 +217,7 @@ export const usePracticeStore = create<PracticeState>((set, get) => ({
       typeFilter: type,
       ...FRESH,
       singlePassage,
+      sessionLimit: part === 5 ? PART5_SESSION_LEN : null,
       pool,
       queue: cycleFill(pool, singlePassage ? 1 : INITIAL_POOL_SIZE),
     });
@@ -216,8 +227,11 @@ export const usePracticeStore = create<PracticeState>((set, get) => ({
     // 보관해 둔 전체 은행에서 약점 유형만 다시 추려 새 세션을 연다
     const s = get();
     const source = s.source.length > 0 ? s.source : getFallbackSets();
-    const pool = buildPool(source, part, { type, rawCategory });
-    if (pool.length === 0) return; // 풀 게 없으면 무시
+    const rawPool = buildPool(source, part, { type, rawCategory });
+    if (rawPool.length === 0) return; // 풀 게 없으면 무시
+    // 맞힌 문항 제외 — 안 푼·틀린 문제만. 전부 정복 시 전체 복습 폴백.
+    const filtered = dropSolved(rawPool, part, loadMastery());
+    const pool = filtered.length > 0 ? filtered : rawPool;
     set({
       status: "active",
       part,
@@ -236,35 +250,16 @@ export const usePracticeStore = create<PracticeState>((set, get) => ({
         : s.source.length > 0
           ? s.source
           : getFallbackSets();
-    // 이 파트에서 이미 정복(연속 2회 정답)한 문항은 드릴에서 제외 → 미정복만 반복
-    const st = loadMastery();
-    const mastered = masteredIdSet(part as MasteryPart, st);
-    const pending = unmasteredIdSet(part as MasteryPart, st); // 봤지만 미정복(streak 0~1)
-    // 실제로 틀린 문항(streak 0) — 복습에서 최우선
-    const streaks = st.parts[part as MasteryPart]?.streaks ?? {};
-    const wrong = new Set(
-      Object.entries(streaks)
-        .filter(([, v]) => v === 0)
-        .map(([id]) => id),
-    );
-    let pool = source
-      .filter((x) => partOf(x) === part)
-      .map((x) => ({
-        ...x,
-        questions: x.questions.filter((q) => !mastered.has(q.id)),
-      }))
-      .filter((x) => x.questions.length > 0);
-    // 전부 정복했으면(드릴 대상 없음) 전체 복습으로 폴백
+    // 리딩 6·7은 "지문 단위" 복습: 지문 안 문제를 하나라도 못 맞히면 그 지문을 통째로 다시,
+    // 그리고 지문 하나 풀면 바로 반영(singlePassage). Part 5는 문항 단위(독립 단문).
+    const singlePassage = part === 6 || part === 7;
+    const byPart = source.filter((x) => partOf(x) === part);
+    // 맞힌 문항은 제외 — 안 푼·틀린 문제만 반복(문항 단위). 지문은 함께 보되 정복한 문제는 안 물음.
+    let pool = dropSolved(byPart, part, loadMastery());
+    // 남은 문항이 없으면(전부 정복) 전체 복습으로 폴백
     const conquest = pool.length > 0;
-    if (!conquest) pool = source.filter((x) => partOf(x) === part);
+    if (!conquest) pool = byPart;
     if (pool.length === 0) return; // 그 파트 콘텐츠 자체가 없음
-    // 복습 우선순위: ① 틀린 문항(streak 0) 든 세트 → ② 나머지 미정복(streak 1) 든 세트 → ③ 그 외
-    const prioWrong = pool.filter((x) => x.questions.some((q) => wrong.has(q.id)));
-    const prioPending = pool.filter(
-      (x) => !x.questions.some((q) => wrong.has(q.id)) && x.questions.some((q) => pending.has(q.id)),
-    );
-    const prio = [...prioWrong, ...prioPending];
-    const rest = pool.filter((x) => !x.questions.some((q) => pending.has(q.id)));
     set({
       status: "active",
       source,
@@ -272,8 +267,11 @@ export const usePracticeStore = create<PracticeState>((set, get) => ({
       typeFilter: "ALL",
       ...FRESH,
       conquest,
-      pool: [...prio, ...rest],
-      queue: priorityFill(prio, rest, INITIAL_POOL_SIZE),
+      singlePassage,
+      sessionLimit: part === 5 ? PART5_SESSION_LEN : null,
+      pool,
+      // Part 6·7은 지문 하나만(바로 반영), Part 5는 5문항 뒤 종료(게임 길이)
+      queue: cycleFill(pool, singlePassage ? 1 : INITIAL_POOL_SIZE),
     });
   },
 
@@ -298,7 +296,9 @@ export const usePracticeStore = create<PracticeState>((set, get) => ({
         ...s.history,
         {
           part: partOf(set0),
-          setId: set0.id,
+          // 문항 단위 정복: 맞힌 문항은 즉시 정복(다시 안 나옴), 틀린·안 푼 문항만 반복.
+          // Part 6·7도 지문은 함께 보되(passageLines) 정복 판정·재출제는 문항 단위(setId=q.id).
+          setId: q.id,
           passageType: set0.passageType,
           question: q,
           selected: choice,
@@ -314,6 +314,12 @@ export const usePracticeStore = create<PracticeState>((set, get) => ({
     if (s.status !== "active") return;
     const set0 = s.queue[0];
     if (!set0) return;
+
+    // 세션 문항 제한(Part 5=5문항) 도달 → 종료
+    if (s.sessionLimit != null && s.solved >= s.sessionLimit) {
+      get().end();
+      return;
+    }
 
     if (s.qIndex + 1 < set0.questions.length) {
       set({

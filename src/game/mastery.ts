@@ -188,6 +188,13 @@ function masteredCount(bucket: PartMastery): number {
   return n;
 }
 
+/** 파트 버킷에서 틀린(streak 0) 문항 수 = 복습 대기 */
+function wrongCount(bucket: PartMastery): number {
+  let n = 0;
+  for (const v of Object.values(bucket.streaks)) if (v === 0) n++;
+  return n;
+}
+
 /** 전 파트 정복 문항 총수 — totals 없이 계산 가능(등급/봇 스케일링용) */
 export function masteredTotalOf(state: MasteryState = loadMastery()): number {
   return MASTERY_PARTS.reduce((n, p) => n + masteredCount(state.parts[p]), 0);
@@ -207,7 +214,11 @@ export function masteredIdSet(
   return out;
 }
 
-/** 특정 파트에서 시도했지만 아직 정복 못한(streak 0~1) 문항 ID 집합 — 복습 대기 */
+/**
+ * 특정 파트의 "복습 대기" 문항 ID 집합 = 실제로 **틀린(streak 0)** 문항만.
+ * 맞혔지만 세트가 만점이 아니어서 정복 대기(streak 1)인 문항은 이미 답을 맞힌 것이므로
+ * 복습(반복) 대상이 아니다 → 제외. 정복 드릴은 "틀린 문제만" 반복한다.
+ */
 export function unmasteredIdSet(
   part: MasteryPart,
   state: MasteryState = loadMastery(),
@@ -216,7 +227,7 @@ export function unmasteredIdSet(
   const bucket = state.parts[part];
   if (!bucket) return out;
   for (const [id, v] of Object.entries(bucket.streaks)) {
-    if (!isMastered(v)) out.add(id);
+    if (v === 0) out.add(id);
   }
   return out;
 }
@@ -249,7 +260,7 @@ export interface PartMasteryView {
   domain: "LC" | "RC";
   /** 정복(streak≥기준) 문항 수 */
   mastered: number;
-  /** 시도했지만 아직 정복 못한 문항 수(streak 0~1) = 복습 대기 */
+  /** 틀린(streak 0) 문항 수 = 복습 대기 (맞혔지만 세트 미완성인 streak 1은 제외) */
   pending: number;
   /** 한 번이라도 시도한 문항 수 */
   attempted: number;
@@ -288,9 +299,10 @@ export function buildMasteryView(state: MasteryState, totals: PartTotals): Maste
     const attempted = Object.keys(b.streaks).length;
     const masteredRaw = masteredCount(b);
     const mastered = Math.min(masteredRaw, total || masteredRaw);
-    // 복습 대기 = 시도했지만 미정복 (분모 초과 방지)
-    const pendingRaw = Math.max(attempted - masteredRaw, 0);
-    const pending = total > 0 ? Math.min(pendingRaw, total - mastered) : pendingRaw;
+    // 복습 대기 = 실제로 틀린(streak 0) 문항만 (분모 초과 방지).
+    // 맞혔지만 세트 미완성(streak 1)은 이미 정답이라 복습 대상이 아님 → 제외.
+    const wrongRaw = wrongCount(b);
+    const pending = total > 0 ? Math.min(wrongRaw, total - mastered) : wrongRaw;
     const coverage = total > 0 ? Math.round((mastered / total) * 100) : 0;
     const accuracy = b.solved > 0 ? Math.round((b.correct / b.solved) * 100) : null;
     return {

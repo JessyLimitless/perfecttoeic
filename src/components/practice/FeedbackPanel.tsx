@@ -22,6 +22,10 @@ export default function FeedbackPanel({
   const streak = usePracticeStore((s) => s.streak);
   const next = usePracticeStore((s) => s.next);
   const singlePassage = usePracticeStore((s) => s.singlePassage);
+  const solved = usePracticeStore((s) => s.solved);
+  const sessionLimit = usePracticeStore((s) => s.sessionLimit);
+  // 세션 문항 제한(Part 5) 마지막 문항인가 → 다음 버튼을 "결과 보기"로
+  const sessionEnding = sessionLimit != null && solved >= sessionLimit;
 
   if (selected === null) return null;
   const isCorrect = selected === question.answerIndex;
@@ -125,7 +129,9 @@ export default function FeedbackPanel({
           className="btn-primary mt-6 w-full"
         >
           {part === 5
-            ? "다음 문항 →"
+            ? sessionEnding
+              ? "결과 보기 →"
+              : "다음 문항 →"
             : isLastInSet
               ? singlePassage
                 ? "결과 보기 →"

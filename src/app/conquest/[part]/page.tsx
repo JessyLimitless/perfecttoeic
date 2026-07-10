@@ -1,6 +1,6 @@
 "use client";
 
-// 파트별 정복 상세 — 한 파트의 정복/복습 대기/미착수를 한눈에 + 복습 대기(계속 틀리는) 문항 목록 + 정복 드릴 진입.
+// 파트별 정복 상세 — 정복/남은(총량−정복)을 한눈에 + 다시 풀 문항(틀린 것) 목록 + 정복 드릴 진입.
 // RC(5·6·7)는 문항 목록·드릴 제공, LC(2·3·4)는 요약 + 리스닝 복습 진입.
 
 import { useEffect, useMemo, useState } from "react";
@@ -117,7 +117,7 @@ export default function ConquestDetailPage() {
     return buildMasteryView(state, { [part]: total }).parts.find((p) => p.part === part) ?? null;
   }, [state, total, part]);
 
-  // 복습 대기(streak 0~1) 문항 — RC만 콘텐츠 표시
+  // 복습 대기(틀린 문제 = streak 0) 문항 — RC만 콘텐츠 표시
   const pending = useMemo<PendingQ[]>(() => {
     if (!state || !part || part < 5 || !sets) return [];
     const streaks = state.parts[part].streaks;
@@ -127,13 +127,13 @@ export default function ConquestDetailPage() {
       const d = (s.difficulty ?? "MEDIUM") as Diff;
       for (const q of s.questions) {
         const st = streaks[q.id];
-        if (st !== undefined && st < MASTER_STREAK) {
+        // 틀린(streak 0) 문항만 복습 대상. 맞혔지만 세트 미완성(streak 1)은 제외.
+        if (st === 0) {
           out.push({ q, streak: st, passageType: s.passageType, difficulty: d });
         }
       }
     }
-    // 아직 안 맞힌(streak 0)부터 먼저
-    return out.sort((a, b) => a.streak - b.streak);
+    return out;
   }, [state, sets, part]);
 
   // 복습 대기 세트 (LC) — 미정복(복습 대기·미착수) 세트, 복습 대기 우선
@@ -177,7 +177,7 @@ export default function ConquestDetailPage() {
         acc[d].total += 1;
         const st = streaks[id];
         if (st !== undefined && st >= MASTER_STREAK) acc[d].mastered += 1;
-        else if (st !== undefined) acc[d].pending += 1;
+        else if (st === 0) acc[d].pending += 1; // 틀린 문제만 복습 대기
       }
     };
     if (part >= 5) {
@@ -209,7 +209,8 @@ export default function ConquestDetailPage() {
   }
 
   const domain = partDomain(part);
-  const untouched = Math.max(total - pv.attempted, 0);
+  // 남은 = 아직 정복 못한 문항(틀린 것 + 안 푼 것). 맞히면 줄어든다. "복습 대기" 버킷은 없앰.
+  const remaining = Math.max(total - pv.mastered, 0);
   const isRc = part >= 5;
 
   // 난이도 필터 적용된 복습 목록
@@ -230,7 +231,7 @@ export default function ConquestDetailPage() {
       // 복습 대기 세트가 있으면 복습 모드로, 난이도 선택 시 그 난이도로 필터해 진입
       const q =
         `/listening?part=${part}` +
-        (pv.pending > 0 ? "&review=1" : "") +
+        (remaining > 0 ? "&review=1" : "") +
         (diff !== "ALL" ? `&diff=${diff}` : "");
       router.push(q);
     }
@@ -272,16 +273,15 @@ export default function ConquestDetailPage() {
             <p className="mt-1.5 text-[13px] font-semibold text-white/50">
               {pv.conquered
                 ? "이 파트를 100% 정복했어요."
-                : `복습 대기 ${pv.pending}문항을 0으로 줄이면 정복 완료`}
+                : `남은 ${remaining.toLocaleString()}문항을 정복하면 완료`}
             </p>
           </div>
           <Ring pct={pv.coverage} domain={domain} />
         </div>
 
-        <div className="relative mt-6 grid grid-cols-2 gap-2.5 sm:grid-cols-4">
+        <div className="relative mt-6 grid grid-cols-3 gap-2.5">
           <Tile label="정복" value={pv.mastered} tone="win" />
-          <Tile label="복습 대기" value={pv.pending} tone="warn" />
-          <Tile label="미착수" value={untouched} />
+          <Tile label="남은" value={remaining} tone="warn" />
           <Tile label="총 문항" value={total} />
         </div>
 
@@ -293,12 +293,12 @@ export default function ConquestDetailPage() {
           {isRc
             ? diff !== "ALL"
               ? `🎯 ${diff} 정복 드릴`
-              : pv.pending > 0
-                ? `🎯 복습 대기 ${pv.pending}문항 정복하기`
-                : "🎯 정복 복습 시작 · 미정복만 반복"
-            : pv.pending > 0
-              ? "🎧 복습 대기 세트 풀기"
-              : "🎧 리스닝으로 새 세트 풀기"}
+              : remaining > 0
+                ? `🎯 남은 ${remaining.toLocaleString()}문항 정복하기`
+                : "🎯 이 파트 정복 완료 · 복습하기"
+            : remaining > 0
+              ? "🎧 남은 세트 정복하기"
+              : "🎧 리스닝으로 복습하기"}
         </button>
       </section>
 
@@ -339,8 +339,8 @@ export default function ConquestDetailPage() {
                     <span className="flex items-center justify-between text-[11.5px] font-semibold">
                       <span className="text-neutral-400">
                         정복 <span className="tabnum text-neutral-700">{d.mastered}</span>/{d.total}
-                        {d.pending > 0 && (
-                          <span className="ml-1.5 text-amber-600">· 복습 {d.pending}</span>
+                        {d.total - d.mastered > 0 && (
+                          <span className="ml-1.5 text-amber-600">· 남은 {d.total - d.mastered}</span>
                         )}
                       </span>
                       <span className="tabnum text-neutral-500">{pct}%</span>
@@ -364,11 +364,11 @@ export default function ConquestDetailPage() {
         </section>
       )}
 
-      {/* 복습 대기 세트 (LC) */}
+      {/* 다시 풀 세트 (LC) — 아직 정복 못한 세트 */}
       {!isRc && (
         <section className="mt-5">
           <div className="mb-2.5 flex items-center gap-2 px-1">
-            <p className="label">복습 대기 세트</p>
+            <p className="label">다시 풀 세트</p>
             {lcSets === null ? (
               <span className="text-[12px] text-neutral-400">불러오는 중…</span>
             ) : (
@@ -382,7 +382,7 @@ export default function ConquestDetailPage() {
             <div className="card px-6 py-10 text-center">
               <div className="text-3xl">🎉</div>
               <p className="mt-2 font-bold text-neutral-900">
-                {diff !== "ALL" ? `${diff} 복습 대기 세트가 없어요` : "복습 대기 세트가 없어요"}
+                {diff !== "ALL" ? `${diff} 다시 풀 세트가 없어요` : "다시 풀 세트가 없어요"}
               </p>
               <p className="mt-1 text-[13px] text-neutral-500">
                 {diff !== "ALL"
@@ -413,7 +413,7 @@ export default function ConquestDetailPage() {
                           : "bg-cyan-500/12 text-cyan-600"
                       }`}
                     >
-                      {s.status === "pending" ? "복습 대기" : "미착수"}
+                      {s.status === "pending" ? "다시 풀기" : "미착수"}
                     </span>
                     <span className="min-w-0 flex-1">
                       <span className="flex items-center gap-1.5">
@@ -440,11 +440,11 @@ export default function ConquestDetailPage() {
         </section>
       )}
 
-      {/* 복습 대기 문항 (RC) */}
+      {/* 다시 풀 문항 (RC) — 틀린 문항 모음 */}
       {isRc && (
         <section className="mt-5">
           <div className="mb-2.5 flex items-center gap-2 px-1">
-            <p className="label">복습 대기 문항</p>
+            <p className="label">다시 풀 문항</p>
             {sets === null ? (
               <span className="text-[12px] text-neutral-400">불러오는 중…</span>
             ) : (
@@ -458,14 +458,14 @@ export default function ConquestDetailPage() {
             <div className="card px-6 py-10 text-center">
               <div className="text-3xl">🎉</div>
               <p className="mt-2 font-bold text-neutral-900">
-                {diff !== "ALL" ? `${diff} 복습 대기 문항이 없어요` : "복습 대기 문항이 없어요"}
+                {diff !== "ALL" ? `${diff} 다시 풀 문항이 없어요` : "다시 풀 문항이 없어요"}
               </p>
               <p className="mt-1 text-[13px] text-neutral-500">
                 {diff !== "ALL"
                   ? "다른 난이도를 골라보세요."
                   : pv.attempted === 0
                     ? "아직 이 파트를 풀지 않았어요. 정복 복습으로 시작해보세요."
-                    : "지금까지 푼 문항은 모두 정복했습니다. 새 문항을 이어가세요."}
+                    : "틀린 문항이 없습니다. 남은 문항을 이어서 정복하세요."}
               </p>
             </div>
           ) : (

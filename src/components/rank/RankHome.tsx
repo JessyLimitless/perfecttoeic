@@ -55,7 +55,7 @@ export default function RankHome() {
   const [drilling, setDrilling] = useState(false);
   const practiceConquest = usePracticeStore((s) => s.practiceConquest);
 
-  /** RC 파트 정복 복습 드릴 시작 (미정복 문항만 반복) */
+  /** RC 파트 정복 복습 드릴 시작 (안 푼·틀린 문제만 반복, 맞힌 문항 제외) */
   const startRcConquest = useCallback(
     async (p: number) => {
       if (drilling) return;
@@ -209,8 +209,10 @@ export default function RankHome() {
               <div className="mt-1 flex items-center justify-between text-[10.5px] font-semibold">
                 <span className="text-neutral-500">
                   {p.coverage}% 정복
-                  {p.pending > 0 && (
-                    <span className="ml-1.5 text-amber-600">· 복습 {p.pending}</span>
+                  {p.total - p.mastered > 0 && (
+                    <span className="ml-1.5 text-amber-600">
+                      · 남은 {(p.total - p.mastered).toLocaleString()}
+                    </span>
                   )}
                 </span>
                 <span className="text-neutral-400">{p.accuracy === null ? "미응시" : `정답률 ${p.accuracy}%`}</span>
@@ -289,7 +291,7 @@ export default function RankHome() {
           {MATCH_DOMAINS[domain].emoji} {MATCH_DOMAINS[domain].label}로 정복하기
         </button>
 
-        {/* 정복 복습 — 미정복 문항만 차분히 반복해 정복 확정 */}
+        {/* 정복 복습 — 안 푼·틀린 문제만 차분히 반복해 정복 확정 (맞힌 문항 제외) */}
         <button
           type="button"
           disabled={drilling}
@@ -302,7 +304,7 @@ export default function RankHome() {
         >
           {drilling
             ? "정복 복습 준비 중…"
-            : `🎯 Part ${part} 정복 복습 · 미정복만 반복`}
+            : `🎯 Part ${part} 정복 복습 · 안 푼·틀린 문제`}
         </button>
 
         <p className="text-center text-[12px] leading-relaxed text-neutral-500">

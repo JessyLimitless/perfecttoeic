@@ -242,7 +242,7 @@ export default function ListeningHome({
       {/* ── 정복 요약 + 복습 모드 토글 ── */}
       <div className="mt-4 flex flex-wrap items-center gap-2 rounded-2xl bg-white/70 px-3.5 py-3 ring-1 ring-neutral-900/[0.05] backdrop-blur-sm">
         <StatPill emoji="👑" label="정복" value={summary.mastered} tone="emerald" />
-        <StatPill emoji="🔁" label="복습 대기" value={summary.pending} tone="amber" />
+        <StatPill emoji="🔁" label="다시 풀기" value={summary.pending} tone="amber" />
         <StatPill emoji="○" label="미착수" value={summary.untouched} tone="neutral" />
         <div className="ml-auto">
           <button
@@ -256,7 +256,7 @@ export default function ListeningHome({
                 : "bg-white text-neutral-500 ring-1 ring-neutral-200 hover:ring-amber-300 hover:text-amber-600"
             }`}
           >
-            {review ? "🔁 복습 대기만" : "🔁 복습 대기 우선"}
+            {review ? "🔁 다시 풀 세트만" : "🔁 다시 풀기 우선"}
           </button>
         </div>
       </div>
@@ -265,7 +265,7 @@ export default function ListeningHome({
         {filtered.length}세트 · {totalQuestions}문항
         {type !== "ALL" && <span className="text-cyan-500"> · {lcTypeLabel(type)} 포함</span>}
         {diff !== "ALL" && <span className="text-cyan-500"> · {diff}</span>}
-        {review && <span className="text-amber-500"> · 복습 대기 세트만 표시</span>}
+        {review && <span className="text-amber-500"> · 다시 풀 세트만 표시</span>}
       </p>
 
       {/* ── 세트 목록 ── */}
@@ -380,7 +380,7 @@ function StatusBadge({ status }: { status: SetConquestStatus }) {
   if (status === "pending") {
     return (
       <span className="shrink-0 rounded-full bg-amber-500/15 px-2 py-0.5 text-[10.5px] font-bold text-amber-600">
-        복습 대기
+        다시 풀기
       </span>
     );
   }
