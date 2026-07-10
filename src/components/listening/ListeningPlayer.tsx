@@ -251,6 +251,7 @@ function Part34View({ set }: { set: ListeningSet }) {
         part: set.part as MasteryPart,
         id: q.id,
         correct: answers[i] === q.answerIndex,
+        setId: set.id,
       })),
     );
     // 세트별 진행·최고점 기록

@@ -19,6 +19,8 @@ export type PracticeStatus = "idle" | "active" | "ended";
 
 export interface PracticeRecord {
   part: Part;
+  /** 이 문항이 속한 세트 ID — 정복 "만점 세트" 판정 단위. */
+  setId: string;
   passageType: string;
   question: PassageQuestion;
   selected: ChoiceIndex;
@@ -296,6 +298,7 @@ export const usePracticeStore = create<PracticeState>((set, get) => ({
         ...s.history,
         {
           part: partOf(set0),
+          setId: set0.id,
           passageType: set0.passageType,
           question: q,
           selected: choice,
@@ -351,6 +354,7 @@ export const usePracticeStore = create<PracticeState>((set, get) => ({
         part: r.part as MasteryPart,
         id: r.question.id,
         correct: r.isCorrect,
+        setId: r.setId,
       })),
     );
     set({ status: "ended" });
