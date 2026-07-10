@@ -57,9 +57,8 @@ export default function LandingPage() {
     setDiag(loadDiagnosticResult());
   }, []);
 
-  // 랜딩 대결 CTA → 곧장 리딩 랭크 대결(파트 5·6·7 중 자동). /rank 중간 화면은 별도 메뉴로만.
-  const startRankMatch = () =>
-    router.push(`/match?ranked=1&part=${5 + Math.floor(Math.random() * 3)}`);
+  // 랜딩 대결 CTA → /rank 허브(정복 현황 확인 → 파트 선택 → 대결 시작)
+  const startRankMatch = () => router.push("/rank");
 
   const rise = (delay = 0) =>
     reduce
