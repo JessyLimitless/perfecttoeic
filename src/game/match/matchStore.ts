@@ -5,6 +5,7 @@ import { create } from "zustand";
 import { getFallbackSets } from "@/lib/questions";
 import type { ChoiceIndex, Difficulty, Part } from "@/game/types";
 import { buildMatchItems } from "./pool";
+import { masteredIdSet, type MasteryPart } from "@/game/mastery";
 import { addCredits, loadIdentity, saveIdentity } from "./persist";
 import { getCharacter } from "./characters";
 import {
@@ -125,7 +126,13 @@ export const useMatchStore = create<MatchState>((set, get) => {
     // ── actions ──
     startMatch: ({ part, difficulty, sets }) => {
       const bank = sets && sets.length > 0 ? sets : getFallbackSets();
-      const items = buildMatchItems(bank, part, difficulty);
+      // 맞힌 문제 제외 — Part 5는 문항 단위, Part 6·7은 세트 전체 정복 시 제외(pool.ts).
+      const items = buildMatchItems(
+        bank,
+        part,
+        difficulty,
+        masteredIdSet(part as MasteryPart),
+      );
       const identity = loadIdentity();
 
       set({

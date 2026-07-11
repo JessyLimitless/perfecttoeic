@@ -83,7 +83,14 @@ export default function MatchResultPage() {
     // 대결에서 맞힌 문항을 정복도에 충전(정복도만 — 정답률 통계는 연습·리스닝 전용)
     const entries = userHistory
       .filter((r) => r.question?.id)
-      .map((r) => ({ part: part as MasteryPart, id: r.question.id, correct: r.isCorrect }));
+      .map((r) => ({
+        part: part as MasteryPart,
+        id: r.question.id,
+        correct: r.isCorrect,
+        // Part 6·7: 지문 전체를 다 맞혀야 정복 → 이번 판(=지문 하나) 문항을 한 세트로 묶어 만점 판정.
+        // Part 5: 문항 단위 즉시 정복(setId 없음).
+        setId: part === 6 || part === 7 ? `match-${part}` : undefined,
+      }));
     const pending = takePendingConquest();
     const beforeCount = pending ? pending.masteredBefore : masteredTotalOf(loadMastery());
     recordAnswers(entries, { coverageOnly: true });

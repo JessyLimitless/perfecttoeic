@@ -21,6 +21,7 @@ import { armConquest, takePendingConquest, gradeFromCoverage, type GradeMeta } f
 import {
   recordAnswers,
   masteredTotalOf,
+  masteredIdSet,
   loadMastery,
   type MasteryPart,
 } from "@/game/mastery";
@@ -91,7 +92,8 @@ export default function LcMatchPage() {
     setDifficulty(d);
     (async () => {
       const sets = await fetchListening();
-      const battle = buildLcBattle(sets, p);
+      // 맞힌 문제 제외 — Part 2는 문항 단위, Part 3·4는 세트 전체 정복 시 제외(build.ts).
+      const battle = buildLcBattle(sets, p, masteredIdSet(p as MasteryPart));
       if (battle.length === 0) {
         setError("이 파트의 리스닝 문항을 불러오지 못했어요.");
         return;
@@ -549,7 +551,14 @@ function LcResult({
     // 대결에서 맞힌 문항을 정복도에 충전(정복도만 — 정답률 통계는 리스닝 학습 전용)
     const entries = data.history
       .filter((h) => h.item?.key)
-      .map((h) => ({ part: h.item.part as MasteryPart, id: h.item.key, correct: h.correct }));
+      .map((h) => ({
+        part: h.item.part as MasteryPart,
+        id: h.item.key,
+        correct: h.correct,
+        // Part 3·4: 대화/담화 세트 전체를 다 맞혀야 정복 → 같은 오디오(audioId=set) 문항을 한 세트로 묶음.
+        // Part 2: 문항 단위 즉시 정복(setId 없음).
+        setId: h.item.part === 2 ? undefined : h.item.audioId,
+      }));
     const pending = takePendingConquest();
     const beforeCount = pending ? pending.masteredBefore : masteredTotalOf(loadMastery());
     recordAnswers(entries, { coverageOnly: true });

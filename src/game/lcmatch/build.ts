@@ -85,23 +85,38 @@ function fromScriptQuestion(
  * - Part 2: 아이템(클립) 단위 셔플 후 채움.
  * - Part 3·4: 세트(대화/담화) 단위 셔플 + 세트 안 문항은 순서 유지(같은 오디오 공유).
  *   → 실전처럼 "한 지문에 딸린 문항이 순서대로" 나온다.
+ *
+ * **맞힌 문제 제외(`mastered`)**: 정복한 문항은 다시 안 나오게 거른다.
+ * - **Part 2(문항 단위)**: 정복한 아이템을 개별 제외.
+ * - **Part 3·4(세트 단위)**: 대화/담화 안 문제를 **전부 정복해야** 그 세트를 제외.
+ *   (아직 한 문제라도 안 맞힌 세트는 통째로 다시 나온다.)
+ * - 남은 게 없으면(전부 정복) 전체 풀로 폴백해 절대 비지 않게 한다.
  */
-export function buildLcBattle(sets: ListeningSet[], part: ListeningPart): LcBattleItem[] {
+export function buildLcBattle(
+  sets: ListeningSet[],
+  part: ListeningPart,
+  mastered: ReadonlySet<string> = new Set(),
+): LcBattleItem[] {
   const byPart = sets.filter((s) => s.part === part);
   if (byPart.length === 0) return [];
 
   if (part === 2) {
-    const items = shuffle(
-      byPart.flatMap((s) => (s.items ?? []).map((it) => fromPart2(s.id, it))),
-    );
+    // 맞힌 아이템 제외 → 안 푼·틀린 문항만. 전부 정복이면 전체로 폴백.
+    const all = byPart.flatMap((s) => (s.items ?? []).map((it) => fromPart2(s.id, it)));
+    const remaining = all.filter((it) => !mastered.has(it.key));
+    const items = shuffle(remaining.length > 0 ? remaining : all);
     if (items.length === 0) return [];
     const out: LcBattleItem[] = [];
     while (out.length < MATCH_LENGTH) out.push(items[out.length % items.length]);
     return out.slice(0, MATCH_LENGTH);
   }
 
-  // Part 3/4 — 세트 단위 그룹 유지
-  const passages = shuffle(byPart).filter((s) => (s.questions?.length ?? 0) > 0);
+  // Part 3/4 — 세트 단위 그룹 유지. 세트 전체를 정복하기 전엔 그 세트가 계속 나온다.
+  const hasUnmastered = (s: ListeningSet) =>
+    (s.questions?.length ?? 0) > 0 && (s.questions ?? []).some((q) => !mastered.has(q.id));
+  let passages = shuffle(byPart).filter(hasUnmastered);
+  if (passages.length === 0)
+    passages = shuffle(byPart).filter((s) => (s.questions?.length ?? 0) > 0);
   if (passages.length === 0) return [];
   const out: LcBattleItem[] = [];
   let gi = 0;
