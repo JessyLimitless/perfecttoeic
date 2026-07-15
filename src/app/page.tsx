@@ -270,6 +270,15 @@ export default function LandingPage() {
           <QuickCard
             index={1}
             reduce={!!reduce}
+            onClick={() => router.push("/patterns")}
+            emoji="📐"
+            title="패턴학습"
+            sub="Part 5 만점 패턴 25"
+            gradient="from-indigo-500 to-sky-600"
+          />
+          <QuickCard
+            index={2}
+            reduce={!!reduce}
             onClick={() => router.push("/listening")}
             emoji="🎧"
             title="리스닝"
@@ -277,7 +286,7 @@ export default function LandingPage() {
             gradient="from-cyan-500 to-sky-600"
           />
           <QuickCard
-            index={2}
+            index={3}
             reduce={!!reduce}
             onClick={() => router.push("/diagnostic")}
             emoji="🎯"
@@ -286,7 +295,7 @@ export default function LandingPage() {
             gradient="from-violet-500 to-fuchsia-600"
           />
           <QuickCard
-            index={3}
+            index={4}
             reduce={!!reduce}
             onClick={() => router.push("/mock")}
             emoji="📝"
@@ -295,7 +304,7 @@ export default function LandingPage() {
             gradient="from-emerald-600 via-teal-600 to-cyan-700"
           />
           <QuickCard
-            index={4}
+            index={5}
             reduce={!!reduce}
             onClick={() => router.push("/warmup")}
             emoji="🔥"
@@ -304,7 +313,7 @@ export default function LandingPage() {
             gradient="from-amber-500 to-orange-600"
           />
           <QuickCard
-            index={5}
+            index={6}
             reduce={!!reduce}
             onClick={() => router.push("/tts")}
             emoji="🔊"
