@@ -227,7 +227,7 @@ export default function PatternStudy({
                           <p className="text-sm font-bold text-neutral-800">
                             정답: {LETTERS[q.answerIndex]} · {q.choices[q.answerIndex]}
                           </p>
-                          <p className="mt-1.5 text-sm leading-relaxed text-neutral-700">
+                          <p className="mt-1.5 whitespace-pre-line text-sm leading-relaxed text-neutral-700">
                             {q.explanation}
                           </p>
                           {q.translation && (

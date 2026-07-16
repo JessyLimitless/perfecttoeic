@@ -18,7 +18,8 @@
           "prompt": "빈칸 (1)",
           "choices": ["expected", "is expected", "expects", "is expecting"],
           "answerIndex": 1,
-          "explanation": "주어 The strategic acquisition은 스스로 기대하는 주체가 아니라 '~할 것으로 기대되는' 대상이므로 수동태. be expected to + 동사원형은 기사문 향후 전망의 고정 구문. 능동 (C)(D)·과거분사 단독 (A) 제외, (B) is expected."
+          "explanation": "주어 The strategic acquisition은 스스로 기대하는 주체가 아니라 '~할 것으로 기대되는' 대상이므로 수동태가 필요하다(be expected to + 동사원형은 기사문 전망의 고정 구문).\n(A) expected — 과거분사 단독이라 정형 본동사가 되지 못한다.\n(B) is expected — 수동태. be expected to로 정답.\n(C) expects — 능동이라 acquisition이 '기대하는' 주체가 되어 태가 어긋난다.\n(D) is expecting — 능동 진행이라 마찬가지로 태가 맞지 않는다.",
+          "translation": "양사 이사회의 만장일치 승인을 받은 이 전략적 인수는 아펙스의 전문 B2G 컨설팅 시장 확장을 가속할 것으로 기대된다."
         },
         {
           "prompt": "빈칸 (2) · 문장 삽입",
@@ -29,19 +30,22 @@
             "Internal employees are encouraged to apply for the vacant leadership roles."
           ],
           "answerIndex": 1,
-          "explanation": "뒤 문장에서 합병 법인이 시장의 30%를 지배할 것으로 예측한다며 지배력 상승을 뒷받침. '이 통합이 즉각적인 강자를 창출한다'는 총론을 던지는 (B)가 자석 문장."
+          "explanation": "뒤 문장에서 합병 법인이 시장의 30%를 지배할 것으로 예측하며 지배력 상승을 뒷받침하므로, 앞에 '이 통합이 즉각적 강자를 창출한다'는 총론이 와야 한다.\n(A) 합병의 재무 세부 사항은 영구 기밀로 유지됩니다 — 지배력 상승 흐름과 무관하다.\n(B) 이 통합은 기업 분석 분야에서 즉각적인 강자를 만들어 냅니다 — 뒤 30% 지배 예측의 총론이라 정답.\n(C) 여러 구형 소프트웨어가 지난주 갑자기 단종되었습니다 — 합병 긍정 톤과 충돌한다.\n(D) 내부 직원은 공석 리더직에 지원하도록 권장됩니다 — 시장 지배 흐름과 무관하다.",
+          "translation": "이 통합은 기업 분석 분야에서 즉각적인 강자를 만들어 냅니다."
         },
         {
           "prompt": "빈칸 (3)",
           "choices": ["unprecedented", "incidental", "reluctant", "obsolete"],
           "answerIndex": 0,
-          "explanation": "일류 기업 합병으로 개발 속도가 엄청나게 빨라진다는 CEO 인터뷰 맥락. '전례 없는' (A) unprecedented. (B) 부수적인·(C) 마지못한·(D) 구식의는 부적합."
+          "explanation": "일류 기업 합병으로 개발 속도가 엄청나게 빨라진다는 CEO 인터뷰 맥락이라 '전례 없는'이 알맞다.\n(A) unprecedented — '전례 없는'. 속도 강조로 정답.\n(B) incidental — '부수적인'이라 속도 강조와 맞지 않는다.\n(C) reluctant — '마지못한'이라 pace 수식으로 어색하다.\n(D) obsolete — '구식의'라 성장 맥락과 반대다.",
+          "translation": "\"아펙스와 힘을 합치면 우리의 자동 문서 생성 도구를 전례 없는 속도로 확장할 수 있습니다.\""
         },
         {
           "prompt": "빈칸 (4)",
           "choices": ["during", "by", "throughout", "inside"],
           "answerIndex": 1,
-          "explanation": "뒤에 the end of the third quarter라는 완료 마감 시점이 온다. '늦어도 그때까지는' 거래가 완료된다는 완료 기한 전치사 (B) by."
+          "explanation": "뒤에 the end of the third quarter라는 완료 마감 시점이 오므로, '늦어도 그때까지는' 거래가 완료된다는 완료 기한 전치사가 필요하다.\n(A) during — '~동안'이라 완료 기한 시점과 맞지 않는다.\n(B) by — '~까지(완료 기한)'. 정답.\n(C) throughout — '~내내'라 완료 시점과 맞지 않는다.\n(D) inside — 공간·범위 '이내'라 특정 마감 시점 표현에는 by가 표준이다.",
+          "translation": "이 거래는 통상적인 종결 조건과 규제 승인을 조건으로 하며, 3분기 말까지 공식 완료될 것으로 예상된다."
         }
       ]
     },
@@ -57,7 +61,8 @@
           "prompt": "빈칸 (1)",
           "choices": ["allocates", "has been allocated", "to allocate", "is allocating"],
           "answerIndex": 1,
-          "explanation": "주어 A total budget of $35 million은 스스로 할당하는 주체가 아니라 '할당되는' 대상이므로 수동태. 능동 (A)(D)·동사 아닌 (C) 소거, 현재완료 수동태 (B) has been allocated."
+          "explanation": "주어 A total budget of $35 million은 스스로 할당하는 주체가 아니라 '할당되는' 대상이므로 수동태가 필요하다.\n(A) allocates — 능동이라 예산이 '할당하는' 주체가 되어 태가 어긋난다.\n(B) has been allocated — 현재완료 수동. 정답.\n(C) to allocate — 준동사라 본동사 자리에 올 수 없다.\n(D) is allocating — 능동 진행이라 태가 맞지 않는다.",
+          "translation": "총 3,500만 달러의 예산이 초기 인프라 구축과 데이터베이스 온톨로지 설계 자금으로 배정되었다."
         },
         {
           "prompt": "빈칸 (2) · 문장 삽입",
@@ -68,19 +73,22 @@
             "Funding for municipal road repairs was completely suspended last week."
           ],
           "answerIndex": 2,
-          "explanation": "뒤 문장에서 전문가들이 지역 상권 활성화·주택 수요 증가를 예측한다며 경제 파급 효과를 언급. '이 단지가 수백 개 부수 일자리를 창출할 것'이라는 (C)가 매끄러운 징검다리."
+          "explanation": "뒤 문장에서 전문 인력 유입이 지역 상권 활성화·주택 수요 증가로 이어진다고 예측하므로, 앞에 '이 단지가 수백 개 부수 일자리를 창출한다'는 총론이 와야 한다.\n(A) 환경 우려로 최종 규제 승인이 지연될 것입니다 — 긍정적 경제 효과 흐름과 어긋난다.\n(B) 따라서 여러 주거지에 일시 정전이 발생합니다 — 문맥과 무관하다.\n(C) 이 단지는 지역에 수백 개의 부수 일자리를 창출할 것으로 기대됩니다 — 뒤 경제 파급의 총론이라 정답.\n(D) 시 도로 보수 예산이 지난주 전면 중단되었습니다 — 개발 기사 흐름과 무관하다.",
+          "translation": "이 단지는 해당 지역에 수백 개의 부수적인 일자리를 창출할 것으로 기대된다."
         },
         {
           "prompt": "빈칸 (3)",
           "choices": ["directly", "reluctantly", "mutually", "marginally"],
           "answerIndex": 0,
-          "explanation": "건설 프로젝트가 지역 경제 성장을 '직접적으로' 가속한다는 도지사의 확신 맥락. (A) directly. (B) 마지못해·(C) 상호간에·(D) 미미하게는 긍정적 발표에 부적합."
+          "explanation": "건설 프로젝트가 지역 경제 성장을 '직접적으로' 가속한다는 도지사의 확신 맥락이다.\n(A) directly — '직접적으로'. 정답.\n(B) reluctantly — '마지못해'라 긍정적 발표와 맞지 않는다.\n(C) mutually — '상호간에'라 가속 부사로 어색하다.\n(D) marginally — '미미하게'라 성장 강조와 반대다.",
+          "translation": "\"이 인프라 사업은 공공 안전을 강화할 뿐 아니라 지역 경제 성장을 직접적으로 가속할 것입니다.\""
         },
         {
           "prompt": "빈칸 (4)",
           "choices": ["enthusiasm", "apprehension", "indifference", "resentment"],
           "answerIndex": 0,
-          "explanation": "뒤 분사구문 anticipating a steady stream of new customers(고객 유입 기대)가 단서. 상인들의 반응은 엄청난 (A) enthusiasm(열정, 환호)."
+          "explanation": "뒤 분사구문 anticipating a steady stream of new customers(고객 유입 기대)가 단서이므로, 상인들의 반응은 열렬한 환호다.\n(A) enthusiasm — '열정, 환호'. 고객 기대와 부합해 정답.\n(B) apprehension — '불안'이라 고객 유입 기대와 반대다.\n(C) indifference — '무관심'이라 immense와 결합·문맥이 어긋난다.\n(D) resentment — '분노'라 긍정 반응과 정반대다.",
+          "translation": "지역 상인들은 2028년 단지가 정식 개장하면 새 고객이 꾸준히 유입되리라 기대하며 이번 발표에 큰 환호를 표했다."
         }
       ]
     },
@@ -96,7 +104,8 @@
           "prompt": "빈칸 (1)",
           "choices": ["rose", "raised", "was risen", "is raising"],
           "answerIndex": 0,
-          "explanation": "주어 overall revenue 뒤에 목적어 없이 by 18 percent가 온다. 자동사가 필요. 타동사 raise의 과거 (B)·자동사인데 수동형인 불가능한 (C) 소거, 과거형 자동사 (A) rose."
+          "explanation": "주어 overall revenue 뒤에 목적어 없이 by 18 percent가 오므로 자동사가 필요하고, 실적 발표라 과거 시제다.\n(A) rose — 자동사 rise의 과거 '올랐다'. by 18%와 부합해 정답.\n(B) raised — 타동사 raise의 과거라 목적어가 필요한데 by만 있어 맞지 않는다.\n(C) was risen — rise는 자동사라 수동태 자체가 성립하지 않는다.\n(D) is raising — 타동사 진행형이라 목적어 필요·시제 모두 어긋난다.",
+          "translation": "보고서에 따르면, 이번 분기 총매출은 전년 동기 대비 18퍼센트 올라 1,200만 달러의 사상 최고치를 기록했다."
         },
         {
           "prompt": "빈칸 (2) · 문장 삽입",
@@ -107,19 +116,22 @@
             "Several subscription tiers will be permanently discontinued by next Monday."
           ],
           "answerIndex": 2,
-          "explanation": "앞 문장에서 소프트웨어 부문이 대형 공공 부문 계약을 따내며 확장했다고 배경을 제시. 그 성과가 '지방 자치단체(=public sector) 고객의 수요에 견인됐다'고 재진술하는 (C)가 정답."
+          "explanation": "앞 문장에서 소프트웨어 부문이 대형 공공 부문 계약을 따내며 확장했다고 배경을 제시하므로, 그 성과가 '지자체 고객 수요에 견인됐다'고 재진술하는 문장이 맞다.\n(A) 이 견고한 성장은 대체로 기술 지원팀 확장에 기인합니다 — 앞의 '공공 계약'과 다른 요인이라 어긋난다.\n(B) 따라서 회사는 지역 소프트웨어 연구소를 축소할 계획입니다 — 성장 호실적과 모순된다.\n(C) 이 인상적 실적은 주로 지자체 고객의 강한 수요에 견인되었습니다 — 앞 '공공 부문 계약'을 재진술해 정답.\n(D) 여러 구독 등급이 다음 주 월요일까지 영구 단종됩니다 — 실적 흐름과 무관하다.",
+          "translation": "이 인상적인 실적은 주로 지자체 고객의 강한 수요에 힘입은 것이다."
         },
         {
           "prompt": "빈칸 (3)",
           "choices": ["heavily", "reluctantly", "marginally", "obsolete"],
           "answerIndex": 0,
-          "explanation": "동사 invest를 수식해 '대규모로 과감하게 투자하다'를 뜻하는 전용 부사. invest heavily in 짝꿍. (A) heavily."
+          "explanation": "동사 invest를 수식해 '대규모로 과감히 투자하다'를 뜻하는 부사가 필요하다(invest heavily in 짝꿍).\n(A) heavily — invest heavily in. '대규모로'로 정답.\n(B) reluctantly — '마지못해'라 투자 확대 의지와 반대다.\n(C) marginally — '미미하게'라 투자 강조와 어긋난다.\n(D) obsolete — 형용사라 동사 invest를 수식하는 부사 자리에 올 수 없다.",
+          "translation": "\"탄탄한 재무 안정성 덕분에 우리는 차세대 예측 데이터 모델에 대규모로 투자할 수 있습니다.\""
         },
         {
           "prompt": "빈칸 (4)",
           "choices": ["outcome", "outlook", "oversight", "obligation"],
           "answerIndex": 1,
-          "explanation": "이사회가 다가오는 분기에 자신감을 표하며 남은 회계연도에 대한 긍정적 '전망'을 내놓았다는 맥락. 재무 기사 마지막 단골 어휘 (B) outlook."
+          "explanation": "이사회가 다가오는 분기에 자신감을 표하며 남은 회계연도에 대한 긍정적 '전망'을 내놓았다는 맥락이다(재무 기사 단골).\n(A) outcome — '결과'라 앞으로에 대한 '전망'과 다르다.\n(B) outlook — '전망'. upbeat outlook으로 정답.\n(C) oversight — '감독/간과'라 전망 의미와 맞지 않는다.\n(D) obligation — '의무'라 문맥과 무관하다.",
+          "translation": "이사회는 새 지역 프로젝트 출범을 앞두고 남은 회계연도에 대해 낙관적인 전망을 내놓으며 다가오는 분기에 자신감을 표했다."
         }
       ]
     },
@@ -135,7 +147,8 @@
           "prompt": "빈칸 (1)",
           "choices": ["clear", "clearly", "clearness", "cleared"],
           "answerIndex": 0,
-          "explanation": "a + [형용사] + majority(명사) 구조. 명사를 앞에서 수식하는 형용사 자리. a clear/overwhelming majority(압도적 다수) 단골 표현. (A) clear."
+          "explanation": "'a + [형용사] + majority(명사)' 구조라 명사를 앞에서 수식하는 형용사 자리다(a clear majority 단골).\n(A) clear — 형용사. majority를 수식해 정답.\n(B) clearly — 부사라 명사 majority를 수식하지 못한다.\n(C) clearness — 명사라 'a clearness majority'로 두 명사가 충돌한다.\n(D) cleared — 과거분사라 '제거된 다수'로 의미가 어색하다.",
+          "translation": "지난달 실시된 종합 설문에 따르면, 소비자의 명백한 다수(60퍼센트 이상)가 이제 기존 방식보다 디지털 결제를 선호한다."
         },
         {
           "prompt": "빈칸 (2) · 문장 삽입",
@@ -146,19 +159,22 @@
             "Funding for external marketing research was completely suspended by management."
           ],
           "answerIndex": 1,
-          "explanation": "앞은 디지털 결제 선호 변화의 원인, 뒤는 '시스템 미도입 소매업체는 시장 점유율을 잃을 위험'이라는 경고. 그 사이 '그러므로 기업은 생존하려면 인프라를 현대화해야 한다'는 당위성 징검다리 (B)."
+          "explanation": "앞은 디지털 결제 선호 변화의 원인, 뒤는 '시스템 미도입 소매업체는 시장 점유율을 잃을 위험'이라는 경고이므로, 사이에 '그러므로 인프라를 현대화해야 한다'는 당위가 와야 한다.\n(A) 따라서 많은 매장이 현금 보유를 늘리기로 했습니다 — 디지털 전환 흐름과 반대다.\n(B) 따라서 기업은 생존하려면 디지털 인프라를 현대화해야 합니다 — 뒤 경고의 당위 총론이라 정답.\n(C) 반대로 전자결제에 대한 소비자 관심이 꾸준히 감소했습니다 — 앞의 선호 증가와 모순된다.\n(D) 외부 마케팅 조사 예산이 경영진에 의해 전면 중단되었습니다 — 문맥과 무관하다.",
+          "translation": "따라서 기업은 생존을 유지하려면 디지털 인프라를 현대화해야 합니다."
         },
         {
           "prompt": "빈칸 (3)",
           "choices": ["efficiently", "reluctantly", "marginally", "obsolete"],
           "answerIndex": 0,
-          "explanation": "process client data(동사+목적어) 뒤 완성된 문장을 수식하는 부사 자리이자, 시스템 업데이트로 데이터를 더 '효율적으로' 처리한다는 긍정 맥락. (A) efficiently."
+          "explanation": "'process client data' 뒤에서 완성된 문장을 수식하는 부사 자리이자, 시스템 업데이트로 데이터를 더 '효율적으로' 처리한다는 긍정 맥락이다.\n(A) efficiently — '효율적으로'. 긍정 개선으로 정답.\n(B) reluctantly — '마지못해'라 개선 맥락과 반대다.\n(C) marginally — '미미하게'라 개선 강조와 어긋난다.\n(D) obsolete — 형용사라 동사를 수식하는 부사 자리에 올 수 없다.",
+          "translation": "보고서는 판매 시점 시스템을 갱신하면 기업이 고객 데이터를 더 효율적으로 처리할 수 있어 고객 유지율 향상으로 직결된다고 강조한다."
         },
         {
           "prompt": "빈칸 (4)",
           "choices": ["persist", "terminate", "reverse", "bounce"],
           "answerIndex": 0,
-          "explanation": "편리성 선호 경향이 예측 가능한 미래에도 계속 '지속될' 가능성이 높다는 맥락. 트렌드 보고서 마지막 단골 자동사 (A) persist."
+          "explanation": "편리성 선호 경향이 예측 가능한 미래에도 계속 '지속될' 가능성이 높다는 맥락이다(트렌드 보고서 단골 자동사).\n(A) persist — '지속되다'. 정답.\n(B) terminate — '종료되다'라 '지속' 의도와 반대다.\n(C) reverse — '뒤집히다'라 선호 지속과 반대다.\n(D) bounce — '튀다'라 문맥과 맞지 않는다.",
+          "translation": "자동화 인프라가 계속 진화함에 따라, 편리성에 대한 이 소비자 선호는 예측 가능한 미래에도 지속될 가능성이 매우 높다."
         }
       ]
     },
@@ -174,7 +190,8 @@
           "prompt": "빈칸 (1)",
           "choices": ["influence", "influential", "influentially", "influenced"],
           "answerIndex": 1,
-          "explanation": "the most + [형용사] + figures(명사) 구조. 복수 명사 figures를 수식하는 형용사 자리. (B) influential(영향력 있는)."
+          "explanation": "'the most + [형용사] + figures(명사)' 구조라 복수 명사 figures를 수식하는 형용사 자리다.\n(A) influence — 명사/동사라 figures를 수식하는 형용사 자리에 올 수 없다.\n(B) influential — 형용사 '영향력 있는'. 정답.\n(C) influentially — 부사라 명사 figures를 수식하지 못한다.\n(D) influenced — 과거분사라 '영향받은 인물'이 되어 최상급 극찬 맥락과 어색하다.",
+          "translation": "오늘날 다나카 씨는 지역 기술 분야에서 가장 영향력 있는 인물 중 한 명으로 인정받는다."
         },
         {
           "prompt": "빈칸 (2) · 문장 삽입",
@@ -185,19 +202,22 @@
             "Therefore, the product launch was indefinitely postponed by the board."
           ],
           "answerIndex": 1,
-          "explanation": "앞은 초창기 투자 부족의 역경, 뒤는 공공 부문 혁신가들과 협력해 시스템을 구축한 극복 성과. 역경과 극복을 잇는 역접 접속부사 (B) Nevertheless."
+          "explanation": "앞은 초창기 투자 부족의 역경, 뒤는 공공 부문 혁신가들과 협력해 시스템을 구축한 극복 성과이므로, 역경과 극복을 잇는 역접이 필요하다.\n(A) 따라서 그녀는 회사 연구 부문을 해체하기로 했습니다 — 극복 성과와 정반대다.\n(B) 그럼에도 디지털 준법에 대한 그녀의 흔들림 없는 헌신은 결코 꺾이지 않았습니다 — 역경→극복을 잇는 역접이라 정답.\n(C) 반대로 대형 기술 대기업이 소프트웨어 시장을 완전히 지배했습니다 — 그녀의 극복 서사와 어긋난다.\n(D) 따라서 제품 출시가 이사회에 의해 무기한 연기되었습니다 — 성공 스토리 흐름과 충돌한다.",
+          "translation": "그럼에도 불구하고, 디지털 준법에 대한 그녀의 흔들림 없는 헌신은 결코 꺾이지 않았다."
         },
         {
           "prompt": "빈칸 (3)",
           "choices": ["collaborative", "reluctant", "marginal", "obsolete"],
           "answerIndex": 0,
-          "explanation": "앞 인용구에서 '어떤 개인도 혼자서 플랫폼을 만들 수 없다'며 팀의 집단적 헌신을 강조. 성공은 '협력적인' 노력의 결과라는 맥락 (A) collaborative."
+          "explanation": "앞 인용구에서 '어떤 개인도 혼자서 플랫폼을 만들 수 없다'며 팀의 집단적 헌신을 강조하므로, 성공은 '협력적인' 노력의 결과다.\n(A) collaborative — '협력적인'. 팀워크 강조로 정답.\n(B) reluctant — '마지못한'이라 헌신 강조와 반대다.\n(C) marginal — '미미한'이라 성공 요인과 어긋난다.\n(D) obsolete — '구식의'라 문맥과 무관하다.",
+          "translation": "\"우리의 성공은 전적으로 협력적인 노력의 결과입니다.\""
         },
         {
           "prompt": "빈칸 (4)",
           "choices": ["allocate", "terminate", "reverse", "bounce"],
           "answerIndex": 0,
-          "explanation": "intends to + [타동사] + a portion of the firm's annual profits(목적어) 구조. 연간 수익 일부를 장학금으로 '할당·배분하다'가 유일한 정답 (A) allocate."
+          "explanation": "'intends to + [타동사] + a portion of the firm's annual profits' 구조라, 연간 수익 일부를 장학금으로 '할당·배분하다'가 알맞다(allocate A to B).\n(A) allocate — 'allocate A to B(~에 배분하다)'. 정답.\n(B) terminate — '종료하다'라 수익을 장학금에 쓰는 의미와 반대다.\n(C) reverse — '뒤집다'라 문맥과 맞지 않는다.\n(D) bounce — '튀다'라 의미가 전혀 맞지 않는다.",
+          "translation": "다나카 씨는 회사 연간 수익의 일부를 저소득층 학생을 위한 기술 장학금 자금으로 배정할 계획이다."
         }
       ]
     }

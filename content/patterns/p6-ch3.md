@@ -18,13 +18,15 @@
           "prompt": "빈칸 (1)",
           "choices": ["will be hosting", "hosted", "host", "had hosted"],
           "answerIndex": 0,
-          "explanation": "첫 문장의 on August 5라는 미래 시점 단서. 앞으로 열릴 축하 행사이므로 미래 진행 시제 (A) will be hosting. 과거(B·D)·현재(C) 제외."
+          "explanation": "첫 문장의 on August 5가 미래 시점 단서이며, 앞으로 열릴 축하 행사이므로 미래 진행 시제가 알맞다.\n(A) will be hosting — 미래 진행. 예정된 행사로 정답.\n(B) hosted — 과거라 8월 5일(미래)과 시제가 어긋난다.\n(C) host — 현재/원형이라 예정을 나타내지 못하고 주어 we와도 어색하다.\n(D) had hosted — 과거완료라 미래 행사와 정반대 시제다.",
+          "translation": "이 뜻깊은 행사를 기념하고자, 우리는 정식 개장 전에 충성 구독자를 위한 독점 프리뷰 행사를 오전 10시부터 오후 2시까지 엽니다."
         },
         {
           "prompt": "빈칸 (2)",
           "choices": ["very", "so", "significantly", "too"],
           "answerIndex": 2,
-          "explanation": "빈칸 뒤 비교급 faster가 있다. 비교급 앞에는 원급 수식 부사 very·so·too를 쓸 수 없으므로 비교급 강조 부사 (C) significantly(훨씬)."
+          "explanation": "빈칸 뒤에 비교급 faster와 than이 있으므로 비교급을 강조하는 부사가 필요하다.\n(A) very — 원급 수식 부사라 비교급 faster를 강조하지 못한다.\n(B) so — 원급 강조라 비교급 앞에 쓸 수 없다.\n(C) significantly — 비교급 강조 '훨씬'. faster를 강조해 정답.\n(D) too — 원급 수식('너무')이라 비교급과 결합하지 않는다.",
+          "translation": "이 최첨단 기기들은 시중의 기존 어떤 모델보다도 훨씬 더 빠르게 복잡한 작업을 처리하도록 설계되었습니다."
         },
         {
           "prompt": "빈칸 (3) · 문장 삽입",
@@ -35,13 +37,15 @@
             "Please note that the store layout has been modified for safety compliance."
           ],
           "answerIndex": 1,
-          "explanation": "뒤 문장에서 선착순 100명 사은품·20% 할인 등 구체 혜택을 나열하므로, '게다가 얼리버드에게 특별 인센티브를 제공한다'는 총론 (B)가 자석 역할."
+          "explanation": "뒤 문장에서 선착순 100명 사은품·20% 할인 등 구체 혜택을 나열하므로, 앞에 '얼리버드에게 특별 인센티브를 제공한다'는 총론이 와야 한다.\n(A) 구형 모델 수리 서비스가 다음 달 영구 종료됩니다 — 오픈 혜택 흐름과 무관하고 부정적이라 어긋난다.\n(B) 게다가 조기 참석자에게 파격 인센티브를 제공합니다 — 뒤 구체 혜택의 총론이라 정답.\n(C) 여러 기술 결함으로 제조가 지연되었습니다 — 축하·홍보 톤과 충돌한다.\n(D) 안전 규정을 위해 매장 배치를 변경했습니다 — 혜택 나열 흐름과 무관하다.",
+          "translation": "또한, 우리는 조기 참석자를 위한 파격적인 혜택을 제공합니다."
         },
         {
           "prompt": "빈칸 (4)",
           "choices": ["unprecedented", "redundant", "confidential", "obsolete"],
           "answerIndex": 0,
-          "explanation": "오픈 기념의 파격적 할인 혜택을 수식하는 형용사. 마케팅 지문 단골인 '전례 없는, 파격적인' (A) unprecedented. 불필요한(B)·기밀의(C)·구식의(D)는 부적합."
+          "explanation": "오픈 기념의 파격적 할인 혜택을 수식하므로 '전례 없는, 파격적인'이 알맞다.\n(A) unprecedented — '전례 없는'. 할인 강조로 정답.\n(B) redundant — '불필요한/중복된'이라 혜택 강조와 맞지 않는다.\n(C) confidential — '기밀의'라 공개 할인 홍보와 어긋난다.\n(D) obsolete — '구식의'라 savings 수식으로 부적합하다.",
+          "translation": "이 전례 없는 할인 혜택과 사무 인프라를 업그레이드할 기회를 놓치지 마십시오."
         }
       ]
     },
@@ -57,13 +61,15 @@
           "prompt": "빈칸 (1)",
           "choices": ["will take place", "took place", "to take place", "is taken place"],
           "answerIndex": 0,
-          "explanation": "뒤의 from September 12는 미래 시점 단서라 미래 시제 (A) will take place. take place는 100% 자동사라 수동태 모양 (D)는 아예 성립하지 않는다."
+          "explanation": "뒤의 from September 12가 미래 시점 단서이며, take place는 완전한 자동사다.\n(A) will take place — 미래 자동사. 정답.\n(B) took place — 과거라 미래 일정과 시제가 어긋난다.\n(C) to take place — 준동사라 that절의 본동사 자리에 올 수 없다.\n(D) is taken place — take place는 자동사라 수동태 자체가 성립하지 않는다.",
+          "translation": "제15회 연례 국제 무역·혁신 엑스포가 9월 12일부터 15일까지 코엑스 센터에서 열립니다."
         },
         {
           "prompt": "빈칸 (2)",
           "choices": ["inside", "throughout", "between", "toward"],
           "answerIndex": 1,
-          "explanation": "뒤에 기간 명사 the weekend가 온다. 행사가 며칠간 쭉 이어지는 흐름이므로 '주말 내내'라는 지속성의 전치사 (B) throughout."
+          "explanation": "뒤에 기간 명사 the weekend가 오고 행사가 며칠간 이어지므로 '주말 내내'라는 지속의 전치사가 필요하다.\n(A) inside — 공간 전치사라 기간 the weekend와 맞지 않는다.\n(B) throughout — '~내내'. 지속 기간으로 정답.\n(C) between — 두 지점 사이라 단일 기간 the weekend와 어색하다.\n(D) toward — '~쪽으로/무렵'이라 지속 의미를 담지 못한다.",
+          "translation": "개막일에는 업계 선구자들의 기조연설이 예정되어 있고, 이어서 주말 내내 상호 참여형 패널 토론이 열립니다."
         },
         {
           "prompt": "빈칸 (3) · 문장 삽입",
@@ -74,13 +80,15 @@
             "Exhibitors are requested to dismantle their booths before midnight."
           ],
           "answerIndex": 1,
-          "explanation": "뒤 문장에서 일반권·프리미엄 패스의 권한 차이를 설명하므로, '온라인 티켓 판매가 이제 일반 대중에게 오픈되었다'는 판매 개시 총론 (B)가 연결고리."
+          "explanation": "뒤 문장에서 일반권·프리미엄 패스의 권한 차이를 설명하므로, 앞에 '온라인 티켓 판매가 대중에 공개되었다'는 판매 개시 총론이 와야 한다.\n(A) 등록비는 각 회계팀이 환급해야 합니다 — 티켓 등급 설명 흐름과 무관하다.\n(B) 온라인 티켓 판매가 이제 일반 대중에 공개되었습니다 — 뒤 등급 설명의 총론이라 정답.\n(C) 기조 연사가 일정 충돌로 발표를 취소했습니다 — 행사 홍보 톤과 충돌한다.\n(D) 전시자는 자정 전에 부스를 철거하도록 요청됩니다 — 관람객 티켓 안내와 무관하다.",
+          "translation": "온라인 티켓 판매가 이제 일반 대중에게 정식으로 공개되었습니다."
         },
         {
           "prompt": "빈칸 (4)",
           "choices": ["that", "whether", "what", "which"],
           "answerIndex": 1,
-          "explanation": "verify의 목적어 명사절 접속사 자리. 셔틀버스 운행 '여부'를 확인하라는 불확실성 문맥이라 (B) whether."
+          "explanation": "verify의 목적어 명사절 자리이며, 셔틀버스 운행 '여부'를 확인하라는 불확실성 문맥이다.\n(A) that — '~라는 것'이라 '여부'라는 불확실성을 담지 못해 확인 문맥과 약하다.\n(B) whether — '~인지 여부'. 운행 여부 확인으로 정답.\n(C) what — 뒤 절이 완전(services will be operating)해 빠진 성분을 대신하는 what은 올 수 없다.\n(D) which — 선택 대상 명사가 없어 부적합하다.",
+          "translation": "인근 지하철역에서 셔틀버스가 운행되는지 여부를 행사 웹사이트에서 확인해 주십시오."
         }
       ]
     },
@@ -96,7 +104,8 @@
           "prompt": "빈칸 (1)",
           "choices": ["will close", "have closed", "are closing", "closed"],
           "answerIndex": 0,
-          "explanation": "next week와 On Wednesday, July 15라는 미래 시점 단서. 앞으로 있을 단축 영업을 단순 미래로 기술하는 (A) will close."
+          "explanation": "next week와 On Wednesday, July 15가 미래 시점 단서이므로 앞으로 있을 단축 영업을 단순 미래로 기술한다.\n(A) will close — 단순 미래. 예정 단축 영업으로 정답.\n(B) have closed — 현재완료라 미래 일정과 시제가 어긋난다.\n(C) are closing — 현재진행도 예정 표현이 가능하나, 특정 미래 날짜의 공식 안내에는 will이 명확·표준이다.\n(D) closed — 과거라 미래 일정과 정반대다.",
+          "translation": "7월 15일 수요일에는 쇼룸과 고객 서비스 창구가 평소보다 4시간 이른 오후 1시에 문을 닫습니다."
         },
         {
           "prompt": "빈칸 (2) · 문장 삽입",
@@ -107,19 +116,22 @@
             "Several staff members will be reassigned to the logistical distribution facility."
           ],
           "answerIndex": 1,
-          "explanation": "뒤 문장에서 '디지털 플랫폼으로 중단 없이 주문·문의가 가능하다'고 뒷받침하므로, '웹 고객 포털은 완전히 가동 상태를 유지한다(remain fully operational)'는 총론 (B)가 징검다리."
+          "explanation": "뒤 문장에서 '디지털 플랫폼으로 중단 없이 주문·문의가 가능하다'고 뒷받침하므로, 앞에 '웹 포털은 완전 가동 상태를 유지한다'는 총론이 와야 한다.\n(A) 국제 주문에 정규 배송비가 부과됩니다 — 휴업 대안 안내 흐름과 무관하다.\n(B) 웹 고객 포털은 완전히 가동 상태를 유지합니다 — 뒤 온라인 이용 안내의 총론이라 정답.\n(C) 시내 플래그십 매장이 전면 리모델링 중입니다 — 재고 실사 단축 영업 맥락과 어긋난다.\n(D) 여러 직원이 물류 시설로 재배치됩니다 — 고객 안내 흐름과 무관하다.",
+          "translation": "저희 웹 기반 고객 포털은 완전히 가동 상태를 유지함을 알려 드립니다."
         },
         {
           "prompt": "빈칸 (3)",
           "choices": ["to handle", "will be handled", "are handling", "have handled"],
           "answerIndex": 1,
-          "explanation": "주어 Any transactions or inquiries는 담당 직원에 의해 처리되는 대상이고, 목요일 아침이라는 미래 시점이 결합해 미래 수동태 (B) will be handled."
+          "explanation": "주어 Any transactions or inquiries는 직원에 의해 처리되는 대상(수동)이고, 목요일 아침이라는 미래 시점이 결합해 미래 수동태가 필요하다.\n(A) to handle — 준동사라 본동사 자리에 올 수 없다.\n(B) will be handled — 미래 수동태. 정답.\n(C) are handling — 능동 진행이라 주어가 '처리하는' 주체가 되어 태가 어긋난다.\n(D) have handled — 능동 현재완료라 태·시제 모두 맞지 않는다.",
+          "translation": "이 짧은 시간 동안 온라인으로 처리된 거래나 문의는 목요일 아침에 처리됩니다."
         },
         {
           "prompt": "빈칸 (4)",
           "choices": ["suspend", "resume", "expire", "evaluate"],
           "answerIndex": 1,
-          "explanation": "임시 휴업 후 정상 영업이 '재개되다' 문맥이므로 (B) resume. 중단(A)·만료(C)·평가(D)는 부적합."
+          "explanation": "임시 휴업 후 정상 영업이 '재개되다'라는 문맥이다.\n(A) suspend — '중단하다'라 정상 복귀 문맥과 정반대다.\n(B) resume — '재개되다'. 정상 영업 복귀로 정답.\n(C) expire — '만료되다'라 영업시간에 맞지 않는다.\n(D) evaluate — '평가하다'라 문맥과 무관하다.",
+          "translation": "전 오프라인 지점의 정상 영업은 7월 16일 목요일 오전 9시에 재개됩니다."
         }
       ]
     },
@@ -135,7 +147,8 @@
           "prompt": "빈칸 (1)",
           "choices": ["will be", "have been", "were", "are being"],
           "answerIndex": 0,
-          "explanation": "뒤의 from 11:00 P.M. on Saturday, July 18이라는 미래 날짜·시간 단서. 다음 주말 점검을 예고하는 맥락이라 단순 미래 (A) will be."
+          "explanation": "뒤의 from 11:00 P.M. on Saturday, July 18이 미래 날짜·시간 단서이며, 다음 주말 점검을 예고하는 맥락이다.\n(A) will be — 단순 미래. 예정 중단으로 정답.\n(B) have been — 현재완료라 미래 예고와 시제가 어긋난다.\n(C) were — 과거라 미래 일정과 정반대다.\n(D) are being — 현재진행이라 미래 특정 시점 예고와 맞지 않는다.",
+          "translation": "공식 고객 포털과 모바일 앱은 7월 18일 토요일 오후 11시부터 7월 19일 일요일 오전 4시까지 이용할 수 없습니다."
         },
         {
           "prompt": "빈칸 (2) · 문장 삽입",
@@ -146,19 +159,22 @@
             "Technical specifications for the database hardware have been uploaded to the forum."
           ],
           "answerIndex": 0,
-          "explanation": "뒤 문장에서 '저장되지 않은 수정 사항은 영구 유실될 수 있다'고 경고하므로, '마감 전에 진행 중인 작업을 저장하라 강력 권장한다'는 주의사항 총론 (A)가 자석."
+          "explanation": "뒤 문장에서 '저장되지 않은 수정 사항은 영구 유실될 수 있다'고 경고하므로, 앞에 '마감 전 진행 중인 작업을 저장하라'는 주의사항 총론이 와야 한다.\n(A) 마감 전에 현재 작업을 모두 저장하시길 강력히 권합니다 — 뒤 유실 경고의 총론이라 정답.\n(B) 고객 상담 전화가 다음 주 영구 단절됩니다 — 점검 주의사항 흐름과 무관하고 과도하다.\n(C) 신규 가입비가 구독 등급에 따라 조정됩니다 — 점검 공지와 무관하다.\n(D) DB 하드웨어 사양이 포럼에 업로드되었습니다 — 사용자 주의사항 흐름과 어긋난다.",
+          "translation": "마감 전에 현재 작업 내용을 모두 저장하시길 강력히 권장합니다."
         },
         {
           "prompt": "빈칸 (3)",
           "choices": ["will make", "is making", "will be made", "has made"],
           "answerIndex": 2,
-          "explanation": "Every effort will be made to V(~하기 위해 모든 노력을 다하겠다)는 고정 격식 표현. 주어 Every effort는 행해지는 대상이라 미래 수동태 (C) will be made."
+          "explanation": "'Every effort will be made to V(~하기 위해 모든 노력을 다하겠다)'는 고정 격식 표현이며, 주어 Every effort는 행해지는 대상(수동)이자 미래다.\n(A) will make — 능동이라 effort가 '만드는' 주체가 되어 태가 어긋난다.\n(B) is making — 능동 진행이라 마찬가지로 태가 맞지 않는다.\n(C) will be made — 미래 수동태. 고정 표현으로 정답.\n(D) has made — 능동 현재완료라 태·시제 모두 맞지 않는다.",
+          "translation": "다운타임을 최소화하기 위해 필요한 업그레이드를 최대한 신속히 완료하고자 모든 노력을 다하겠습니다."
         },
         {
           "prompt": "빈칸 (4)",
           "choices": ["through", "after", "during", "until"],
           "answerIndex": 1,
-          "explanation": "뒤에 '점검 기간이 끝났다(has concluded)'는 절이 온다. 점검이 '끝난 후에도' 오류가 나면 연락하라는 흐름이라 시간 접속사 (B) after."
+          "explanation": "뒤에 '점검 기간이 끝났다(has concluded)'는 절이 오며, '끝난 후에도' 오류가 나면 연락하라는 흐름이라 시간 접속사가 필요하다.\n(A) through — 전치사(부사)라 뒤에 절을 이끄는 접속사로 부적합하다.\n(B) after — '~한 후에'. 점검 종료 후 접속사로 정답.\n(C) during — 전치사라 뒤에 절(주어+동사)을 이끌지 못한다.\n(D) until — '~까지'라 '끝난 뒤에도'라는 의미와 논리가 맞지 않는다.",
+          "translation": "예정된 점검 기간이 끝난 후에도 지속적인 접속 문제가 있으면, 브라우저 캐시를 지우거나 IT 헬프데스크로 연락 주십시오."
         }
       ]
     },
@@ -174,7 +190,8 @@
           "prompt": "빈칸 (1)",
           "choices": ["will expire", "expiring", "to expire", "expired"],
           "answerIndex": 0,
-          "explanation": "뒤의 on August 31이라는 미래 날짜 단서. 다음 달 말 만료를 정중히 예고하는 서신이라 단순 미래 (A) will expire. expire는 100% 자동사라 수동태 불가."
+          "explanation": "뒤의 on August 31이 미래 날짜 단서이며, expire는 완전한 자동사다.\n(A) will expire — 미래 자동사. 다음 달 말 만료 예고로 정답.\n(B) expiring — 분사라 본동사 자리에 올 수 없다.\n(C) to expire — 준동사라 본동사 자리에 올 수 없다.\n(D) expired — 과거라 앞으로의 만료(미래)와 시제가 어긋난다.",
+          "translation": "귀하의 현재 연간 구독이 8월 31일에 만료됨을 알려 드립니다."
         },
         {
           "prompt": "빈칸 (2) · 문장 삽입",
@@ -185,19 +202,22 @@
             "New subscription packages are completely unavailable to existing users."
           ],
           "answerIndex": 1,
-          "explanation": "뒤 문장에서 '8월 15일 전 연장 시 고정 요금(locked-in rate) 혜택'이라는 금전적 이득을 나열하므로, '조기 갱신에 독점 재정 인센티브를 제공한다'는 총론 (B)가 자석."
+          "explanation": "뒤 문장에서 '8월 15일 전 연장 시 고정 요금(locked-in rate) 혜택'이라는 금전적 이득을 나열하므로, 앞에 '조기 갱신에 독점 재정 인센티브를 제공한다'는 총론이 와야 한다.\n(A) 계정 해지는 30일 전 서면 요청이 필요합니다 — 갱신 권유 흐름과 반대다.\n(B) 조기 갱신에 독점 재정 혜택을 제공하게 되어 기쁩니다 — 뒤 요금 혜택의 총론이라 정답.\n(C) 여러 기술 업그레이드로 서버 다운타임을 최소화했습니다 — 갱신 혜택 흐름과 무관하다.\n(D) 신규 구독 패키지는 기존 사용자에게 전혀 제공되지 않습니다 — 갱신 권유와 모순되고 부정적이라 어긋난다.",
+          "translation": "저희는 조기 갱신 고객을 위한 독점 재정 혜택을 제공하게 되어 기쁩니다."
         },
         {
           "prompt": "빈칸 (3)",
           "choices": ["can complete", "completes", "can be completed", "is completing"],
           "answerIndex": 2,
-          "explanation": "주어 Renewing your status는 시스템에 의해 완료되는 대상이므로 조동사 수동태 (C) can be completed. is ~ and (동사구) 병렬 구조."
+          "explanation": "주어 Renewing your status는 시스템에 의해 완료되는 대상(수동)이며, 'is ~ and (동사구)' 병렬 구조다.\n(A) can complete — 능동이라 '갱신 행위가 완료하는' 주체가 되어 태가 어긋난다.\n(B) completes — 능동 현재라 마찬가지로 태가 맞지 않는다.\n(C) can be completed — 조동사 수동태. '완료될 수 있다'로 정답.\n(D) is completing — 능동 진행이라 태가 맞지 않는다.",
+          "translation": "회원 자격 갱신은 매우 간단하며, 저희 보안 고객 포털에서 클릭 몇 번으로 완료될 수 있습니다."
         },
         {
           "prompt": "빈칸 (4)",
           "choices": ["patronage", "negligence", "reluctance", "coincidence"],
           "answerIndex": 0,
-          "explanation": "단골 고객·기업 회원의 오랜 성원·애용을 격식 있게 표현하는 (A) patronage. We value your patronage는 비즈니스 편지 마무리 정형 구문."
+          "explanation": "단골 고객·기업 회원의 오랜 성원·애용을 격식 있게 표현하는 어휘가 필요하다(We value your patronage 정형).\n(A) patronage — '애용, 성원'. 정답.\n(B) negligence — '태만'이라 감사할 대상이 아니라 부적합하다.\n(C) reluctance — '꺼림'이라 부정적이라 맞지 않는다.\n(D) coincidence — '우연'이라 문맥과 무관하다.",
+          "translation": "저희는 귀사의 성원을 진심으로 소중히 여기며, 앞으로도 멋진 한 해 동안 데이터 인프라를 지원하기를 고대합니다."
         }
       ]
     }

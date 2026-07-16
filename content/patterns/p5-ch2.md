@@ -17,21 +17,21 @@
           "prompt": "The consulting firm ______ the merchandising strategy for Hillcrest Retail reported strong quarterly gains.",
           "choices": ["manage", "management", "managing", "managed"],
           "answerIndex": 2,
-          "explanation": "주어 firm 뒤 수식 분사 자리, 진짜 동사는 뒤의 reported. 빈칸 뒤에 목적어 the merchandising strategy가 살아 있으므로 능동의 현재분사 (C) managing.",
+          "explanation": "주어 firm을 뒤에서 꾸미는 분사 자리다(진짜 동사는 뒤의 reported). 빈칸 뒤에 목적어 the merchandising strategy가 살아 있으므로 능동이 필요하다.\n(A) manage — 동사원형/현재복수라 이미 본동사 reported가 있어 수식 자리에 못 온다.\n(B) management — 명사라 firm 뒤에서 목적어를 거느리며 수식하지 못한다.\n(C) managing — 현재분사(능동). 뒤 목적어를 지배하며 firm을 수식해 정답.\n(D) managed — 과거분사(수동)라 뒤에 목적어가 남은 구조와 맞지 않는다.",
           "translation": "힐크레스트 리테일의 상품화 전략을 관리하는 그 컨설팅 회사는 분기별로 큰 수익을 보고했다."
         },
         {
           "prompt": "The proposal ______ to the regional planning committee received outstanding evaluations.",
           "choices": ["submit", "submitting", "submitted", "submission"],
           "answerIndex": 2,
-          "explanation": "주어 proposal과 진짜 동사 received 사이의 수식 분사 자리. 빈칸 뒤 목적어 없이 전치사구 to the committee만 붙고, 제안서는 '제출되는' 대상이므로 수동의 과거분사 (C) submitted.",
+          "explanation": "주어 proposal과 진짜 동사 received 사이의 수식 분사 자리다. 뒤에 목적어 없이 전치사구 to the committee만 붙고, 제안서는 '제출되는' 대상이라 수동이 필요하다.\n(A) submit — 동사원형이라 본동사 received가 이미 있어 수식 자리에 못 온다.\n(B) submitting — 현재분사(능동)인데 뒤에 목적어가 없어 능동으로 볼 수 없다.\n(C) submitted — 과거분사(수동) '제출된'. 정답.\n(D) submission — 명사라 명사 proposal 뒤의 수식 분사 자리에 부적합하다.",
           "translation": "지역 기획 위원회에 제출된 그 제안서는 우수한 평가를 받았다."
         },
         {
           "prompt": "Companies ______ the new accounting software require additional staff training.",
           "choices": ["utilize", "utilizing", "utilized", "utilization"],
           "answerIndex": 1,
-          "explanation": "주어 Companies를 뒤에서 꾸미는 자리, 진짜 동사는 require. 빈칸 뒤 목적어 the new accounting software가 있으므로 능동의 현재분사 (B) utilizing.",
+          "explanation": "주어 Companies를 뒤에서 꾸미는 자리다(진짜 동사는 require). 빈칸 뒤에 목적어 the new accounting software가 있으므로 능동이 필요하다.\n(A) utilize — 동사원형/현재복수라 본동사 require와 동사가 겹친다.\n(B) utilizing — 현재분사(능동). 목적어를 지배해 정답.\n(C) utilized — 과거분사(수동)라 뒤에 목적어가 남은 구조와 맞지 않는다.\n(D) utilization — 명사라 수식 분사 자리에 못 온다.",
           "translation": "새 회계 소프트웨어를 사용하는 회사들은 추가 직원 교육이 필요하다."
         }
       ]
@@ -48,21 +48,21 @@
           "prompt": "Management at Brightway Consulting decided ______ the security procedures to prevent data loss.",
           "choices": ["update", "to update", "updating", "updated"],
           "answerIndex": 1,
-          "explanation": "타동사 decided는 to부정사를 목적어로 취한다. 동사원형 (A)·동명사 (C)·과거형 (D) 제외 → (B) to update.",
+          "explanation": "타동사 decided는 목적어로 to부정사를 취한다(decide to do).\n(A) update — 동사원형이라 decided의 목적어가 될 수 없다.\n(B) to update — to부정사. decide의 목적어로 정답.\n(C) updating — 동명사인데 decide는 동명사를 목적어로 취하지 않는다(대표 함정).\n(D) updated — 과거형/분사라 목적어 자리에 부적합하다.",
           "translation": "브라이트웨이 컨설팅 경영진은 데이터 손실을 막기 위해 보안 절차를 업데이트하기로 결정했다."
         },
         {
           "prompt": "Delivery teams must not fail ______ the shipment logs before dispatching each order.",
           "choices": ["verify", "to verify", "verifying", "verification"],
           "answerIndex": 1,
-          "explanation": "fail은 뒤에 대상을 취할 때 to부정사와 결합한다(fail to do). → (B) to verify.",
+          "explanation": "fail은 대상을 취할 때 to부정사와 결합한다(fail to do).\n(A) verify — 동사원형이라 fail 뒤의 목적어가 못 된다.\n(B) to verify — fail to do. 정답.\n(C) verifying — fail은 동명사를 취하지 않는다.\n(D) verification — 명사라 뒤 목적어 the shipment logs를 지배하지 못한다.",
           "translation": "배송팀은 각 주문을 발송하기 전에 반드시 배송 기록을 확인해야 한다."
         },
         {
           "prompt": "Northgate Manufacturing intends ______ its packaging line before the holiday season.",
           "choices": ["enhance", "to enhance", "enhancing", "enhancement"],
           "answerIndex": 1,
-          "explanation": "intend는 미래지향적 의도를 나타내며 to부정사와 짝을 이룬다. 명사 (D)는 뒤에 목적어 its packaging line을 지배할 수 없어 탈락 → (B) to enhance.",
+          "explanation": "intend는 미래지향적 의도를 나타내며 to부정사와 짝을 이룬다(intend to do).\n(A) enhance — 동사원형이라 intends 뒤의 목적어가 될 수 없다.\n(B) to enhance — intend to do. 정답.\n(C) enhancing — intend는 동명사를 목적어로 취하지 않는다.\n(D) enhancement — 명사라 뒤 목적어 its packaging line을 지배하지 못한다.",
           "translation": "노스게이트 제조사는 연휴 시즌 전에 자사 포장 라인을 개선할 계획이다."
         }
       ]
@@ -79,21 +79,21 @@
           "prompt": "Senior consultants strongly recommend ______ the workflow to remove unnecessary delays.",
           "choices": ["to streamline", "streamlining", "streamline", "streamlined"],
           "answerIndex": 1,
-          "explanation": "recommend는 동명사를 목적어로 취한다. 함정 to부정사 (A)를 제치고 (B) streamlining.",
+          "explanation": "recommend는 목적어로 동명사를 취한다.\n(A) to streamline — recommend는 to부정사를 목적어로 취하지 않는다(대표 함정).\n(B) streamlining — 동명사. recommend의 목적어로 정답.\n(C) streamline — 동사원형이라 목적어가 될 수 없다.\n(D) streamlined — 과거형/분사라 목적어 자리에 부적합하다.",
           "translation": "선임 컨설턴트들은 불필요한 지연을 없애기 위해 업무 흐름을 간소화할 것을 강력히 권장한다."
         },
         {
           "prompt": "To avoid ______ any scheduling conflicts, staff must confirm all bookings a day in advance.",
           "choices": ["to cause", "causing", "cause", "causation"],
           "answerIndex": 1,
-          "explanation": "avoid는 동명사를 취한다. 목적어 any scheduling conflicts를 거느려야 하므로 명사 (D)도 불가 → (B) causing.",
+          "explanation": "avoid는 목적어로 동명사를 취한다.\n(A) to cause — avoid는 to부정사와 결합하지 않는다.\n(B) causing — 동명사. avoid의 목적어로 정답.\n(C) cause — 동사원형이라 avoid의 목적어가 못 된다.\n(D) causation — 명사라 뒤 목적어 any scheduling conflicts를 지배하지 못한다.",
           "translation": "일정 충돌을 피하기 위해, 직원들은 모든 예약을 하루 전에 확정해야 한다."
         },
         {
           "prompt": "The board decided to postpone ______ the new downtown branch until the market survey is complete.",
           "choices": ["opening", "to open", "open", "openable"],
           "answerIndex": 0,
-          "explanation": "postpone(연기하다)은 동명사와 결합한다. (B) to open은 postpone과 결합할 수 없다 → (A) opening.",
+          "explanation": "postpone(연기하다)은 목적어로 동명사와 결합한다.\n(A) opening — 동명사. postpone의 목적어로 정답.\n(B) to open — postpone은 to부정사를 목적어로 취하지 않는다.\n(C) open — 동사원형/형용사라 목적어가 될 수 없다.\n(D) openable — 형용사라 목적어 자리에 부적합하다.",
           "translation": "이사회는 시장 조사가 완료될 때까지 새 시내 지점 개점을 연기하기로 결정했다."
         }
       ]
@@ -110,21 +110,21 @@
           "prompt": "The new scheduling system will enable branch managers ______ staff shifts in real time.",
           "choices": ["adjust", "to adjust", "adjusting", "adjustment"],
           "answerIndex": 1,
-          "explanation": "enable + 목적어(branch managers) + to부정사(목적격보어) 구조 → (B) to adjust.",
+          "explanation": "enable + 목적어(branch managers) + 목적격 보어(to부정사) 구조다.\n(A) adjust — 동사원형이라 목적격 보어 자리에 to 없이 올 수 없다.\n(B) to adjust — enable의 목적격 보어로 정답.\n(C) adjusting — enable은 목적격 보어로 to부정사를 요구하므로 -ing는 불가하다.\n(D) adjustment — 명사라 뒤 목적어 staff shifts를 지배하지 못한다.",
           "translation": "새 일정 관리 시스템은 지점 관리자들이 실시간으로 근무조를 조정할 수 있게 해 줄 것이다."
         },
         {
           "prompt": "Employees are strictly required ______ their identification badges before entering the facility.",
           "choices": ["present", "to present", "presenting", "presented"],
           "answerIndex": 1,
-          "explanation": "require + 목적어 + to do의 수동태(be required). 목적어가 주어로 나가고 목적격 보어인 to부정사가 남았다 → (B) to present.",
+          "explanation": "require + 목적어 + to do의 수동태(be required to do)다. 목적어가 주어로 나가고 목적격 보어인 to부정사가 남았다.\n(A) present — 동사원형이라 be required 뒤에 바로 올 수 없다.\n(B) to present — 남은 목적격 보어 to부정사. 정답.\n(C) presenting — require 수동태 뒤에 -ing 형태는 오지 않는다.\n(D) presented — 과거분사라 여기서는 목적격 보어 to부정사 자리와 맞지 않는다.",
           "translation": "직원들은 시설에 들어가기 전에 반드시 신분증을 제시해야 한다."
         },
         {
           "prompt": "The training coordinator encouraged the sales team ______ their client presentations.",
           "choices": ["revise", "to revise", "revising", "revision"],
           "answerIndex": 1,
-          "explanation": "encourage + 목적어(the sales team) + to부정사. 뒤 명사구 their client presentations를 지배할 수 있는 준동사는 (B) to revise.",
+          "explanation": "encourage + 목적어(the sales team) + to부정사 구조다.\n(A) revise — 동사원형이라 목적격 보어 자리에 to 없이 올 수 없다.\n(B) to revise — encourage의 목적격 보어로 정답.\n(C) revising — encourage는 목적격 보어로 to부정사를 요구한다(-ing 불가).\n(D) revision — 명사라 뒤 목적어 their client presentations를 지배하지 못한다.",
           "translation": "교육 담당자는 영업팀이 고객 발표 자료를 수정하도록 독려했다."
         }
       ]
@@ -141,21 +141,21 @@
           "prompt": "______ compliance with the new safety guidelines, Northgate Manufacturing inspects its equipment every week.",
           "choices": ["Ensure", "To ensure", "Ensuring", "Ensured"],
           "answerIndex": 1,
-          "explanation": "콤마 뒤에 완전한 절이 있으므로 앞은 수식어 거품. '준수를 보장하기 위해'라는 목적이 자연스러우므로 (B) To ensure. 명령문 (A)는 뒤에 콤마+절이 못 온다.",
+          "explanation": "콤마 뒤에 완전한 절이 있으므로 앞자리는 목적을 나타내는 수식어 거품이다. '준수를 보장하기 위해'가 자연스럽다.\n(A) Ensure — 명령문 동사원형이라 뒤에 콤마+또 다른 완전한 절이 이어질 수 없다.\n(B) To ensure — 목적의 to부정사. 정답.\n(C) Ensuring — 분사구문 형태이나, '~하기 위해'라는 목적을 명확히 나타내는 데는 to부정사가 정답으로 우선한다.\n(D) Ensured — 과거분사라 능동으로 목적어 compliance를 지배하지 못한다.",
           "translation": "새 안전 지침의 준수를 보장하기 위해, 노스게이트 제조사는 매주 장비를 점검한다."
         },
         {
           "prompt": "The records staff relocated all files to the central archive ______ storage costs across the department.",
           "choices": ["reduce", "to reduce", "reduction", "reduced"],
           "answerIndex": 1,
-          "explanation": "앞에 완전한 문장이 끝났고 뒷자리는 목적의 수식어 거품. '보관 비용을 줄이기 위해'가 자연스러운 (B) to reduce.",
+          "explanation": "앞에 완전한 문장이 끝났고 뒷자리는 목적의 수식어 거품이다. '보관 비용을 줄이기 위해'가 자연스럽다.\n(A) reduce — 동사원형이라 이미 본동사 relocated가 있어 들어갈 수 없다.\n(B) to reduce — 목적의 to부정사. 정답.\n(C) reduction — 명사라 뒤 목적어 storage costs를 지배하지 못한다.\n(D) reduced — 과거형/분사라 '~하기 위해'라는 목적 의미를 만들지 못한다.",
           "translation": "기록 관리 직원들은 부서 전반의 보관 비용을 줄이기 위해 모든 파일을 중앙 자료실로 옮겼다."
         },
         {
           "prompt": "Mr. Halloran revised the training manual in order ______ onboarding time for new hires.",
           "choices": ["shorten", "to shorten", "shortening", "shortened"],
           "answerIndex": 1,
-          "explanation": "in order to + 동사원형은 하나의 관용 목적 표현. → (B) to shorten.",
+          "explanation": "in order to + 동사원형은 하나의 관용적 목적 표현이다.\n(A) shorten — in order 뒤에는 반드시 to가 와야 한다.\n(B) to shorten — in order to do. 정답.\n(C) shortening — in order 뒤에 -ing는 올 수 없다.\n(D) shortened — 과거형이라 in order to 관용구를 깬다.",
           "translation": "핼러런 씨는 신입 직원의 적응 기간을 단축하기 위해 교육 매뉴얼을 개정했다."
         }
       ]

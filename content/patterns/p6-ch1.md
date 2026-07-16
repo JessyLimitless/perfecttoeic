@@ -18,7 +18,8 @@
           "prompt": "빈칸 (1)",
           "choices": ["delays", "has been delayed", "to delay", "will delay"],
           "answerIndex": 1,
-          "explanation": "빈칸 뒤에 목적어 없이 마침표로 끝나므로 수동태가 필요. 능동 (A)(D)·동사 자리가 아닌 (C) 제외. 재고 부족으로 '지금까지 지연되어 온' 상태이므로 현재완료 수동태 (B) has been delayed."
+          "explanation": "빈칸 뒤에 목적어 없이 마침표로 끝나므로 수동태가 필요하고, 재고 부족으로 '지금까지 지연되어 온' 상태라 현재완료가 어울린다.\n(A) delays — 능동 현재라 목적어가 없는 자리·'지연되는 대상'인 shipment 처리와 태가 맞지 않는다.\n(B) has been delayed — 현재완료 수동. '처리가 지연되어 왔다'로 정답.\n(C) to delay — 준동사라 문장의 본동사 자리에 올 수 없다.\n(D) will delay — 능동 미래라 목적어가 필요하고 '지연시키다'가 되어 태가 어긋난다.",
+          "translation": "그 결과, 귀하의 배송 처리가 지연되어 왔습니다."
         },
         {
           "prompt": "빈칸 (2) · 문장 삽입",
@@ -29,19 +30,22 @@
             "Thank you for submitting your product review on our website."
           ],
           "answerIndex": 2,
-          "explanation": "앞 문장에서 '화요일에 재고 입고 후 주문을 즉시 우선 처리'라고 했으므로, 이어질 자연스러운 흐름은 구체적 발송 일정 안내. (C) '목요일쯤 발송 예상'이 맥락에 맞다."
+          "explanation": "앞 문장에서 '화요일 재고 입고 후 주문을 즉시 우선 처리한다'고 했으므로, 구체적 발송 일정 안내가 자연스럽다.\n(A) 계정이 정지되었습니다 — 주문 처리 흐름과 무관하고 부정적이라 사과·보상 톤과 충돌한다.\n(B) 30일 내 전액 환불 대상입니다 — 지연 안내이지 환불 맥락이 아니라 어긋난다.\n(C) 목요일쯤 발송 예상 — 우선 처리 약속에 이어지는 구체 일정이라 정답.\n(D) 후기 작성에 감사드립니다 — 아직 배송 전이라 후기 감사 맥락이 성립하지 않는다.",
+          "translation": "귀하의 물품이 다음 주 목요일까지 발송될 것으로 예상합니다."
         },
         {
           "prompt": "빈칸 (3)",
           "choices": ["temporary", "initial", "deliberate", "redundant"],
           "answerIndex": 0,
-          "explanation": "배송 지연은 재고가 채워지면 해결될 일이므로 '일시적인' (A) temporary. (C) 의도적인·(D) 불필요한은 사과 문맥에 부적합."
+          "explanation": "재고가 채워지면 해결될 불편이므로 '일시적인'이 알맞다.\n(A) temporary — '일시적인'. 곧 해결될 지연 불편에 맞아 정답.\n(B) initial — '초기의'라 이번 지연의 성격(일시성)을 정확히 담지 못한다.\n(C) deliberate — '의도적인'이라 사과 문맥과 정면으로 충돌한다.\n(D) redundant — '불필요한/중복된'이라 inconvenience 수식으로 의미가 어색하다.",
+          "translation": "이 일시적인 불편에 대해 진심으로 사과드립니다."
         },
         {
           "prompt": "빈칸 (4)",
           "choices": ["has credited", "is crediting", "will be credited", "credits"],
           "answerIndex": 2,
-          "explanation": "쿠폰(voucher)은 스스로 적립하는 주체가 아니라 시스템에 의해 '적립되는' 대상이므로 수동태, 앞으로 있을 보상이므로 미래. (C) will be credited."
+          "explanation": "쿠폰(voucher)은 스스로 적립하는 주체가 아니라 시스템에 의해 '적립되는' 대상(수동)이고, 앞으로 있을 보상(미래)이다.\n(A) has credited — 능동 현재완료라 voucher가 스스로 적립하는 주체가 되어 태가 어긋난다.\n(B) is crediting — 능동 진행이라 마찬가지로 태가 맞지 않는다.\n(C) will be credited — 미래 수동. '적립될 것'으로 정답.\n(D) credits — 능동 현재라 태·시제 모두 맞지 않는다.",
+          "translation": "또한 다음 구매에 쓰실 15% 할인 쿠폰이 귀하의 계정에 적립될 것입니다."
         }
       ]
     },
@@ -57,13 +61,15 @@
           "prompt": "빈칸 (1)",
           "choices": ["illuminated", "illuminating", "illuminate", "illumination"],
           "answerIndex": 1,
-          "explanation": "were truly [형용사/분사] 자리. 통찰(insights)이 깨달음을 '주는' 능동 의미이므로 현재분사 (B) illuminating(명쾌한, 이해를 돕는)."
+          "explanation": "were truly [형용사/분사] 보어 자리이며, 통찰(insights)이 이해를 '주는' 능동 의미라 현재분사가 맞다.\n(A) illuminated — 과거분사(수동)라 '이해를 받은'이 되어, insights가 주는 주체라는 의미와 어긋난다.\n(B) illuminating — 현재분사(능동) '명쾌한, 이해를 돕는'. 정답.\n(C) illuminate — 동사원형이라 be동사 뒤 보어 자리에 올 수 없다.\n(D) illumination — 명사라 '통찰=조명'이 되어 보어 의미가 어색하다.",
+          "translation": "법률 논리와 자동화 시스템을 통합하는 것에 대한 귀하의 통찰은 정말로 명쾌했습니다."
         },
         {
           "prompt": "빈칸 (2)",
           "choices": ["nominal", "volatile", "invaluable", "precarious"],
           "answerIndex": 2,
-          "explanation": "파트너십 제안은 상대의 가치를 극찬한다. '매우 귀중한' (C) invaluable. (A) 명목상의·(B) 변덕스러운·(D) 위태로운은 제안서에 부적합."
+          "explanation": "파트너십 제안은 상대의 가치를 극찬하므로 '매우 귀중한'이 알맞다.\n(A) nominal — '명목상의'라 극찬 맥락과 반대다.\n(B) volatile — '변덕스러운'이라 자산을 부정적으로 만들어 부적합하다.\n(C) invaluable — '매우 귀중한'. 정답.\n(D) precarious — '위태로운'이라 협력 제안의 칭찬 톤과 충돌한다.",
+          "translation": "귀하의 10년 전문성을 고려할 때, 귀하의 조언은 저희의 새 사업에 매우 귀중한 자산이 될 것입니다."
         },
         {
           "prompt": "빈칸 (3) · 문장 삽입",
@@ -74,13 +80,15 @@
             "Our technicians have successfully resolved the software glitch."
           ],
           "answerIndex": 2,
-          "explanation": "앞에서 협력의 필요성을 제시했고 뒤에서 '구체적으로 공동 입찰 기회를 모색하고 싶다'고 이어진다. 협력 제안을 잇는 (C)."
+          "explanation": "앞에서 협력의 필요성을 제시했고 뒤에서 '구체적으로 공동 입찰 기회를 모색하고 싶다'고 이어진다.\n(A) 지역 컨설팅 부문을 축소하기로 했습니다 — 협력 확대 제안과 정반대라 어긋난다.\n(B) 서밋 티켓 환불을 요청합니다 — 제안 맥락과 무관하다.\n(C) 귀 팀과 맞춤 문서 생성에 협력하기를 열망합니다 — 뒤의 구체 제안으로 자연스럽게 이어져 정답.\n(D) 기술진이 소프트웨어 결함을 해결했습니다 — 제안서 흐름과 무관하다.",
+          "translation": "저희는 귀 팀과 맞춤 문서 생성 분야에서 협력하기를 간절히 바랍니다."
         },
         {
           "prompt": "빈칸 (4)",
           "choices": ["will appreciate", "would appreciate", "appreciated", "are appreciating"],
           "answerIndex": 1,
-          "explanation": "정중한 요청의 고정 표현 would appreciate it if you could + 동사원형(가정법 공손). (B) would appreciate."
+          "explanation": "'would appreciate it if you could + 동사원형'은 정중한 요청의 고정 표현(가정법 공손)이다.\n(A) will appreciate — 단순 미래라 if you could 가정법 공손 구문과 호응이 약하다.\n(B) would appreciate — would appreciate it if ~ could. 정답.\n(C) appreciated — 과거라 요청 시점(현재/미래)과 맞지 않는다.\n(D) are appreciating — 진행형이라 상태동사 appreciate의 용법·공손 구문과 맞지 않는다.",
+          "translation": "다음 주 중 15분만 짧은 소개용 화상 통화에 내주실 수 있다면 감사하겠습니다."
         }
       ]
     },
@@ -96,13 +104,15 @@
           "prompt": "빈칸 (1)",
           "choices": ["caused", "to cause", "was caused", "causing"],
           "answerIndex": 0,
-          "explanation": "a technical glitch(주어) + [동사] + the duplicate payment(목적어) 구조. 뒤에 목적어가 있으므로 능동, 이미 확인된 과거 사실이므로 과거시제 (A) caused."
+          "explanation": "`a technical glitch(주어) + [동사] + the duplicate payment(목적어)` 구조라, 뒤에 목적어가 있으므로 능동이고 이미 확인된 과거 사실이다.\n(A) caused — 능동 과거. 목적어를 취해 정답.\n(B) to cause — 준동사라 본동사 자리에 올 수 없다.\n(C) was caused — 수동이라 뒤의 목적어 the duplicate payment와 충돌한다.\n(D) causing — 분사라 본동사 자리에 올 수 없다.",
+          "translation": "거래 기록을 검토한 후, 시스템의 기술적 결함이 이 중복 결제를 일으켰음을 확인했습니다."
         },
         {
           "prompt": "빈칸 (2)",
           "choices": ["is appearing", "will appear", "appeared", "appears"],
           "answerIndex": 1,
-          "explanation": "뒤의 시간 단서 within three business days(3영업일 이내)는 미래. appear는 자동사라 수동태 함정에 넘어가지 말 것. (B) will appear."
+          "explanation": "뒤의 시간 단서 within three business days(3영업일 이내)는 미래이며, appear는 자동사라 수동태 함정에 넘어가지 말아야 한다.\n(A) is appearing — 현재진행이라 미래 시점 단서와 맞지 않는다.\n(B) will appear — 미래. '3영업일 내 나타날 것'으로 정답.\n(C) appeared — 과거라 앞으로의 일과 시제가 어긋난다.\n(D) appears — 현재라 within three business days(미래)와 맞지 않는다.",
+          "translation": "전액 환불금이 3영업일 이내에 귀하의 등록 카드에 나타날 것입니다."
         },
         {
           "prompt": "빈칸 (3) · 문장 삽입",
@@ -113,13 +123,15 @@
             "Several customers have expressed interest in upgrading their current plans."
           ],
           "answerIndex": 0,
-          "explanation": "앞은 사과·환불 조치, 뒤는 '게다가 1개월 무료 연장' 추가 보상. 그 사이 재발 방지 약속인 (A) '보안 프로토콜을 성공적으로 업데이트했다'가 자연스럽다."
+          "explanation": "앞은 사과·환불 조치, 뒤는 '게다가 1개월 무료 연장'이라는 추가 보상이라, 그 사이엔 재발 방지 약속이 자연스럽다.\n(A) 향후 결함 방지를 위해 보안 프로토콜을 성공적으로 업데이트했습니다 — 재발 방지 약속으로 흐름에 맞아 정답.\n(B) 불량품을 가까운 서비스 센터로 반품하세요 — 청구 오류(디지털 구독) 맥락에 물건 반품은 무관하다.\n(C) 따라서 구독이 즉시 해지되었습니다 — 사과·관계 유지 의도와 정반대라 어긋난다.\n(D) 여러 고객이 요금제 업그레이드에 관심을 보였습니다 — 개인 사과 이메일 흐름과 무관하다.",
+          "translation": "저희는 향후 결함을 막기 위해 보안 프로토콜을 성공적으로 업데이트했습니다."
         },
         {
           "prompt": "빈칸 (4)",
           "choices": ["repeats", "is repeating", "does not recur", "has recurred"],
           "answerIndex": 2,
-          "explanation": "패치를 적용한 목적은 이 오류가 '재발하지 않도록' 하기 위함. 자동사 recur(재발하다). (C) does not recur."
+          "explanation": "패치를 적용한 목적은 이 오류가 '재발하지 않도록' 하기 위함이며, recur는 자동사다.\n(A) repeats — 능동 현재라 '오류가 반복한다'가 되어 방지 목적과 반대 의미다.\n(B) is repeating — 진행형이라 방지 목적·문맥과 맞지 않는다.\n(C) does not recur — '재발하지 않는다'. 방지 목적에 맞아 정답.\n(D) has recurred — 현재완료라 '이미 재발했다'가 되어 방지 취지와 정반대다.",
+          "translation": "저희 기술팀은 이 특정 오류가 재발하지 않도록 청구 소프트웨어에 영구 패치를 적용했습니다."
         }
       ]
     },
@@ -135,13 +147,15 @@
           "prompt": "빈칸 (1)",
           "choices": ["Attached", "Attachment", "Attaching", "Attach"],
           "answerIndex": 0,
-          "explanation": "보어 도치 [Attached/Enclosed] + be동사 + 진짜 주어. 뒤에 is + brochure가 있으므로 주격 보어 형용사(분사) (A) Attached. 명사·동사원형에 낚이지 말 것."
+          "explanation": "`[Attached/Enclosed] + be동사 + 진짜 주어`의 보어 도치 구조이며, 뒤에 is + brochure가 온다.\n(A) Attached — 주격 보어 분사형용사. 도치 구조로 정답.\n(B) Attachment — 명사라 '첨부물 is brochure'로 두 명사가 충돌한다.\n(C) Attaching — 현재분사(능동)라 '첨부하는 것'이 되어 '첨부된' 수동 상태 의미와 어긋난다.\n(D) Attach — 동사원형이라 문두 도치 보어 자리에 올 수 없다.",
+          "translation": "첨부된 것은 저희의 종합 디지털 브로슈어입니다."
         },
         {
           "prompt": "빈칸 (2)",
           "choices": ["standard", "approximate", "approximately", "approximation"],
           "answerIndex": 2,
-          "explanation": "뒤에 숫자 forty percent가 있으므로 수량을 수식하는 부사 자리. '대략, 약' (C) approximately."
+          "explanation": "뒤에 숫자 forty percent가 있으므로 수량을 수식하는 부사 자리다.\n(A) standard — 형용사/명사라 숫자를 수식하는 부사 역할을 못 한다.\n(B) approximate — 형용사라 뒤의 수량 표현을 수식하지 못한다.\n(C) approximately — 부사 '약, 대략'. 숫자를 수식해 정답.\n(D) approximation — 명사라 수식 자리에 부적합하다.",
+          "translation": "이 시스템은 귀사의 행정 처리 시간을 약 40퍼센트 줄여 줄 것입니다."
         },
         {
           "prompt": "빈칸 (3) · 문장 삽입",
@@ -152,13 +166,15 @@
             "Your request to cancel the subscription has been processed successfully."
           ],
           "answerIndex": 1,
-          "explanation": "뒤 문장에서 '이달 말 전 시범 설치 시 무료 세팅'이라는 구체 혜택을 던진다. 앞에서 '새 기업 고객 독점 혜택도 제공한다'고 운을 떼는 (B)가 징검다리."
+          "explanation": "뒤 문장에서 '이달 말 전 시범 설치 시 무료 세팅'이라는 구체 혜택을 제시하므로, 앞에서 '새 기업 고객 대상 독점 혜택'으로 운을 떼는 것이 자연스럽다.\n(A) 즉시 라이선스 갱신비가 필요합니다 — 혜택 제공 흐름과 반대(비용 부과)라 어긋난다.\n(B) 새 기업 고객을 위한 독점 혜택도 제공합니다 — 뒤 구체 혜택으로 이어져 정답.\n(C) 프로모션이 이미 만료되었습니다 — 뒤의 혜택 제안과 모순된다.\n(D) 구독 취소 요청이 처리되었습니다 — 신규 영업 답변 맥락과 무관하다.",
+          "translation": "저희는 또한 새 기업 고객을 위한 독점 혜택을 제공하고 있습니다."
         },
         {
           "prompt": "빈칸 (4)",
           "choices": ["hesitate", "postpone", "anticipate", "fluctuate"],
           "answerIndex": 0,
-          "explanation": "비즈니스 서신 마무리 관용구 do not hesitate to + 동사원형(망설이지 말고 연락 주세요). (A) hesitate."
+          "explanation": "'do not hesitate to + 동사원형(주저 말고 연락 주세요)'은 비즈니스 서신 마무리의 관용구다.\n(A) hesitate — do not hesitate to reach out. 정답.\n(B) postpone — '연기하다'라 뒤 to부정사와의 결합도 어색하고 의미도 맞지 않는다.\n(C) anticipate — '예상하다'라 관용구·의미 모두 맞지 않는다.\n(D) fluctuate — '변동하다'라 문맥과 전혀 맞지 않는다.",
+          "translation": "추가 질문이 있으시거나 실시간 시연을 원하시면 주저 말고 연락 주십시오."
         }
       ]
     },
@@ -174,13 +190,15 @@
           "prompt": "빈칸 (1)",
           "choices": ["talent", "talented", "talents", "talenting"],
           "answerIndex": 1,
-          "explanation": "an + exceptionally(부사) + [형용사] + professional(명사) 구조. 명사를 꾸미는 형용사 자리이므로 분사형 형용사 (B) talented."
+          "explanation": "`an + exceptionally(부사) + [형용사] + professional(명사)` 구조라, 명사를 꾸미는 형용사 자리다.\n(A) talent — 명사라 명사 professional 앞의 수식 형용사 자리에 올 수 없다.\n(B) talented — 분사형 형용사 '재능 있는'. professional을 수식해 정답.\n(C) talents — 복수 명사라 형용사 자리에 부적합하다.\n(D) talenting — 존재하지 않는 비표준 형태다.",
+          "translation": "저는 그녀가 대단히 재능 있는 전문가로 성장하는 것을 지켜보았습니다."
         },
         {
           "prompt": "빈칸 (2)",
           "choices": ["among", "throughout", "into", "under"],
           "answerIndex": 3,
-          "explanation": "'촉박한 마감 하에서'를 뜻하는 고정 표현 under tight deadlines. under pressure·under budget과 세트로 암기. (D) under."
+          "explanation": "'under tight deadlines(촉박한 마감 하에서)'는 압박을 나타내는 고정 표현이다(under pressure·under budget과 세트).\n(A) among — '~사이에'라 deadlines와 연어·의미가 맞지 않는다.\n(B) throughout — '~내내'라 '마감 하에서'라는 압박 의미를 담지 못한다.\n(C) into — 방향 전치사라 deadlines와의 결합이 어색하다.\n(D) under — under tight deadlines(압박 하에서). 정답.",
+          "translation": "그녀는 촉박한 마감 속에서도 팀이 복잡한 컨설팅 솔루션을 내도록 이끌었습니다."
         },
         {
           "prompt": "빈칸 (3) · 문장 삽입",
@@ -191,13 +209,15 @@
             "The recruitment process has been extended due to a high volume of applicants."
           ],
           "answerIndex": 2,
-          "explanation": "앞은 기술 전문성·리더십 칭찬, 뒤는 '헌신·분석력이 귀사에도 기여할 것 확신'. 과거의 구체적 성과를 제시하는 (C) '두 건의 대형 B2G 계약 확보에 결정적 기여'가 자연스럽다."
+          "explanation": "앞은 기술 전문성·리더십 칭찬, 뒤는 '헌신·분석력이 귀사에도 기여할 것을 확신'이라, 사이에 과거의 구체적 성과가 자연스럽다.\n(A) 핵심 마일스톤을 놓쳐 자주 징계받았습니다 — 추천서 극찬 톤과 정반대라 어긋난다.\n(B) 그녀가 우리 회사와 계약을 갱신하기로 해 유감입니다 — 추천(이직) 맥락과 모순된다.\n(C) 그녀의 기여는 두 건의 대형 B2G 계약 확보에 결정적이었습니다 — 구체 성과로 칭찬을 뒷받침해 정답.\n(D) 지원자 급증으로 채용 절차가 연장되었습니다 — 추천서 흐름과 무관하다.",
+          "translation": "그녀의 기여는 저희가 두 건의 대형 B2G 계약을 확보하는 데 결정적이었습니다."
         },
         {
           "prompt": "빈칸 (4)",
           "choices": ["Should", "Unless", "Provided", "Although"],
           "answerIndex": 0,
-          "explanation": "If you should require~에서 접속사 If가 생략되며 조동사 Should가 문두로 도치된 형태. 문두 빈칸 + 뒤에 동사원형 require. 가정법 도치 (A) Should."
+          "explanation": "'If you should require~'에서 If가 생략되며 조동사 Should가 문두로 도치된 형태로, 뒤에 동사원형 require가 온다.\n(A) Should — 가정법 If 생략 도치. '혹시 필요하시면'으로 정답.\n(B) Unless — '~하지 않는 한'이라 '필요하면 연락'이라는 의도와 정반대다.\n(C) Provided — '~라는 조건이면'이라 도치 없이 주어가 바로 와야 해 이 어순과 맞지 않는다.\n(D) Although — '비록 ~지만'이라 조건 의미가 아니고 도치 구조와도 맞지 않는다.",
+          "translation": "김 씨의 자격에 관해 추가 정보가 필요하시면, 주저 말고 저에게 직접 연락 주십시오."
         }
       ]
     }

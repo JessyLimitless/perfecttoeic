@@ -23,7 +23,8 @@
             "To request feedback on a proposed employee benefits package"
           ],
           "answerIndex": 1,
-          "explanation": "첫 단락: '이사회가 재택근무 및 디지털 준수 가이드라인의 종합 개정안을 승인했다'. 회사 운영 규칙 변경을 직원에게 알리는 (B)."
+          "explanation": "첫 단락에 '이사회가 재택근무 및 디지털 준수 가이드라인의 종합 개정안을 승인했다'고 나온다.\n(A) 새로 채용된 소프트웨어 개발팀 소개 — 채용 소개가 아니라 규정 개정 안내다.\n(B) 회사 운영 규칙 변경을 직원에게 알림 — revision to guidelines라 정답.\n(C) 강남 새 사무실 개소 발표 — 강남은 기존 본사이고 개소 발표가 아니다.\n(D) 제안된 복리후생에 대한 피드백 요청 — 복리후생 피드백이 아니라 규정 통보다.",
+          "translation": null
         },
         {
           "prompt": "What is indicated about the remote work policy change?",
@@ -34,7 +35,8 @@
             "It completely eliminates the flexible hours benefit."
           ],
           "answerIndex": 2,
-          "explanation": "두 번째 단락: 과거 주 최대 3일 재택에서 본사 최소 3일 근무·재택 최대 2일로 축소. 허용 재택 최대 일수를 줄인 (C)."
+          "explanation": "두 번째 단락에서 과거 주 최대 3일 재택이 본사 최소 3일 근무·재택 최대 2일로 바뀐다고 한다.\n(A) 이제 주 내내 재택 가능 — 오히려 재택이 줄어 정반대다.\n(B) 공공 컨설팅 고객이 요청함 — 요청 주체는 이사회이고 고객 요청 언급은 없다.\n(C) 허용되는 최대 재택 일수를 줄임 — 3일→2일 축소라 정답.\n(D) 유연 근무 혜택을 완전히 없앰 — 최대 2일 재택은 남으므로 '완전 폐지'는 과장이다.",
+          "translation": null
         },
         {
           "prompt": "What are employees required to do by July 20?",
@@ -45,7 +47,8 @@
             "Update their emergency contact records with the HR department"
           ],
           "answerIndex": 2,
-          "explanation": "마지막 단락: '서명된 확인서를 7월 20일까지 인사부에 제출하라'. signed confirmation을 (C) signed form acknowledging the revised policy로 패러프레이징."
+          "explanation": "마지막 단락에 '서명된 확인서를 7월 20일까지 인사부에 제출하라'고 나온다.\n(A) MFA 기술 교육 이수 — 교육 이수 지시는 없다(MFA는 사용 의무일 뿐).\n(B) 기존 DB 파일을 Supabase 서버로 이전 — 파일 이전 지시는 없다.\n(C) 개정 정책 확인 서명서를 제출 — signed confirmation의 패러프레이징이라 정답.\n(D) 비상 연락처를 인사부에 갱신 — 연락처 갱신 언급은 없다.",
+          "translation": null
         }
       ]
     },
@@ -66,7 +69,8 @@
             "To apologize for an unexpected system downtime on the server"
           ],
           "answerIndex": 1,
-          "explanation": "첫 단락에서 '새 CEO로서 처음 글을 쓴다'고 밝힌 뒤 회사의 다음 전략적 성장 단계·목표를 선포한다. 신임 대표의 비전 공유 (B)."
+          "explanation": "첫 단락에서 '새 CEO로서 처음 글을 쓴다'고 밝힌 뒤 회사의 다음 전략적 성장 단계·목표를 선포한다.\n(A) 개정 디지털 준법 정책 엄수 요구 — 준법 요구가 아니라 비전 공유다.\n(B) 새 CEO로서 전략적 비전을 공유 — 취임사·비전 선포라 정답.\n(C) 마케팅 부서 예산 조정 발표 — 예산 재배정은 B2G 지원 수단일 뿐 서신 목적이 아니다.\n(D) 서버 다운타임에 대해 사과 — 사과 내용은 없다.",
+          "translation": null
         },
         {
           "prompt": "What area does Ms. Tanaka identify as a priority for the company's growth?",
@@ -77,7 +81,8 @@
             "Recruiting external human resources legal consultants"
           ],
           "answerIndex": 1,
-          "explanation": "세 번째 단락: '최우선 목표는 B2G 컨설팅 시장으로의 확장 가속화'. B2G를 (B) government로, expansion을 penetrating으로 패러프레이징."
+          "explanation": "세 번째 단락에 '최우선 목표는 전문 B2G 컨설팅 시장으로의 확장 가속화'라고 나온다.\n(A) 상업 소매 매장 네트워크 확장 — 소매 매장 확장 언급은 없다.\n(B) 전문 정부 컨설팅 시장 진출 — B2G를 government로 패러프레이징해 정답.\n(C) 자동 퀀트 트레이딩 봇 알고리즘 개발 — 트레이딩 봇 개발 언급은 없다.\n(D) 외부 인사 법률 컨설턴트 채용 — 외부 컨설턴트 채용 언급은 없다.",
+          "translation": null
         },
         {
           "prompt": "What is indicated about Ms. Tanaka's plans for the near future?",
@@ -88,7 +93,8 @@
             "She will postpone the virtual contract signing ceremony."
           ],
           "answerIndex": 2,
-          "explanation": "마지막 단락: '향후 2주간 모든 부서를 방문할 계획(visit every department)'. (C) visit individual company departments로 재진술."
+          "explanation": "마지막 단락에 '향후 2주간 모든 부서를 방문할 계획'이라고 나온다.\n(A) 즉시 현 이사회를 해산 — 이사회 해산 언급은 없다(오히려 감사를 표한다).\n(B) 국제 AI 윤리 심포지엄에서 연설 예정 — 연설 예정 언급은 없다.\n(C) 개별 회사 부서를 방문할 계획 — visit every department의 재진술이라 정답.\n(D) 화상 계약 서명식을 연기 — 서명식 언급은 없다.",
+          "translation": null
         }
       ]
     },
@@ -109,7 +115,8 @@
             "To explain a price adjustment for external licensing terms"
           ],
           "answerIndex": 1,
-          "explanation": "첫 단락 후반: '인사부가 강화된 직원 추천 보상 제도의 시작을 발표한다'. 수정된 추천 인센티브 프로그램을 안내하는 (B)."
+          "explanation": "첫 단락 후반에 '인사부가 강화된 직원 추천 보상 제도의 시작을 발표한다'고 나온다.\n(A) 새로 채용된 데이터 과학 팀원 소개 — 특정 인물 소개가 아니라 제도 안내다.\n(B) 직원 추천을 위한 개정 인센티브 프로그램 안내 — referral reward initiative라 정답.\n(C) 분기 우수 사원상 수상자 발표 — 특정 수상자 발표가 아니다.\n(D) 외부 라이선스 조건의 가격 조정 설명 — 가격 조정 내용이 아니다.",
+          "translation": null
         },
         {
           "prompt": "According to the email, when is the first half of the bonus paid?",
@@ -120,7 +127,8 @@
             "After the newly hired employee works for a full year"
           ],
           "answerIndex": 1,
-          "explanation": "세 번째 단락: '첫 1,500달러는 채용 인력이 초기 3개월 근무를 완료한 후 자동 지급'. (B) completes three months of work."
+          "explanation": "세 번째 단락에 '첫 1,500달러는 채용 인력이 초기 3개월 근무를 완료한 후 자동 지급된다'고 나온다.\n(A) 후보자가 이력서를 제출한 직후 — 이력서 제출은 자격 요건이지 지급 시점이 아니다.\n(B) 신규 채용자가 3개월 근무를 완료하면 — 지문과 일치해 정답.\n(C) 화상 서명식 날짜에 — 서명식 언급은 없다.\n(D) 신규 채용자가 만 1년 근무한 후 — 1년은 '나머지 절반' 지급 시점이지 첫 절반이 아니다.",
+          "translation": null
         },
         {
           "prompt": "What requirement must be met to qualify for the referral reward?",
@@ -131,7 +139,8 @@
             "The employee must attend a mandatory corporate finance seminar."
           ],
           "answerIndex": 1,
-          "explanation": "네 번째 단락: '후보자 이력서는 반드시 보안 클라이언트 포털을 통해 제출해야 한다'. (B)로 거의 그대로 재진술."
+          "explanation": "네 번째 단락에 '후보자 이력서는 반드시 보안 클라이언트 포털을 통해 제출해야 한다'고 나온다.\n(A) 추천자가 행정학 학위를 소지 — 학위 요건 언급은 없다.\n(B) 직원이 후보자 이력서를 클라이언트 포털로 제출 — 지문 요건과 일치해 정답.\n(C) 후보자가 퀀트 트레이딩 경력을 보유 — 트레이딩 경력 요건은 없다.\n(D) 직원이 의무 재무 세미나에 참석 — 세미나 참석 요건은 없다.",
+          "translation": null
         }
       ]
     },
@@ -152,7 +161,8 @@
             "To invite public sector clients to an AI ethics symposium"
           ],
           "answerIndex": 1,
-          "explanation": "첫 단락에서 '차세대 지식 엔진 LinkMD 플랫폼의 출시를 공식 발표'하고 이후 독점 사전 예약 프로그램과 특별 혜택을 안내한다. 신제품 소개+예약 혜택 (B)."
+          "explanation": "첫 단락에서 '차세대 지식 엔진 LinkMD 플랫폼의 출시를 공식 발표'하고 이후 독점 사전 예약 혜택을 안내한다.\n(A) 외부 API 성능 문제에 항의 — 항의가 아니라 제품 홍보다.\n(B) 새 소프트웨어 플랫폼 소개 및 사전 예약 혜택 제공 — 신제품 홍보+예약 혜택이라 정답.\n(C) 연구 프로젝트 예산 재배정 발표 — 예산 재배정이 아니라 신제품 홍보다.\n(D) 공공 고객을 AI 윤리 심포지엄에 초청 — 심포지엄 초청이 아니다.",
+          "translation": null
         },
         {
           "prompt": "According to the letter, what is a feature of the LinkMD Platform?",
@@ -163,7 +173,8 @@
             "It was developed entirely by an external technology vendor."
           ],
           "answerIndex": 1,
-          "explanation": "두 번째 단락: 플랫폼이 '지연 시간 없이(with zero latency) 예측 데이터 모델을 처리'. (B) without any processing delays or latency로 패러프레이징."
+          "explanation": "두 번째 단락에 플랫폼이 '지연 시간 없이(with zero latency) 예측 데이터 모델을 처리한다'고 나온다.\n(A) 매 자정 수동 DB 롤백이 필요 — 롤백 요구 언급은 없다.\n(B) 처리 지연이나 지연 시간 없이 작동 — zero latency의 패러프레이징이라 정답.\n(C) 주로 소매 매장 직원용으로 설계 — 기업 데이터 워크플로용이지 소매 직원용이 아니다.\n(D) 외부 업체가 전적으로 개발 — 공공 부문 혁신가와 '협력' 개발이지 외부 업체 전담이 아니다.",
+          "translation": null
         },
         {
           "prompt": "What advantage is offered to clients who order before August 15?",
@@ -174,7 +185,8 @@
             "Direct technical support from the Chief Executive Officer"
           ],
           "answerIndex": 2,
-          "explanation": "세 번째 단락: '8월 15일 전 계약 체결 파트너는 연간 구독 요금 20% 고정 할인'. locked-in discount를 (C) reduced subscription rate로 패러프레이징."
+          "explanation": "세 번째 단락에 '8월 15일 전 계약 체결 파트너는 연간 구독 요금 20% 고정 할인을 받는다'고 나온다.\n(A) 국제 기술 콘퍼런스 무료 등록 — 콘퍼런스 등록 혜택 언급은 없다.\n(B) 만 3년 연장 라이선스 기간 — 3년 기간 혜택 언급은 없다.\n(C) 연간 계약의 인하된 구독 요금 — 20% locked-in discount의 패러프레이징이라 정답.\n(D) CEO의 직접 기술 지원 — CEO 직접 지원 언급은 없다.",
+          "translation": null
         }
       ]
     },
@@ -195,7 +207,8 @@
             "To request additional funding for a specialized public sector research project"
           ],
           "answerIndex": 1,
-          "explanation": "첫 단락: 'IT 인프라 부서가 주말에 의무적 DB 최적화·시스템 업그레이드를 실시한다'. 정비 위한 서버 접근 일시 중단 공지 (B)."
+          "explanation": "첫 단락에 'IT 인프라 부서가 이번 주말에 의무적 DB 최적화·시스템 업그레이드를 실시한다'고 나온다.\n(A) 새로 채용된 DB 아키텍처 컨설턴트 소개 — 채용 소개가 아니다.\n(B) 정비를 위한 사내 서버 접근의 일시 중단 발표 — downtime 공지라 정답.\n(C) 개정 재택근무·디지털 준법 정책 안내 — 정책 안내가 아니라 점검 공지다.\n(D) 공공 연구 프로젝트 추가 자금 요청 — 자금 요청 내용이 아니다.",
+          "translation": null
         },
         {
           "prompt": "According to the email, what will happen between 11:00 P.M. on Saturday and 5:00 A.M. on Sunday?",
@@ -206,7 +219,8 @@
             "The finance division will implement corporate expense control measures."
           ],
           "answerIndex": 1,
-          "explanation": "두 번째 단락: 6시간 동안 '모든 핵심 사내 네트워크 앱이 완전히 접근 불가(completely inaccessible)'. (B) entirely unavailable로 패러프레이징."
+          "explanation": "두 번째 단락에 6시간 동안 '모든 핵심 사내 네트워크 앱이 완전히 접근 불가능하다'고 나온다.\n(A) 마케팅팀이 화상 서명식을 실행 — 서명식 언급은 없다.\n(B) 핵심 사내 네트워크 앱이 완전히 이용 불가 — completely inaccessible의 패러프레이징이라 정답.\n(C) 직원들이 의무 데이터 과학 세미나에 참석 — 세미나 언급은 없다.\n(D) 재무부가 경비 통제 조치를 시행 — 이 시간대의 사건이 아니다.",
+          "translation": null
         },
         {
           "prompt": "What are Muze AI employees instructed to do before 10:30 P.M. on Saturday?",
@@ -217,7 +231,8 @@
             "Contact external technical vendors via personal mobile numbers"
           ],
           "answerIndex": 2,
-          "explanation": "세 번째 단락: 토요일 밤 10시 30분 전에 '계정 로그아웃하고 진행 중 장부를 저장하라'. (C) Save current work and sign out으로 재진술."
+          "explanation": "세 번째 단락에 '토요일 밤 10시 30분 전에 계정에서 로그아웃하고 진행 중인 장부를 저장하라'고 나온다.\n(A) 회사 모바일 기기의 캐시 파일 삭제 — 캐시 삭제 지시는 없다.\n(B) 프리미엄 기업 컨설팅 구독 갱신 — 구독 갱신 지시는 없다.\n(C) 현재 작업을 저장하고 계정에서 로그아웃 — log out and save의 재진술이라 정답.\n(D) 개인 휴대폰으로 외부 업체에 연락 — 이 시점의 지시가 아니다.",
+          "translation": null
         }
       ]
     }

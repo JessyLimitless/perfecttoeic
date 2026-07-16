@@ -23,7 +23,8 @@
             "To promote a new multi-factor authentication network security software"
           ],
           "answerIndex": 1,
-          "explanation": "헤드라인 'PREMIUM OFFICE SPACE AVAILABLE FOR IMMEDIATE LEASE'와 강남 테헤란로 사무실 매물 홍보. 상업용 사무실 임대 광고 (B)."
+          "explanation": "헤드라인 'PREMIUM OFFICE SPACE AVAILABLE FOR IMMEDIATE LEASE'와 함께 강남 테헤란로 사무실 매물을 홍보한다.\n(A) 자산운용사가 데이터 과학자를 채용 — 채용 광고가 아니라 임대 광고다.\n(B) 임대 가능한 상업용 사무실 홍보 — for lease 광고라 정답.\n(C) IT 스타트업 본사 이전 발표 — 이전 발표가 아니라 임대 매물 소개다.\n(D) 새 MFA 보안 소프트웨어 홍보 — MFA는 사무실의 편의시설일 뿐 광고 대상이 아니다.",
+          "translation": null
         },
         {
           "prompt": "What is NOT mentioned as an amenity included with the property?",
@@ -34,7 +35,8 @@
             "Reserved parking zones with electric vehicle chargers"
           ],
           "answerIndex": 1,
-          "explanation": "Key Amenities 목록에 24시간 보안 출입(A)·서버실·광인터넷(C)·전기차 충전 지하 주차장(D)은 있으나 '구내 식당·케이터링'은 언급이 없음 → (B)."
+          "explanation": "NOT 문제이므로 Key Amenities 목록에 있는 것을 지운다.\n(A) 24시간 보안 건물 출입 — Secured 24/7 access로 언급됨(오답).\n(B) 구내 식당·기업 케이터링 — 지문 어디에도 없어 정답(NOT mentioned).\n(C) 광인터넷·전용 서버실 — Dedicated server room ... fiber-optic으로 언급됨(오답).\n(D) 전기차 충전기 있는 지정 주차 — Underground reserved parking with EV charging으로 언급됨(오답).",
+          "translation": null
         },
         {
           "prompt": "How can a prospective tenant arrange a viewing of the office suite?",
@@ -45,7 +47,8 @@
             "By visiting the Gangnam municipal government office"
           ],
           "answerIndex": 2,
-          "explanation": "마지막 단락: 투어 일정은 '임대 운영 팀에 이메일로 연락하거나 보안 포털을 방문하라'. (C) 이메일·포털로 연락."
+          "explanation": "마지막 단락에서 투어 일정은 '임대 운영 팀에 이메일로 연락하거나 보안 포털을 방문하라'고 안내한다.\n(A) 팩스로 투자 제안서 제출 — 팩스 제출 안내는 없다.\n(B) 월요일 화상 서명식 참석 — 서명식 언급은 없다.\n(C) 이메일이나 포털로 임대팀에 연락 — 지문 안내와 일치해 정답.\n(D) 강남 시청 방문 — 시청 방문 안내는 없다.",
+          "translation": null
         }
       ]
     },
@@ -66,7 +69,8 @@
             "A quantitative trading bot algorithm using the KIS API"
           ],
           "answerIndex": 1,
-          "explanation": "헤드라인 'Automated Document Generation Suite 30% 할인'과 문서 자동 생성 플랫폼 설명. 문서 생성 소프트웨어 광고 (B)."
+          "explanation": "헤드라인 'Automated Document Generation Suite 30% 할인'과 문서 자동 생성 플랫폼 설명이 이어진다.\n(A) 공공 합병 재무 컨설팅 서비스 — 컨설팅 서비스가 아니라 소프트웨어다.\n(B) 자동 문서 생성 소프트웨어 패키지 — 정답.\n(C) 소매업용 클라우드 저장 드라이브 — 저장 드라이브가 아니라 문서 생성 스위트다.\n(D) KIS API 이용 퀀트 트레이딩 봇 — 트레이딩 봇이 아니다.",
+          "translation": null
         },
         {
           "prompt": "What is indicated about the Enterprise Tier subscription?",
@@ -77,7 +81,8 @@
             "It is available for a locked-in duration of three full years."
           ],
           "answerIndex": 2,
-          "explanation": "Enterprise Tier 항목: '무제한 사용자 계정(Unlimited user accounts)'과 '자동 준수 검증(automated compliance verification)'. (C) unlimited user access and automated compliance tools."
+          "explanation": "Enterprise Tier 항목에 '무제한 사용자 계정(Unlimited user accounts)'과 '자동 준수 검증(automated compliance verification)'이 나온다.\n(A) 활성 계정을 최대 10개로 제한 — 10개 제한은 Standard Tier의 조건이다.\n(B) 14일 의무 교육 세미나 포함 — 14일은 무료 체험 기간이지 교육 세미나가 아니다.\n(C) 무제한 사용자 접근과 자동 준수 도구 제공 — 지문과 일치해 정답.\n(D) 만 3년 고정 기간으로 제공 — 3년 기간 언급은 없다(연간 구독).",
+          "translation": null
         },
         {
           "prompt": "What is offered as a special perk for clients purchasing the Enterprise Tier plan?",
@@ -88,7 +93,8 @@
             "Cash bonuses for every new executive referral submitted"
           ],
           "answerIndex": 0,
-          "explanation": "Exclusive Promotional Perks: 엔터프라이즈 구매 고객에게 '무료 24시간 기술 지원'과 연동 감독을 '추가 비용 없이' 제공. (A) Free technical support and integration assistance."
+          "explanation": "Exclusive Promotional Perks에 엔터프라이즈 구매 고객에게 '무료 24시간 기술 지원'과 연동 감독을 '추가 비용 없이' 제공한다고 나온다.\n(A) 무료 기술 지원과 연동 지원 — 지문과 일치해 정답.\n(B) 매 자정 자동 DB 롤백 — 롤백 혜택 언급은 없다.\n(C) 지역 B2G 무료 법률 컨설팅 — 법률 컨설팅 혜택은 없다.\n(D) 임원 추천마다 현금 보너스 — 추천 보너스는 다른 지문의 소재다.",
+          "translation": null
         }
       ]
     },
@@ -109,7 +115,8 @@
             "To announce a price adjustment for automated document generation tools"
           ],
           "answerIndex": 1,
-          "explanation": "헤드라인 'Advanced Enterprise Data Modeling Workshop'과 첫 단락의 'intensive training seminar'. 시니어 개발자·엔지니어 대상 데이터 시스템·모델링 전문 교육 제공 (B)."
+          "explanation": "헤드라인 'Advanced Enterprise Data Modeling Workshop'과 첫 단락의 intensive training seminar가 핵심이다.\n(A) 소셜브레인 신본사 개소 축하 — 개소 축하가 아니라 교육 워크숍이다(본사는 행사 장소일 뿐).\n(B) 데이터 시스템·모델링 전문 교육 제공 — training seminar라 정답.\n(C) RT Institute의 정규 엔지니어 채용 — 채용이 아니라 교육이다.\n(D) 문서 생성 도구 가격 조정 발표 — 가격 조정이 아니다.",
+          "translation": null
         },
         {
           "prompt": "According to the schedule, what will participants do during the afternoon session?",
@@ -120,7 +127,8 @@
             "Clear browser cache files on their active terminal accounts"
           ],
           "answerIndex": 1,
-          "explanation": "오후 세션(01:30~05:00) 'Live Simulation: Deploying Custom API Endpoints via Supabase'. (B) implementing custom API connections using Supabase로 패러프레이징."
+          "explanation": "오후 세션(01:30~05:00)은 'Live Simulation: Deploying Custom API Endpoints via Supabase'이다.\n(A) B2G 준수 프레임워크 강연 청취 — 지정 오후 실습 내용이 아니다.\n(B) Supabase로 맞춤 API 연결 실습 — 오후 실습과 일치해 정답.\n(C) 외부 컨설턴트와 재무 감사 로그 검토 — 일정에 없는 활동이다.\n(D) 활성 계정 브라우저 캐시 삭제 — 일정과 무관하다.",
+          "translation": null
         },
         {
           "prompt": "What incentive is offered to companies sending a group of at least three attendees?",
@@ -131,7 +139,8 @@
             "Priority access to a private consulting session with Ms. Tanaka"
           ],
           "answerIndex": 1,
-          "explanation": "Registration Details: '같은 회사 3명 이상 등록 시 15% 그룹 할인'. discount를 (B) reduction in the overall registration cost로 재진술."
+          "explanation": "Registration Details에 '같은 회사에서 3명 이상 등록 시 15% 그룹 할인'이 명시돼 있다.\n(A) 프리미엄 구독 1년 무료 — 무료 구독 혜택은 없다.\n(B) 전체 등록 비용의 인하 — 15% 그룹 할인의 재진술이라 정답.\n(C) 지하 지정 주차권 무료 — 주차권 혜택은 없다.\n(D) 다나카 씨와의 사적 컨설팅 우선권 — 그런 혜택 언급은 없다.",
+          "translation": null
         }
       ]
     },
@@ -152,7 +161,8 @@
             "To advertise available commercial office space for immediate lease"
           ],
           "answerIndex": 1,
-          "explanation": "헤드라인 'FACILITY RENOVATION AND PARKING ZONE CLOSURE'와 지하 주차 시설 리모델링 공지. 공사로 인한 임시 폐쇄를 알리는 (B)."
+          "explanation": "헤드라인 'FACILITY RENOVATION AND PARKING ZONE CLOSURE'와 함께 지하 주차 시설 리모델링을 공지한다.\n(A) 새 시설 부서장 소개 — 부서장 소개가 아니다.\n(B) 리모델링으로 인한 임시 폐쇄를 직원에게 알림 — 정답.\n(C) 개정 재택근무·디지털 준법 정책 안내 — 정책 안내가 아니다.\n(D) 임대 가능한 상업 사무실 광고 — 임대 광고가 아니다.",
+          "translation": null
         },
         {
           "prompt": "According to the notice, what will happen from July 20 through July 24?",
@@ -163,7 +173,8 @@
             "Senior developers will undergo mandatory data science integration training."
           ],
           "answerIndex": 2,
-          "explanation": "두 번째 항목: 7월 20~24일 5일간 '지하 주차 구조 전체 접근이 완전히 불가(completely inaccessible)'. (C) entirely restricted로 패러프레이징."
+          "explanation": "두 번째 항목에 7월 20~24일 5일간 '지하 주차 구조 전체 접근이 완전히 불가능하다'고 나온다.\n(A) 직원이 대체 장소에서 재택 근무 — 재택 지시는 없다.\n(B) 회사가 공공 고객과 화상 서명식 개최 — 서명식 언급은 없다.\n(C) 지하 주차장 접근이 완전히 통제됨 — completely inaccessible의 패러프레이징이라 정답.\n(D) 시니어 개발자가 의무 데이터 과학 교육 이수 — 교육 언급은 없다.",
+          "translation": null
         },
         {
           "prompt": "Where are Social Brain AI staff members advised to park their vehicles during the project?",
@@ -174,7 +185,8 @@
             "At the Muze AI centralized research facility parking lot"
           ],
           "answerIndex": 1,
-          "explanation": "세 번째 항목: '160 테헤란로의 테헤란 코퍼레이트 센터에 무료 일일 주차를 확보'. (B) nearby corporate building at 160 Teheran-ro."
+          "explanation": "세 번째 항목에 '160 테헤란로의 테헤란 코퍼레이트 센터에 무료 일일 주차를 확보했다'고 나온다.\n(A) 지역 시청 주차장 — 시청 주차 언급은 없다.\n(B) 160 테헤란로의 인근 기업 건물 — 지문과 일치해 정답.\n(C) 강남 본사 바로 옆 도로변 — 노상 주차 안내는 없다.\n(D) Muze AI 중앙 연구소 주차장 — 대체 주차지는 테헤란 코퍼레이트 센터다.",
+          "translation": null
         }
       ]
     },
@@ -195,7 +207,8 @@
             "To advertise a promotion on external software licensing packages"
           ],
           "answerIndex": 1,
-          "explanation": "첫 단락: '데이터 보안 부서가 네트워크 보안 프레임워크의 즉각적·의무적 업그레이드를 실행한다'. 더 엄격한 데이터 보호·네트워크 규칙을 알리는 (B)."
+          "explanation": "첫 단락에 '데이터 보안 부서가 네트워크 보안 프레임워크의 즉각적·의무적 업그레이드를 실행한다'고 나온다.\n(A) 공공 컨설팅 신규 마케팅 전략 소개 — 마케팅 전략이 아니다.\n(B) 더 엄격한 데이터 보호·네트워크 규칙을 직원에게 알림 — 정답.\n(C) 온톨로지 프로젝트 마감 연장 발표 — 마감 연장이 아니다.\n(D) 외부 소프트웨어 라이선스 프로모션 광고 — 프로모션 광고가 아니다.",
+          "translation": null
         },
         {
           "prompt": "According to the notice, what is explicitly banned for remote workers?",
@@ -206,7 +219,8 @@
             "Registering multiple mobile devices on the active terminal account"
           ],
           "answerIndex": 2,
-          "explanation": "두 번째 항목 Unsecured Network Prohibitions: '보안되지 않은 공용 와이파이로 DB 연결·장부 검토는 명시적으로 금지'. (C) unsecured public Wi-Fi."
+          "explanation": "두 번째 항목(Unsecured Network Prohibitions)에 '보안되지 않은 공용 와이파이로 DB 연결·장부 검토는 명시적으로 금지된다'고 나온다.\n(A) 금요일 오후 네트워크 비밀번호 갱신 — 금지가 아니라 오히려 요구되는 조치다.\n(B) 외부 법률 컨설턴트와 장부 공유 — 그런 금지 항목은 없다.\n(C) 보안 안 된 공용 와이파이로 기업 DB 접근 — explicitly prohibited라 정답.\n(D) 활성 계정에 여러 모바일 기기 등록 — 그런 금지는 없다.",
+          "translation": null
         },
         {
           "prompt": "What action must employees complete before 5:00 P.M. on Friday, July 17?",
@@ -217,7 +231,8 @@
             "Request a manual database rollback from the IT infrastructure team"
           ],
           "answerIndex": 2,
-          "explanation": "세 번째 항목: 7월 17일 금요일 오후 5시 전까지 '기본 네트워크 비밀번호를 반드시 업데이트'. (C) Change their main network access passwords."
+          "explanation": "세 번째 항목에 '7월 17일 금요일 오후 5시 전까지 기본 네트워크 비밀번호를 반드시 업데이트해야 한다'고 나온다.\n(A) 인사 운영 관리자에 서명 확인서 제출 — 서명서 제출은 다른 지문의 소재다.\n(B) 모든 관리 컴퓨터의 브라우저 캐시 삭제 — 캐시 삭제 지시는 없다.\n(C) 새 규칙에 따라 기본 네트워크 비밀번호 변경 — 지문과 일치해 정답.\n(D) IT팀에 수동 DB 롤백 요청 — 롤백 요청 지시는 없다.",
+          "translation": null
         }
       ]
     }

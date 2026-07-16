@@ -18,13 +18,15 @@
           "prompt": "빈칸 (1)",
           "choices": ["instrumental", "instrument", "instrumentally", "instrumentation"],
           "answerIndex": 0,
-          "explanation": "have been [형용사] in ~ing(~하는 데 결정적 역할을 하다) 패턴 자리. 승진·성공 지문 단골로 '핵심 기여'를 뜻하는 형용사 (A) instrumental. 명사(B·D)·부사(C)는 보어 자리에 부적합."
+          "explanation": "'have been [형용사] in ~ing(~하는 데 결정적 역할을 하다)' 보어 자리이며, 승진·성공 지문에서 '핵심 기여'를 뜻하는 형용사가 필요하다.\n(A) instrumental — '결정적 역할을 하는'. be instrumental in -ing로 정답.\n(B) instrument — 명사('도구')라 be동사 뒤 형용사 보어 자리에 올 수 없다.\n(C) instrumentally — 부사라 be동사 뒤 보어 자리에 부적합하다.\n(D) instrumentation — 명사('계측/편성')라 보어·의미 모두 맞지 않는다.",
+          "translation": "재직 기간 동안, 로시 씨는 우리 생산 공정을 혁신하는 데 결정적 역할을 했습니다."
         },
         {
           "prompt": "빈칸 (2)",
           "choices": ["accelerate", "decelerate", "compensate", "fluctuate"],
           "answerIndex": 0,
-          "explanation": "부사장 승진 인물에게 기대하는 것은 성장·속도. 유럽 시장 확장을 '가속화하다' (A) accelerate. 감속(B)·보상(C)·변동(D)은 문맥상 부적합."
+          "explanation": "부사장으로 승진한 인물에게 기대하는 것은 성장·속도이므로, 유럽 시장 확장을 '가속화한다'가 알맞다.\n(A) accelerate — '가속화하다'. 확장 촉진으로 정답.\n(B) decelerate — '감속하다'라 확장 기대와 정반대다.\n(C) compensate — '보상하다'라 expansion을 목적어로 취해도 의미가 어색하다.\n(D) fluctuate — '변동하다'라 자동사이며 문맥과 맞지 않는다.",
+          "translation": "우리는 그녀의 리더십이 유럽 시장으로의 확장을 가속화할 것이라 확신합니다."
         },
         {
           "prompt": "빈칸 (3)",
@@ -35,7 +37,8 @@
             "before the renovation begins."
           ],
           "answerIndex": 1,
-          "explanation": "리셉션 개최를 선언했으니 '언제' 열리는지 구체적 시점이 와야 한다. 발령일(8월 1일) 직전이 자연스러워 (B) 7월 28일 오후."
+          "explanation": "리셉션 개최를 선언했으니 '언제' 열리는지 구체적 시점이 와야 하며, 발령일(8월 1일) 직전이 자연스럽다.\n(A) 회계연도 말에 — 발령일 8월 1일과 시점이 동떨어져 어색하다.\n(B) 7월 28일 오후에 — 발령 직전의 구체 시점이라 정답.\n(C) 지정된 근무 시간 내에 — 리셉션의 구체적 날짜를 제시하지 못한다.\n(D) 리모델링이 시작되기 전에 — 지문에 없는 공사 언급이라 맥락과 무관하다.",
+          "translation": "우리는 메인 로비에서 7월 28일 오후에 축하 리셉션을 열 예정입니다."
         },
         {
           "prompt": "빈칸 (4) · 문장 삽입",
@@ -46,7 +49,8 @@
             "Please submit your monthly reports to your direct supervisor."
           ],
           "answerIndex": 0,
-          "explanation": "빈칸 뒤에서 참석 여부(RSVP)를 7월 20일까지 요청하므로, '이 특별 행사에 시간 내어 참석해 달라'는 초대의 말인 (A)가 징검다리로 자연스럽다."
+          "explanation": "빈칸 뒤에서 참석 여부(RSVP)를 7월 20일까지 요청하므로, '이 특별 행사에 시간 내어 참석해 달라'는 초대의 말이 자연스럽다.\n(A) 이 특별 행사에 시간 내어 참석해 주시길 바랍니다 — 뒤 RSVP 요청으로 이어져 정답.\n(B) 공석인 운영이사직 지원자를 찾습니다 — 축하·초대 흐름과 무관하다.\n(C) 새 전략이 전 지사에 시행됩니다 — 리셉션 안내 맥락과 어긋난다.\n(D) 월간 보고서를 상사에게 제출하세요 — 행사 초대 흐름과 무관하다.",
+          "translation": "이 특별한 행사에 시간을 내어 참석해 주시길 바랍니다."
         }
       ]
     },
@@ -62,13 +66,15 @@
           "prompt": "빈칸 (1)",
           "choices": ["effect", "effective", "effectively", "effectiveness"],
           "answerIndex": 1,
-          "explanation": "become effective(~부로 효력을 발휘하다)는 고정 짝꿍. become은 2형식이라 주격 보어에 형용사 (B) effective. 명사(A·D)·부사(C)는 불가."
+          "explanation": "'become effective(~부로 효력을 발휘하다)'는 고정 짝꿍이며, become은 2형식이라 주격 보어에 형용사가 온다.\n(A) effect — 명사라 become의 형용사 보어 자리에 맞지 않는다.\n(B) effective — 형용사. become effective로 정답.\n(C) effectively — 부사라 2형식 보어 자리에 부적합하다.\n(D) effectiveness — 명사라 보어 형용사 자리에 올 수 없다.",
+          "translation": "개정된 지침은 8월 1일부터 효력을 발휘합니다."
         },
         {
           "prompt": "빈칸 (2)",
           "choices": ["Additionally", "Conversely", "Alternatively", "Nevertheless"],
           "answerIndex": 0,
-          "explanation": "앞 문장은 코어타임 온라인 유지 의무, 뒤 문장은 일일 업데이트 기록 의무. 대등한 규정을 누적하는 첨가의 접속부사 (A) Additionally."
+          "explanation": "앞 문장은 코어타임 온라인 유지 의무, 뒤 문장은 일일 업데이트 기록 의무로, 대등한 규정을 누적하는 첨가의 접속부사가 필요하다.\n(A) Additionally — '게다가'. 규정을 더하는 첨가로 정답.\n(B) Conversely — '반대로'라는 대조인데, 두 규정은 대조 관계가 아니다.\n(C) Alternatively — '대안으로'라 둘 중 택일 의미인데, 둘 다 의무라 맞지 않는다.\n(D) Nevertheless — '그럼에도'라는 양보인데, 앞뒤가 상충하지 않는다.",
+          "translation": "게다가, 직원들은 매 근무 종료 전에 일일 프로젝트 업데이트를 중앙 포털에 기록해야 합니다."
         },
         {
           "prompt": "빈칸 (3) · 문장 삽입",
@@ -79,13 +85,15 @@
             "The office renovation will be completed ahead of schedule."
           ],
           "answerIndex": 1,
-          "explanation": "앞 문장에서 '새 프로토콜 적응에 전환 기간이 필요함을 이해한다'고 공감했으므로, 후속 조치로 'Q&A 세션을 개최하겠다'는 (B)가 자연스럽다."
+          "explanation": "앞 문장에서 '새 프로토콜 적응에 전환 기간이 필요함을 이해한다'고 공감했으므로, 후속 지원 조치가 자연스럽다.\n(A) 예산 제약으로 임시직을 채용할 수 없습니다 — 지원 조치 흐름과 무관하고 부정적이라 어긋난다.\n(B) 따라서 다음 화요일에 안내 Q&A 세션을 엽니다 — 공감에 이은 지원 조치라 정답.\n(C) 대다수 직원이 이미 업무 공간에 불만을 표했습니다 — 문맥과 무관하다.\n(D) 사무실 리모델링이 예정보다 일찍 끝납니다 — 지문에 없는 소재라 어긋난다.",
+          "translation": "따라서, 우리는 다음 주 화요일에 안내용 Q&A 세션을 개최할 것입니다."
         },
         {
           "prompt": "빈칸 (4)",
           "choices": ["appreciate", "are appreciating", "appreciated", "will appreciate"],
           "answerIndex": 0,
-          "explanation": "We appreciate your cooperation(협조에 감사드립니다)는 현재 시제 고정 템플릿. appreciate는 지속적 태도를 고마워하는 동사라 진행형·미래형이 아닌 현재형 (A)."
+          "explanation": "'We appreciate your cooperation(협조에 감사드립니다)'는 현재 시제 고정 템플릿이며, appreciate는 지속적 태도를 고마워하는 상태동사다.\n(A) appreciate — 현재형. 고정 표현으로 정답.\n(B) are appreciating — 상태동사라 진행형이 어색하다.\n(C) appreciated — 과거라 협조를 구하는 현재 시점과 맞지 않는다.\n(D) will appreciate — 미래라 지금 감사를 표하는 관용 표현과 어긋난다.",
+          "translation": "이 변경을 원활히 시행하는 데 있어 여러분의 협조에 감사드립니다."
         }
       ]
     },
@@ -101,13 +109,15 @@
           "prompt": "빈칸 (1)",
           "choices": ["placed", "will be placed", "placing", "are placing"],
           "answerIndex": 1,
-          "explanation": "날짜 단서 from July 18 through July 20은 미래. 엘리베이터는 관리자에 의해 운행 정지되는 대상이라 미래 수동태 (B) will be placed. be placed out of service는 '운행 중단되다' 고정 표현."
+          "explanation": "날짜 단서 from July 18 through July 20은 미래이고, 엘리베이터는 관리자에 의해 운행 정지되는 대상이라 미래 수동태가 필요하다(be placed out of service = 운행 중단되다).\n(A) placed — 과거/분사 단독이라 정형 본동사로 미래를 나타내지 못한다.\n(B) will be placed — 미래 수동태. 정답.\n(C) placing — 능동 진행 분사라 '엘리베이터가 놓는' 능동이 되어 태가 어긋난다.\n(D) are placing — 능동 현재진행이라 태·시제 모두 맞지 않는다.",
+          "translation": "이 구역의 주요 엘리베이터 세 대는 7월 18일부터 20일까지 운행이 중단됩니다."
         },
         {
           "prompt": "빈칸 (2)",
           "choices": ["Alternately", "On the contrary", "In short", "For instance"],
           "answerIndex": 0,
-          "explanation": "앞은 서쪽 동 엘리베이터 이용 불가, 뒤는 동쪽 동 보조 엘리베이터 이용 권고. 다른 방안을 제시하는 대안의 접속부사 (A) Alternately."
+          "explanation": "앞은 서쪽 동 엘리베이터 이용 불가, 뒤는 동쪽 동 보조 엘리베이터 이용 권고로, 다른 방안을 제시하는 대안의 접속부사가 필요하다.\n(A) Alternately — '대신에'. 대안 제시로 정답.\n(B) On the contrary — '그와 반대로'라 앞 내용을 반박하는 것이 아니라 맞지 않는다.\n(C) In short — '요컨대'라는 요약인데, 새 대안 제시라 부적합하다.\n(D) For instance — '예를 들어'라는 예시인데, 대안 안내라 어긋난다.",
+          "translation": "대신에, 모두 동쪽 동에 있는 보조 엘리베이터를 이용하시길 권합니다."
         },
         {
           "prompt": "빈칸 (3) · 문장 삽입",
@@ -118,13 +128,15 @@
             "All staff members must submit their identification badge renewals."
           ],
           "answerIndex": 2,
-          "explanation": "공사·시설 제한 안내문 단골인 '불편에 대한 정중한 사과 템플릿' (C)가 가장 매끄럽게 삽입된다."
+          "explanation": "공사·시설 제한 안내문에 단골로 들어가는 '불편에 대한 정중한 사과 템플릿'이 가장 매끄럽게 삽입된다.\n(A) 보안팀이 내일 아침 소방 훈련을 합니다 — 엘리베이터 보수 흐름과 무관하다.\n(B) 관리소가 월 임대료를 인하하기로 했습니다 — 맥락과 무관하다.\n(C) 이 일시적 지장으로 불편을 끼쳐 드려 사과드립니다 — 제한 안내에 자연스러워 정답.\n(D) 전 직원은 신분증 갱신본을 제출해야 합니다 — 엘리베이터 공지와 무관하다.",
+          "translation": "이 일시적인 지장으로 불편을 끼쳐 드리는 점 사과드립니다."
         },
         {
           "prompt": "빈칸 (4)",
           "choices": ["patience", "precision", "indifference", "reluctance"],
           "answerIndex": 0,
-          "explanation": "시설 제한으로 불편을 겪는 대상에게 cooperation과 함께 요구하는 단골 어휘는 (A) patience(인내, 양해). We appreciate your patience and cooperation 세트 구문."
+          "explanation": "시설 제한으로 불편을 겪는 대상에게 cooperation과 함께 요구하는 단골 어휘가 필요하다(We appreciate your patience and cooperation 세트).\n(A) patience — '인내, 양해'. cooperation과 세트로 정답.\n(B) precision — '정밀함'이라 양해를 구하는 맥락과 맞지 않는다.\n(C) indifference — '무관심'이라 감사할 대상이 아니라 부적합하다.\n(D) reluctance — '꺼림'이라 부정적이라 감사 표현과 충돌한다.",
+          "translation": "건물 시스템 개선을 위해 노력하는 동안 여러분의 양해와 협조에 감사드립니다."
         }
       ]
     },
@@ -140,13 +152,15 @@
           "prompt": "빈칸 (1)",
           "choices": ["voluntary", "mandatory", "optional", "accidental"],
           "answerIndex": 1,
-          "explanation": "제목의 'Mandatory Seminar'와 all management-level personnel 맥락. '의무적인, 필수적인' (B) mandatory. 자발적(A)·선택적(C)은 반대 의미."
+          "explanation": "제목의 'Mandatory Seminar'와 all management-level personnel 맥락상 '의무적인'이 알맞다.\n(A) voluntary — '자발적인'이라 mandatory 맥락과 반대다.\n(B) mandatory — '의무적인'. 정답.\n(C) optional — '선택적인'이라 의무와 반대다.\n(D) accidental — '우발적인'이라 참석 성격과 전혀 맞지 않는다.",
+          "translation": "이 교육 세션 참석은 전 관리직 직원에게 의무입니다."
         },
         {
           "prompt": "빈칸 (2)",
           "choices": ["were offered", "would have offered", "will be offered", "are offering"],
           "answerIndex": 2,
-          "explanation": "미래 단서 next week + 주어 identical sessions는 제공되는 대상이므로 미래 수동태 (C) will be offered. 과거(A)·가정법(B)·현재진행 능동(D) 제외."
+          "explanation": "미래 단서 next week와 함께 주어 identical sessions는 제공되는 대상이므로 미래 수동태가 필요하다.\n(A) were offered — 과거라 next week(미래)와 시제가 어긋난다.\n(B) would have offered — 가정법 과거완료라 시제·태 모두 맞지 않는다.\n(C) will be offered — 미래 수동태. 정답.\n(D) are offering — 능동 현재진행이라 sessions가 '제공하는' 주체가 되어 태가 어긋난다.",
+          "translation": "모두의 일정을 맞추기 위해, 동일한 세션이 다음 주에 두 차례 제공됩니다."
         },
         {
           "prompt": "빈칸 (3) · 문장 삽입",
@@ -157,13 +171,15 @@
             "The management team has recently finalized the office renovation plans."
           ],
           "answerIndex": 1,
-          "explanation": "뒤 문장에서 '포털 로그인 후 원하는 시간대를 7월 15일까지 선택하라'는 지침이 나오므로, '모든 참가자는 선호 시간대를 사전 등록해야 한다'는 총론 (B)가 자석 역할."
+          "explanation": "뒤 문장에서 '포털 로그인 후 원하는 시간대를 7월 15일까지 선택하라'는 지침이 나오므로, '모든 참가자는 선호 시간대를 사전 등록해야 한다'는 총론이 앞에 와야 한다.\n(A) 예산 제약으로 세미나가 취소되었습니다 — 뒤 등록 지침과 모순된다.\n(B) 모든 참가자는 선호 시간대를 사전 등록해야 합니다 — 뒤 구체 지침의 총론이라 정답.\n(C) 무료 소프트웨어 업그레이드를 외부 고객에 배포합니다 — 사내 교육 맥락과 무관하다.\n(D) 경영진이 사무실 리모델링 계획을 확정했습니다 — 세미나 등록과 무관하다.",
+          "translation": "모든 참가자는 원하는 시간대를 사전에 등록해야 합니다."
         },
         {
           "prompt": "빈칸 (4)",
           "choices": ["promptly", "reluctantly", "mutually", "marginally"],
           "answerIndex": 0,
-          "explanation": "등록 마감(7월 15일) 전에 기술 문제를 신속히 해결해야 하므로 '지체 없이, 즉각' (A) promptly가 자연스럽다."
+          "explanation": "등록 마감(7월 15일) 전에 기술 문제를 신속히 해결해야 하므로 '지체 없이'가 알맞다.\n(A) promptly — '즉각, 지체 없이'. 신속 통지로 정답.\n(B) reluctantly — '마지못해'라 문제 해결을 미루는 뉘앙스라 부적합하다.\n(C) mutually — '상호간에'라 통지 방식과 의미가 맞지 않는다.\n(D) marginally — '미미하게'라 통지 신속성과 무관하다.",
+          "translation": "등록 중 기술적 문제가 생기면, 문제를 해결할 수 있도록 IT 지원 데스크에 즉시 알려 주십시오."
         }
       ]
     },
@@ -179,13 +195,15 @@
           "prompt": "빈칸 (1)",
           "choices": ["by", "to", "for", "with"],
           "answerIndex": 0,
-          "explanation": "cut/reduce/increase 류 동사 + 비율(15%) 앞에서 '~만큼(차이·폭)'을 나타내는 전치사는 (A) by. 목표치 '~로'라면 to지만, 15% '만큼' 삭감 맥락이라 by가 정답."
+          "explanation": "cut/reduce/increase 류 동사 + 비율(15%) 앞에서 '~만큼(증감 폭)'을 나타내는 전치사가 필요하다.\n(A) by — 증감 폭 '~만큼'. cut ~ by 15%로 정답.\n(B) to — 목표치 '~로'를 나타낼 때 쓰지만, 여기선 '15% 만큼' 삭감이라 맞지 않는다.\n(C) for — 기간·목적 전치사라 증감 폭 표현에 쓰지 않는다.\n(D) with — 수단·동반이라 비율 삭감 폭과 맞지 않는다.",
+          "translation": "즉시 시행으로, 전 부서장은 남은 회계연도 동안 재량 지출을 15퍼센트 삭감해야 합니다."
         },
         {
           "prompt": "빈칸 (2)",
           "choices": ["refrain", "refraining", "to refrain", "refrained"],
           "answerIndex": 0,
-          "explanation": "request that + 주어 + (should) 동사원형 구조라 빈칸은 동사원형. 뒤 전치사 from과 결합해 '~를 자제하다'가 되는 자동사 (A) refrain."
+          "explanation": "request that + 주어 + (should) 동사원형 구조라 빈칸은 동사원형이며, 뒤 전치사 from과 결합해 '~를 자제하다'가 되는 자동사다.\n(A) refrain — should가 생략된 동사원형. refrain from -ing로 정답.\n(B) refraining — 준동사라 that절의 동사 자리에 올 수 없다.\n(C) to refrain — to부정사라 that절 정동사 자리에 부적합하다.\n(D) refrained — 과거형이라 당위 that절의 원형 규칙에 어긋난다.",
+          "translation": "따라서, 추후 공지가 있을 때까지 전 직원은 비필수 출장 승인을 자제해 주시기를 엄격히 요청합니다."
         },
         {
           "prompt": "빈칸 (3) · 문장 삽입",
@@ -196,13 +214,15 @@
             "Virtual communication should serve as the primary alternative for collaboration."
           ],
           "answerIndex": 3,
-          "explanation": "앞은 비필수 출장 자제 요청, 뒤는 'Instead, 화상 회의를 활용하라'는 대안. 그 사이에 '가상 소통이 협업의 기본 대안이 되어야 한다'는 (D)가 징검다리."
+          "explanation": "앞은 비필수 출장 자제 요청, 뒤는 'Instead, 화상 회의를 활용하라'는 대안이라, 그 사이에 '가상 소통이 협업의 기본 대안이 되어야 한다'는 다리가 필요하다.\n(A) 임원 전원에 국제 출장 보험을 제공합니다 — 출장 자제 취지와 정반대다.\n(B) 지역 고객 방문을 저녁 시간에 잡으세요 — 여전히 대면 이동이라 절감 취지와 어긋난다.\n(C) 지난달 경비 보고서가 전액 환급되었습니다 — 비용 절감 지침 흐름과 무관하다.\n(D) 가상 소통이 협업의 기본 대안이 되어야 합니다 — 뒤 'Instead 화상 회의'로 이어져 정답.",
+          "translation": "가상 소통이 협업을 위한 주요 대안이 되어야 합니다."
         },
         {
           "prompt": "빈칸 (4)",
           "choices": ["detrimental", "vital", "incidental", "redundant"],
           "answerIndex": 1,
-          "explanation": "목표 달성에 임직원 참여가 얼마나 중요한지 강조하므로 '필수적인, 극히 중요한' (B) vital. 해로운(A)·부수적인(C)·불필요한(D)은 독려 문맥에 부적합."
+          "explanation": "목표 달성에 임직원 참여가 얼마나 중요한지 강조하므로 '필수적인, 극히 중요한'이 알맞다.\n(A) detrimental — '해로운'이라 독려 문맥과 정반대다.\n(B) vital — '극히 중요한'. 정답.\n(C) incidental — '부수적인'이라 중요성 강조와 반대다.\n(D) redundant — '불필요한'이라 참여 독려와 충돌한다.",
+          "translation": "이 비용 절감 계획에 대한 여러분의 적극적 참여가 우리의 성공에 필수적입니다."
         }
       ]
     }

@@ -23,7 +23,8 @@
             "The opening of a new regional data analytics facility in Jeonbuk"
           ],
           "answerIndex": 1,
-          "explanation": "첫 단락: 'Social Brain AI가 자동 문서 생성 전문 기업 Muze AI를 1,250만 달러에 인수하는 구속력 있는 계약을 완료했다'. 기업 인수 소식 (B)."
+          "explanation": "첫 단락에서 'Social Brain AI가 자동 문서 생성 전문 기업 Muze AI를 1,250만 달러에 인수하는 구속력 있는 계약을 완료했다'고 밝힌다.\n(A) 대형 서버 인프라 기업의 주가 하락 — 주가 하락 소식이 아니다.\n(B) 기술 선도 기업의 전문 소프트웨어 기업 인수 — 기사 핵심이라 정답.\n(C) Social Brain AI와 외부 법률 자문 간 라이선스 분쟁 — 분쟁 언급은 없다.\n(D) 전북에 새 데이터 분석 시설 개소 — 시설 개소가 아니라 기업 인수 소식이다.",
+          "translation": null
         },
         {
           "prompt": "Why does Social Brain AI intend to purchase Muze AI?",
@@ -34,7 +35,8 @@
             "To clear outdated browser cache files from its centralized network"
           ],
           "answerIndex": 1,
-          "explanation": "두 번째 단락: 'Muze AI의 독점 문서 생성 소프트웨어를 자사 기업 플랫폼에 직접 내장할 계획(embed)'. (B) integrate automated document generation tools."
+          "explanation": "두 번째 단락에서 'Muze AI의 독점 문서 생성 소프트웨어를 자사 기업 플랫폼에 직접 내장(embed)할 계획'이라 밝힌다.\n(A) 핵심 개발자를 소매 매장망으로 영구 이전 — 인력 이전 언급은 없다.\n(B) 자동 문서 생성 도구를 플랫폼에 통합 — embed를 패러프레이징한 정답.\n(C) MFA 관련 규정 위반 벌금 회피 — 벌금 회피가 인수 목적이 아니다.\n(D) 중앙 네트워크의 오래된 브라우저 캐시 정리 — 지문과 무관한 소재다.",
+          "translation": null
         },
         {
           "prompt": "What is indicated about Ms. Tanaka?",
@@ -45,7 +47,8 @@
             "She rejected the initial cash transaction value proposed by James Albright."
           ],
           "answerIndex": 2,
-          "explanation": "마지막 단락: 'Muze AI 설립자 타나카 하나는 모회사(Social Brain AI)의 최고혁신책임자(CIO)로 전환 예정'. (C) become the Chief Innovation Officer at Social Brain AI."
+          "explanation": "마지막 단락에서 'Muze AI 설립자 타나카 하나는 모회사(Social Brain AI)의 최고혁신책임자(CIO)로 전환 예정'이라 한다.\n(A) 지역 정부의 재무 감사 로그를 관리 — 감사 로그 관리는 언급이 없다.\n(B) 다음 달 국제 AI 윤리 심포지엄에서 연설 예정 — 연설 일정은 없다.\n(C) Social Brain AI의 최고혁신책임자가 됨 — 지문과 일치해 정답.\n(D) 앨브라이트가 제안한 인수 금액을 거절 — 금액 거절 언급은 없다.",
+          "translation": null
         }
       ]
     },
@@ -66,7 +69,8 @@
             "The upcoming retirement of a senior technology consulting director"
           ],
           "answerIndex": 1,
-          "explanation": "헤드라인 'THE ASCENT OF TECH HUBS IN THE JEONBUK REGION'과 첫 문장에서 전북 지역이 B2G 기술 중심지로 전환 중이라 분석한다. 특정 지역의 경제·기술적 성장을 다룬 (B)."
+          "explanation": "헤드라인 'THE ASCENT OF TECH HUBS IN THE JEONBUK REGION'과 첫 문장에서 전북 지역이 B2G 기술 중심지로 전환 중이라 분석한다.\n(A) 프리미엄 기업용 소프트웨어 구독 가격 조정 — 가격 조정 리포트가 아니다.\n(B) 특정 지역의 경제·기술적 성장 — 리포트 핵심 주제라 정답.\n(C) 내부 네트워크 보안 프로토콜 관련 구조적 분쟁 — 분쟁을 다루지 않는다.\n(D) 선임 기술 컨설팅 이사의 임박한 은퇴 — 은퇴 언급은 없다.",
+          "translation": null
         },
         {
           "prompt": "According to the report, what asset helps reduce system latency in the region?",
@@ -77,7 +81,8 @@
             "Standardized client communication logs"
           ],
           "answerIndex": 1,
-          "explanation": "둘째 단락 마지막 문장: 'integrated Supabase server installations가 system latency를 효과적으로 완화한다'. 기술 명칭을 그대로 매칭한 (B)."
+          "explanation": "둘째 단락 마지막 문장에서 'integrated Supabase server installations가 system latency를 효과적으로 완화한다'고 한다.\n(A) 개인화된 다중 인증 도구 — 지연 완화 요인으로 언급되지 않는다.\n(B) 통합 Supabase 서버 설치 — 지문 표현을 그대로 매칭한 정답.\n(C) 수동 데이터베이스 롤백 소프트웨어 템플릿 — 지연 완화와 무관하다.\n(D) 표준화된 고객 커뮤니케이션 로그 — 언급되지 않은 소재다.",
+          "translation": null
         },
         {
           "prompt": "What problem does the report identify as a barrier to long-term scalability?",
@@ -88,7 +93,8 @@
             "Inadequate funding allocations from public sector bodies"
           ],
           "answerIndex": 1,
-          "explanation": "셋째 단락 However 뒤 병목으로 'an acute deficit of senior solutions architects'를 지목. acute deficit을 shortage로 패러프레이징한 (B)."
+          "explanation": "셋째 단락 However 뒤에서 병목으로 'an acute deficit of senior solutions architects'를 지목한다.\n(A) 즉시 임대 가능한 상업용 사무실 부족 — 사무 공간 문제는 언급이 없다.\n(B) 고숙련 선임 기술 인력 부족 — acute deficit을 shortage로 바꾼 정답.\n(C) 자동 접근 토큰의 갑작스러운 취소 — 토큰 취소 언급은 없다.\n(D) 공공 부문의 부족한 자금 배정 — 오히려 초기 자금은 abundant라 반대다.",
+          "translation": null
         }
       ]
     },
@@ -109,7 +115,8 @@
             "Muze AI"
           ],
           "answerIndex": 2,
-          "explanation": "송장 상단 'INVOICE TO: Social Brain AI'와 그 아래 'Attn: Dae-hyun Soun' → 수령처에 근무하는 (C)."
+          "explanation": "송장 상단 'INVOICE TO: Social Brain AI'와 그 아래 'Attn: Dae-hyun Soun'으로 보아 수령처 직원이다.\n(A) Apex Hardware Logistics — 송장을 보낸(FROM) 공급업체다.\n(B) Regional Commerce Institute — 이 거래 당사자가 아니다.\n(C) Social Brain AI — 송장 수령처(INVOICE TO)라 정답.\n(D) Muze AI — 이 송장에 거래 당사자로 등장하지 않는다.",
+          "translation": null
         },
         {
           "prompt": "How much did Social Brain AI save through the early-bird contract discount?",
@@ -120,7 +127,8 @@
             "$15,500"
           ],
           "answerIndex": 1,
-          "explanation": "청구 요약의 '20% DISCOUNT: -$3,100'이 얼리버드 계약으로 차감된 절약액임을 NOTES에서도 확인 → (B)."
+          "explanation": "청구 요약의 '20% DISCOUNT: -$3,100'이 얼리버드 계약으로 차감된 절약액이며 NOTES에서도 확인된다.\n(A) $1,500 — MFA 토큰 품목 금액이지 할인액이 아니다.\n(B) $3,100 — 20% 할인 차감액이라 정답.\n(C) $12,400 — 최종 결제액(TOTAL DUE)이다.\n(D) $15,500 — 할인 전 소계(SUBTOTAL)다.",
+          "translation": null
         },
         {
           "prompt": "What will happen if the invoice balance is not settled by July 25, 2026?",
@@ -131,7 +139,8 @@
             "A comprehensive manual database rollback will be executed."
           ],
           "answerIndex": 1,
-          "explanation": "NOTES: '7월 25일 이후 남은 잔액에 주당 5% 연체료 부과' → 매주 연체료가 추가된다는 (B)."
+          "explanation": "NOTES에서 '7월 25일 이후 남은 잔액에 주당 5% 연체료(late penalty)를 부과한다'고 명시한다.\n(A) MFA 토큰이 취소됨 — 토큰 취소 조항은 없다.\n(B) 매주 추가 연체료가 부과됨 — 지문과 일치해 정답.\n(C) 데이터 저장 서버를 공급업체에 반송 — 반송 조항은 없다.\n(D) 전면 수동 DB 롤백 실행 — 롤백 언급은 없다.",
+          "translation": null
         }
       ]
     },
@@ -152,7 +161,8 @@
             "Dae-hyun Soun"
           ],
           "answerIndex": 1,
-          "explanation": "일정표 상단 'Traveler: James Albright (Chief Operating Officer, Social Brain AI)' 명시 → (B)."
+          "explanation": "일정표 상단에 'Traveler: James Albright (Chief Operating Officer, Social Brain AI)'로 명시된다.\n(A) Min-seok Kang — 일정표에 등장하지 않는 인물이다.\n(B) James Albright — Traveler로 명시돼 정답.\n(C) Hana Tanaka — 이 출장의 여행자가 아니다.\n(D) Dae-hyun Soun — 송장 지문 인물로 여기선 무관하다.",
+          "translation": null
         },
         {
           "prompt": "According to the itinerary, what will take place at 2:30 P.M. on Thursday, July 16?",
@@ -163,7 +173,8 @@
             "An evaluation meeting in Boardroom 201"
           ],
           "answerIndex": 1,
-          "explanation": "7월 16일 02:30 P.M. 행이 'Infrastructure Tech Tour / Server Facility' → 서버 인프라 시설 투어인 (B)."
+          "explanation": "7월 16일 02:30 P.M. 행이 'Infrastructure Tech Tour / Server Facility'다.\n(A) 데이터베이스 온톨로지 동기화 세션 — 금요일 09:30 일정이다.\n(B) 서버 인프라 시설 투어 — 해당 시각 활동이라 정답.\n(C) 전략적 화상 서명식 — 일정표에 없는 활동이다.\n(D) 201호 회의실 평가 회의 — 금요일 04:30 일정이다.",
+          "translation": null
         },
         {
           "prompt": "What is a requirement for attending the tour at the server facility?",
@@ -174,7 +185,8 @@
             "Clearing internet browser cache files prior to arrival"
           ],
           "answerIndex": 2,
-          "explanation": "주석 둘째 항목: 서버 시설 진입 시 'All personnel must wear their corporate identification badges visibly'. company identification badge로 패러프레이징한 (C)."
+          "explanation": "주석 둘째 항목에서 서버 시설 진입 시 'All personnel must wear their corporate identification badges visibly'라 요구한다.\n(A) 개인 휴대폰으로 14일 체험 코드 다운로드 — 그런 요건은 없다.\n(B) 개정 재택근무 방침 서명본 지참 — 언급되지 않는다.\n(C) 유효한 사원증을 잘 보이게 착용 — 지문 요건과 일치해 정답.\n(D) 도착 전 브라우저 캐시 정리 — 무관한 소재다.",
+          "translation": null
         }
       ]
     },
@@ -195,7 +207,8 @@
             "To select a location for the upcoming public sector research facility"
           ],
           "answerIndex": 1,
-          "explanation": "제목 'INTERNAL SURVEY SUMMARY: NEW SUPABASE API INTEGRATION' → 연동된 데이터베이스 시스템에 대한 직원 피드백을 모은 (B)."
+          "explanation": "제목 'INTERNAL SURVEY SUMMARY: NEW SUPABASE API INTEGRATION'에서 새로 연동한 시스템에 대한 직원 피드백 수집이 목적임을 알 수 있다.\n(A) 외부 공급업체와의 소프트웨어 라이선스 계약 평가 — 라이선스 평가가 아니다.\n(B) 최근 연동된 데이터베이스 시스템에 대한 직원 피드백 수집 — 정답.\n(C) 개정 재택근무 방침 선호도 파악 — 재택 방침 조사가 아니다.\n(D) 공공 부문 연구 시설 입지 선정 — 입지 선정과 무관하다.",
+          "translation": null
         },
         {
           "prompt": "Which evaluation category received the lowest satisfaction score?",
@@ -206,7 +219,8 @@
             "User Interface Navigation Dashboard"
           ],
           "answerIndex": 2,
-          "explanation": "표에서 'Database Ontology Synchronization'이 평점 3.1·찬성률 62%로 최저이고 피드백에서도 Category 3 최저라 명시 → (C)."
+          "explanation": "표에서 'Database Ontology Synchronization'이 평점 3.1·찬성률 62%로 최저이고 서술 피드백도 Category 3을 최저로 명시한다.\n(A) 처리 속도·지연 감소 — 4.7로 최고 항목이다.\n(B) 다중 인증 보안 — 4.2로 최저가 아니다.\n(C) 데이터베이스 온톨로지 동기화 — 3.1로 최저라 정답.\n(D) UI 내비게이션 대시보드 — 4.5로 높은 편이다.",
+          "translation": null
         },
         {
           "prompt": "What does management plan to do on July 20?",
@@ -217,7 +231,8 @@
             "Relocate the central data cooling frameworks to the Gangnam campus"
           ],
           "answerIndex": 2,
-          "explanation": "NEXT ACTION PLAN: '7월 20일 전담 컨설턴트를 투입해 집중 troubleshooting seminar 개최'. 전문 기술 교육 세션 제공으로 패러프레이징한 (C)."
+          "explanation": "NEXT ACTION PLAN에서 '7월 20일 전담 컨설턴트를 투입해 집중 troubleshooting seminar를 개최한다'고 한다.\n(A) 기술 파트너를 영구 인수하는 구속력 있는 계약 체결 — 인수 계획이 아니다.\n(B) 비밀번호 현대화를 위해 모든 터미널 계정 취소 — 계정 취소 계획은 없다.\n(C) 문제 해결을 위한 전문 기술 교육 세션 제공 — seminar를 패러프레이징한 정답.\n(D) 중앙 데이터 냉각 설비를 강남 캠퍼스로 이전 — 이전 언급은 없다.",
+          "translation": null
         }
       ]
     }

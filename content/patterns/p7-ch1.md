@@ -23,7 +23,8 @@
             "To complain about a delayed software delivery from an external vendor"
           ],
           "answerIndex": 1,
-          "explanation": "전반부에서 API 접속 오류를 사과한 뒤, 세 번째 단락에서 '오늘 오전 10시 롤백을 배포해 모든 API가 완전히 가동 중(all core API endpoints are now fully operational)'이라고 밝힌다. 기술 문제 해결을 기업 고객에게 알리는 (B)."
+          "explanation": "전반부에서 API 접속 오류를 사과한 뒤, 세 번째 단락에서 '오늘 오전 10시 롤백을 배포해 모든 API가 완전히 가동 중'이라고 밝힌다. 기술 문제 해결을 기업 고객에게 알리는 것이 핵심이다.\n(A) 공동 연구 자금 추가 요청 — 자금 요청 내용은 지문에 없다.\n(B) 기술 문제가 해결됐음을 기업 고객에게 알림 — 롤백·정상화 통지라 정답.\n(C) 구독 정책의 구조적 변경 발표 — 정책 변경이 아니라 일시 오류·복구 안내다.\n(D) 외부 업체의 배송 지연에 항의 — 발신자는 지원팀이며 항의가 아니라 사과·해결 안내다.",
+          "translation": null
         },
         {
           "prompt": "According to the email, what caused the dashboard error?",
@@ -34,7 +35,8 @@
             "An invalid login attempt by unauthorized system users"
           ],
           "answerIndex": 1,
-          "explanation": "두 번째 단락: '자정에 서브베이스 서버에 적용된 자동 구조 업데이트가 접근 토큰을 무효화했다'. 지문의 structural update를 (B) database upgrade로 패러프레이징한 선지가 정답."
+          "explanation": "두 번째 단락에 '자정에 Supabase 서버에 적용된 자동 구조 업데이트가 접근 토큰을 무효화했다'고 나온다. 지문의 structural update를 database upgrade로 패러프레이징한 선지가 정답이다.\n(A) 재무부의 갑작스러운 가격 조정 — 가격 조정이 아니라 서버 업데이트가 원인이다.\n(B) 자정에 실행된 자동 데이터베이스 업그레이드 — structural update의 패러프레이징이라 정답.\n(C) 고객 내부 네트워크의 하드웨어 고장 — 원인은 벤더 서버 업데이트지 고객 하드웨어가 아니다.\n(D) 무단 사용자의 잘못된 로그인 시도 — 침입이 아니라 '설정 오류(configuration error)'라고 명시됐다.",
+          "translation": null
         },
         {
           "prompt": "What is Mr. Albright's team advised to do before logging in?",
@@ -45,7 +47,8 @@
             "Update their personal mobile contact information"
           ],
           "answerIndex": 2,
-          "explanation": "마지막 단락: '다시 로그인하기 전에 개발자들이 브라우저 캐시를 지울 것을 강력히 권장(clear their browser caches)'. 지문 표현을 거의 그대로 반영한 (C)."
+          "explanation": "마지막 단락에 '다시 로그인하기 전에 개발자들이 브라우저 캐시를 지울 것을 강력히 권장한다'고 나온다.\n(A) 서면으로 라이선스 계약 갱신 — 갱신이 아니라 캐시 삭제를 권한다.\n(B) 회계팀에 공식 환급 요청 제출 — 환급 요청 지침은 없다(할인은 자동 적용됨).\n(C) 인터넷 브라우저 캐시 파일 삭제 — 지문 clear their browser caches 그대로라 정답.\n(D) 개인 휴대폰 연락처 갱신 — 언급 없는 내용이다.",
+          "translation": null
         }
       ]
     },
@@ -66,7 +69,8 @@
             "To request an extension on a public sector project deadline"
           ],
           "answerIndex": 1,
-          "explanation": "첫 단락 후반부: '독점 소프트웨어를 LinkMD 엔진에 통합하는 전략적 협업 제안을 공식적으로 전달(formally extend a proposal)한다'. 파트너십·라이선스 계약을 제안하는 (B)."
+          "explanation": "첫 단락 후반부에 '독점 소프트웨어를 LinkMD 엔진에 통합하는 전략적 협업 제안을 공식적으로 전달한다'고 나온다.\n(A) 데이터 유출에 대한 재정 보상 요구 — 보상 요구가 아니라 협업 제안이다.\n(B) 사업 파트너십·라이선스 계약을 공식 제안 — formally extend a proposal이라 정답.\n(C) 기술 전문가를 서밋 연사로 초청 — 초청이 아니며, 서밋은 지난주 논의의 배경일 뿐이다.\n(D) 공공 프로젝트 마감 연장 요청 — 마감 연장 요청 내용은 없다.",
+          "translation": null
         },
         {
           "prompt": "What is NOT mentioned as a term of the proposed agreement?",
@@ -77,7 +81,8 @@
             "Priority access to Social Brain AI's server infrastructure"
           ],
           "answerIndex": 2,
-          "explanation": "2년 초기 기간(A)·분기 4만 5천 달러 고정 요금(B)·서버 우선 접근(D)은 모두 명시됨. 엔지니어의 '영구 인력 재배치'는 전혀 언급이 없으므로 (C)."
+          "explanation": "NOT 문제이므로 '언급된 것 3개'를 지우고 남는 것을 고른다.\n(A) 초기 2년 라이선스 기간 — 2단락에 initial duration of two years로 명시되어 언급됨(오답).\n(B) Social Brain이 Muze에 내는 분기 고정 요금 — fixed quarterly licensing fee of $45,000로 언급됨(오답).\n(C) Muze 엔지니어의 영구 인력 재배치 — 지문에 전혀 없어 정답(NOT mentioned).\n(D) Social Brain 서버 인프라 우선 접근 — priority access to our Supabase server로 언급됨(오답).",
+          "translation": null
         },
         {
           "prompt": "What is Ms. Tanaka requested to do by July 25?",
@@ -88,7 +93,8 @@
             "Attend a physical signing ceremony at the Gangnam office"
           ],
           "answerIndex": 2,
-          "explanation": "마지막 단락: '7월 25일까지 피드백·수정 요청을 제공해 달라(provide your feedback ... by July 25)'. provide your feedback을 (C) Respond with feedback으로 패러프레이징."
+          "explanation": "마지막 단락에 '7월 25일까지 피드백이나 수정 요청을 제공해 달라'고 나온다.\n(A) 초기 설치 송장 제출 — 송장 제출 요청은 없다.\n(B) 회사 신분증 접근 갱신 — 언급 없는 내용이다.\n(C) 계약 조건에 대한 피드백으로 회신 — provide your feedback by July 25의 패러프레이징이라 정답.\n(D) 강남 사무실 서명식 참석 — 서명식 참석 요청은 없고 초안 검토만 요청한다.",
+          "translation": null
         }
       ]
     },
@@ -109,7 +115,8 @@
             "To explain a revised policy on employee expense reports"
           ],
           "answerIndex": 0,
-          "explanation": "첫 단락: '강민석 씨를 새 CFO로 임명했음을 공식 발표(formally announce the appointment ... as the new CFO)'. 새 임원을 전 직원에게 소개하는 (A)."
+          "explanation": "첫 단락에서 '강민석 씨를 새 CFO로 임명했음을 공식 발표한다'고 밝힌다.\n(A) 새로 임명된 임원을 회사에 소개 — appointment 발표라 정답.\n(B) 다가오는 합병의 세부 사항 설명 — 합병은 강 씨의 과거 이력일 뿐 이메일 주제가 아니다.\n(C) 창업 CEO의 은퇴 발표 — 전임 재무이사가 자문역으로 이동할 뿐 CEO 은퇴가 아니다.\n(D) 경비 보고 정책 개정 설명 — 경비 통제는 그의 담당 업무일 뿐 이메일 주제가 아니다.",
+          "translation": null
         },
         {
           "prompt": "What is indicated about Mr. Kang's professional background?",
@@ -120,7 +127,8 @@
             "He managed a database ontology project for five years."
           ],
           "answerIndex": 1,
-          "explanation": "두 번째 단락: '지난 6년 동안 Apex Technology Group에서 재무 운영 수석 부사장으로 근무(For the past six years, he served ... at Apex Technology Group)'. 사실 관계를 매칭한 (B)."
+          "explanation": "두 번째 단락에 '지난 6년 동안 Apex Technology Group에서 재무 운영 수석 부사장으로 근무했다'고 나온다.\n(A) 공공 기업에서 소프트웨어 개발자로 근무 — 그는 재무 담당이지 개발자가 아니다.\n(B) 지난 6년간 Apex Technology Group에 재직 — 지문 사실과 일치해 정답.\n(C) 본인의 퀀트 트레이딩 스타트업 창업 — 창업 이력은 언급이 없다.\n(D) 5년간 데이터 온톨로지 프로젝트 관리 — '5년'은 전임 재무이사의 근속 기간이고 온톨로지도 그의 이력이 아니다.",
+          "translation": null
         },
         {
           "prompt": "What will take place on Friday, July 17?",
@@ -131,7 +139,8 @@
             "A virtual press conference with regional B2G clients"
           ],
           "answerIndex": 2,
-          "explanation": "마지막 단락: '7월 17일 금요일 오후 4시 메인 쇼룸에서 가벼운 환영 리셉션 개최(casual welcome reception)'. casual welcome reception을 (C) social gathering으로 패러프레이징."
+          "explanation": "마지막 단락에 '7월 17일 금요일 오후 4시 메인 쇼룸에서 가벼운 환영 리셉션을 연다'고 나온다.\n(A) 의무 재무 준법 교육 — 교육 세션이 아니라 환영 리셉션이다.\n(B) 예측 데이터 부서 성과 평가 — 성과 평가 언급은 없다.\n(C) 신규 직원을 환영하는 친목 모임 — welcome reception의 패러프레이징이라 정답.\n(D) B2G 고객과의 화상 기자회견 — 기자회견은 언급이 없다.",
+          "translation": null
         }
       ]
     },
@@ -152,7 +161,8 @@
             "To complain about a lack of technical support during an upgrade"
           ],
           "answerIndex": 1,
-          "explanation": "첫 단락에서 송장 번호를 명시하며 '즉각적인 조정이 필요한 상당한 금액 불일치를 발견했다'고 밝힌다. 오류 정정을 요청하는 (B)."
+          "explanation": "첫 단락에서 송장 번호를 명시하며 '즉각적인 조정이 필요한 상당한 금액 불일치를 발견했다'고 밝힌다.\n(A) 프리미엄 구독 계약 취소 — 취소가 아니라 송장 정정 요청이다.\n(B) 최근 받은 송장의 정정 요청 — pricing discrepancy 조정 요청이라 정답.\n(C) 서비스료 자동 이체 승인 — 승인이 아니라 금액이 틀려 정정을 요청한다.\n(D) 업그레이드 중 기술 지원 부족에 항의 — 지원 부족 항의가 아니라 부당 청구 정정이다.",
+          "translation": null
         },
         {
           "prompt": "What is indicated about the contract between Social Brain AI and Apex Tech?",
@@ -163,7 +173,8 @@
             "It is scheduled to be permanently terminated on July 15."
           ],
           "answerIndex": 2,
-          "explanation": "세 번째 단락 제4B조: '공급업체 내부 정비로 다운타임이 발생하면 부수 비용은 전액 면제(auxiliary fees are to be completely waived)'. (C) waives extra fees로 패러프레이징. ($45,000은 '분기' 요금이라 (A) monthly는 오답.)"
+          "explanation": "세 번째 단락 제4B조에 '공급업체 내부 정비로 다운타임이 발생하면 부수 비용은 전액 면제된다'고 나온다.\n(A) 월 4.5만 달러 라이선스 지불 요구 — $45,000은 '분기(quarterly)' 요금이라 '월(monthly)'은 틀렸다.\n(B) 외부 법률 컨설팅이 초안 작성 — 초안 작성 주체는 언급이 없다.\n(C) 특정 정비 조건에서 추가 요금을 면제 — 4B조 waived의 패러프레이징이라 정답.\n(D) 7월 15일 영구 해지 예정 — 7월 15일은 결제 처리일이지 계약 해지일이 아니다.",
+          "translation": null
         },
         {
           "prompt": "According to Mr. Eom, what should the total balance be on the revised invoice?",
@@ -174,7 +185,8 @@
             "$52,500"
           ],
           "answerIndex": 2,
-          "explanation": "마지막 단락: '올바른 잔액인 $45,000이 반영된 수정 송장을 발행해 달라(the correct balance of $45,000)'. 부당한 Emergency Support Charge $7,500을 제외한 (C) $45,000."
+          "explanation": "마지막 단락에서 '올바른 잔액인 $45,000이 반영된 수정 송장을 발행해 달라'고 요청한다.\n(A) $7,500 — 부당 청구된 Emergency Support Charge 금액이지 정정 잔액이 아니다.\n(B) $12,000 — 지문에 근거 없는 임의 금액이다.\n(C) $45,000 — 계약상 고정 분기 요금(부당 요금 제외)이라 정답.\n(D) $52,500 — 부당 요금이 포함된 총 청구액이라 오히려 정정 대상 금액이다.",
+          "translation": null
         }
       ]
     },
@@ -195,7 +207,8 @@
             "To update the shipping address for an existing order"
           ],
           "answerIndex": 1,
-          "explanation": "첫 단락에서 '주문 #NX-2026-0615와 관련된 심각한 배송 지연에 깊은 불만을 표한다'며 7월 5일까지 오기로 한 물품이 안 온 사실을 짚는다. 납품 마감 기한 미준수에 항의하는 (B)."
+          "explanation": "첫 단락에서 '주문 #NX-2026-0615와 관련된 심각한 배송 지연에 깊은 불만을 표한다'며 7월 5일까지 오기로 한 물품이 오지 않은 사실을 짚는다.\n(A) 고성능 단말기 견적 요청 — 견적 요청이 아니라 지연 항의다.\n(B) 납품 마감 기한 미준수에 항의 — delivery delay 불만이라 정답.\n(C) 장기 기술 컨설팅 계약 갱신 — 계약 갱신이 아니라 오히려 해지를 경고한다.\n(D) 기존 주문의 배송 주소 갱신 — 주소 변경 내용은 없다.",
+          "translation": null
         },
         {
           "prompt": "What is a stated consequence of the delay?",
@@ -206,7 +219,8 @@
             "Staff members were permanently reassigned to another facility."
           ],
           "answerIndex": 2,
-          "explanation": "세 번째 단락: '엔지니어링 팀이 새로 개발한 데이터 온톨로지 아키텍처를 테스트하지 못한다(unable to test)'. unable to test를 (C) interrupted로 패러프레이징."
+          "explanation": "세 번째 단락에 '엔지니어링 팀이 새로 개발한 데이터 온톨로지 아키텍처를 테스트하지 못하고 있다'고 나온다.\n(A) 프로젝트 마케팅 예산이 삭감됨 — 예산 삭감 언급은 없다.\n(B) 외부 개발자가 시스템 접근을 취소함 — 접근 취소 내용은 없다.\n(C) 새 데이터베이스 아키텍처 테스트가 중단됨 — unable to test의 패러프레이징이라 정답.\n(D) 직원이 다른 시설로 영구 재배치됨 — 재배치 언급은 없다.",
+          "translation": null
         },
         {
           "prompt": "What does Mr. Ji threaten to do if the issue is not addressed by July 15?",
@@ -217,7 +231,8 @@
             "Request a manual database rollback from his team"
           ],
           "answerIndex": 0,
-          "explanation": "마지막 단락: 7월 15일까지 확답이 없으면 '주문을 완전히 취소하고 다른 업체를 찾겠다(cancel the order entirely)'. cancel the order를 (A) Terminate the transaction으로 패러프레이징."
+          "explanation": "마지막 단락에서 7월 15일까지 확답이 없으면 '주문을 완전히 취소하고 다른 업체를 찾겠다'고 경고한다.\n(A) Apex Hardware와의 거래를 종료 — cancel the order entirely의 패러프레이징이라 정답.\n(B) 다음 송장에서 15% 위약금 차감 — 위약금 차감 위협은 없다.\n(C) 지방 정부에 공식 민원 제출 — 정부는 자사 프로젝트의 이해관계자일 뿐 민원 대상이 아니다.\n(D) 팀에 수동 DB 롤백 요청 — 롤백은 다른 지문의 소재이지 이 위협이 아니다.",
+          "translation": null
         }
       ]
     }
