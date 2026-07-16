@@ -26,6 +26,7 @@ export default function PatternStudy({
 
   const q = qs[idx];
   const answered = selected[idx] !== undefined;
+  const hasPassage = !!pattern.passage;
   const correctCount = useMemo(
     () => selected.filter((s, i) => s === qs[i].answerIndex).length,
     [selected, qs],
@@ -53,7 +54,11 @@ export default function PatternStudy({
     <main className="relative min-h-dvh overflow-hidden bg-neutral-50 pb-24 text-neutral-900">
       <div className="pointer-events-none absolute -top-24 left-1/2 -z-10 h-72 w-[36rem] max-w-[92vw] -translate-x-1/2 rounded-full bg-gradient-to-r from-indigo-300/40 via-blue-300/30 to-sky-300/40 blur-[90px]" />
 
-      <div className="container-narrow relative z-10 mx-auto max-w-2xl px-4 pt-6 sm:pt-10">
+      <div
+        className={`relative z-10 mx-auto px-4 pt-6 sm:pt-10 ${
+          hasPassage ? "container-exam" : "container-narrow max-w-2xl"
+        }`}
+      >
         <button
           onClick={() => router.push("/patterns")}
           className="mb-4 inline-flex items-center gap-1.5 text-sm font-semibold text-neutral-500 transition hover:text-neutral-800"
@@ -110,19 +115,27 @@ export default function PatternStudy({
           </section>
         )}
 
-        {/* 지문 (P6·P7) */}
-        {pattern.passage && (
-          <section className="mt-3 rounded-2xl border border-neutral-200 bg-neutral-50 p-5">
-            <p className="mb-2 text-xs font-extrabold uppercase tracking-wider text-neutral-400">
-              지문
-            </p>
-            <Passage text={pattern.passage} />
-          </section>
-        )}
+        {/* 지문(좌) + 예제(우) — P6·P7은 한 화면 2단, P5는 예제만 단일 컬럼 */}
+        <div
+          className={
+            hasPassage
+              ? "mt-5 grid grid-cols-1 gap-5 lg:grid-cols-[1fr_1fr] lg:items-start"
+              : ""
+          }
+        >
+          {hasPassage && (
+            <section className="rounded-2xl border border-neutral-200 bg-neutral-50 p-5 lg:sticky lg:top-6">
+              <p className="mb-2 text-xs font-extrabold uppercase tracking-wider text-neutral-400">
+                지문
+              </p>
+              <Passage text={pattern.passage!} tall />
+            </section>
+          )}
 
+          <div>
         {/* 예제 */}
         {!done ? (
-          <section className="mt-6">
+          <section className={hasPassage ? "" : "mt-6"}>
             <div className="mb-3 flex items-center justify-between">
               <p className="text-sm font-bold text-neutral-500">
                 실전 예제 <span className="text-indigo-600">{idx + 1}</span> / {qs.length}
@@ -249,6 +262,8 @@ export default function PatternStudy({
             onList={() => router.push("/patterns")}
           />
         )}
+          </div>
+        </div>
 
         {/* 하단 패턴 네비 */}
         <div className="mt-8 flex items-center justify-between text-sm font-semibold">
@@ -361,10 +376,14 @@ function Inline({ text }: { text: string }) {
 }
 
 // 지문 렌더러 — 빈칸 (1) 표식과 밑줄 공란을 강조.
-function Passage({ text }: { text: string }) {
+function Passage({ text, tall = false }: { text: string; tall?: boolean }) {
   const parts = text.split(/(\(\d\)|_{3,})/g).filter((s) => s !== "");
   return (
-    <div className="max-h-[46vh] overflow-y-auto whitespace-pre-wrap rounded-lg bg-white/70 p-3 font-serif text-[14px] leading-7 text-neutral-800 ring-1 ring-neutral-200">
+    <div
+      className={`overflow-y-auto whitespace-pre-wrap rounded-lg bg-white/70 p-3 font-serif text-[14px] leading-7 text-neutral-800 ring-1 ring-neutral-200 ${
+        tall ? "max-h-[46vh] lg:max-h-[calc(100dvh-9rem)]" : "max-h-[46vh]"
+      }`}
+    >
       {parts.map((p, i) => {
         if (/^\(\d\)$/.test(p))
           return (
