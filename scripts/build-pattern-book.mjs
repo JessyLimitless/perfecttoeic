@@ -84,21 +84,65 @@ const outLines = src.slice();
 for (let k = rows.length - 1; k >= 0; k--) {
   outLines.splice(rows[k].start, rows[k].end - rows[k].start, ...render(flat[k]));
 }
-// 3-b) 각 챕터(## CHAPTER …)를 새 페이지에서 시작 — 교재형 간지. (멱등: 직전에 이미 있으면 skip)
-let chapterBreaks = 0;
-for (let i = 0; i < outLines.length; i++) {
-  if (!/^## CHAPTER /.test(outLines[i])) continue;
-  // 위쪽으로 빈 줄/앵커(<a id>)를 건너뛴 지점에 page-break div가 이미 있으면 skip
-  let p = i - 1;
-  while (p >= 0 && (outLines[p].trim() === "" || /^<a id=/.test(outLines[p].trim()))) p--;
-  if (p >= 0 && outLines[p].includes("page-break-before")) continue;
-  outLines.splice(i, 0, '<div style="page-break-before: always;"></div>', "");
-  i += 2;
-  chapterBreaks++;
-}
-console.log(`✓ 챕터 간지(page-break-before) 삽입: ${chapterBreaks}개`);
+// 3-b) 예전 방식(보이지 않는 page-break-before div)은 제거 — 챕터 페이지 나눔은 아래 인쇄 CSS가 담당
+let stripped = outLines.filter((ln, i) => {
+  if (ln.trim() === '<div style="page-break-before: always;"></div>') return false;
+  return true;
+});
 
-const result = outLines.join("\n");
+// 3-c) 프리미엄 인쇄 테마(<style>) 최상단 1회 주입 — LinkMD(marked, sanitize 없음)가 화면·인쇄 모두에 적용.
+//   ① 지문 검은 코드박스 → 밝은 문서 패널  ② 챕터 헤딩 = 컬러 간지 배너(+인쇄 새 페이지)  ③ 요약표·대제목 정리
+const THEME_MARK = "<!-- pattern-book-theme -->";
+const THEME = `${THEME_MARK}
+<style>
+/* ===== 패턴 마스터 · 프리미엄 인쇄 테마 (LinkMD viewer/print 공통) ===== */
+.md-render{--pb-indigo:#4f46e5;--pb-sky:#0ea5e9;--pb-ink:#0f172a;--pb-line:#e2e8f0}
+/* 지문: 검은 코드박스 → 밝은 문서 패널 (ASCII 표 정렬 위해 monospace 유지) */
+.md-render pre{background:#f8fafc!important;color:var(--pb-ink)!important;border:1px solid var(--pb-line)!important;border-left:4px solid var(--pb-indigo)!important;border-radius:12px;box-shadow:0 1px 3px rgba(15,23,42,.06);padding:22px 26px;line-height:1.8;white-space:pre-wrap!important;overflow-x:visible!important;margin:16px 0}
+.md-render pre code{color:var(--pb-ink)!important;background:none!important;border:0!important;padding:0!important;font-size:1rem}
+/* 산문 지문(이메일·기사·편지): 비율 글꼴로 크고 읽기 좋게 */
+.md-render pre code.language-prose{font-family:'Segoe UI','Malgun Gothic',system-ui,-apple-system,sans-serif!important;font-size:1.06rem;line-height:1.9;letter-spacing:.005em}
+/* 데이터 지문(송장·일정표·표): 열 정렬 위해 고정폭 유지 */
+.md-render pre code.language-data{font-family:'Consolas','D2Coding',ui-monospace,monospace!important;font-size:.93rem;line-height:1.7}
+.code-lang-label,.code-copy-btn{display:none!important}
+/* 파트 대제목 */
+.md-render h1{color:var(--pb-indigo);font-weight:800;letter-spacing:-.02em}
+/* 챕터·섹션 = 시각적 간지 배너 */
+.md-render h2{background:linear-gradient(135deg,var(--pb-indigo),var(--pb-sky));color:#fff!important;border:0!important;padding:13px 20px;border-radius:12px;margin:36px 0 22px;font-size:1.12rem;font-weight:700;box-shadow:0 6px 18px rgba(79,70,229,.22)}
+/* 패턴 소제목 */
+.md-render h3{color:#1e293b}
+/* 요약 시트 표 */
+.md-render table{box-shadow:0 1px 3px rgba(15,23,42,.06)}
+.md-render thead th{background:linear-gradient(135deg,#eef2ff,#e0f2fe)!important;color:#3730a3!important}
+/* 인쇄 최적화: 챕터마다 새 페이지 + 블록 안 잘림 */
+@media print{
+  .md-render h2{break-before:page;box-shadow:none;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .md-render pre,.md-render blockquote,.md-render table{break-inside:avoid}
+  .md-render h1,.md-render h2,.md-render h3{break-after:avoid}
+}
+</style>
+`;
+if (stripped[0] !== THEME_MARK) {
+  stripped = [...THEME.split("\n"), ...stripped];
+  console.log("✓ 프리미엄 인쇄 테마 <style> 주입");
+} else {
+  // 기존 테마 블록(마커~</style> 다음 빈 줄까지) 제거 후 최신본 재주입 (멱등)
+  let end = stripped.indexOf("</style>");
+  if (end !== -1) { let e = end + 1; if (stripped[e] === "") e++; stripped = stripped.slice(e); }
+  stripped = [...THEME.split("\n"), ...stripped];
+  console.log("✓ 프리미엄 인쇄 테마 <style> 갱신");
+}
+
+// 3-d) 지문 코드펜스 언어 태그를 내용에 따라 분류 (멱등): 표(| 또는 ----- 포함)=data(고정폭) · 그 외=prose(비율글꼴)
+let passageProse = 0, passageData = 0;
+let joined = stripped.join("\n").replace(/```(?:text|prose|data)\n([\s\S]*?)```/g, (_m, inner) => {
+  const isData = /\|/.test(inner) || /-{5,}/.test(inner);
+  if (isData) passageData++; else passageProse++;
+  return "```" + (isData ? "data" : "prose") + "\n" + inner + "```";
+});
+console.log(`✓ 지문 분류: 산문(prose) ${passageProse} · 표(data) ${passageData}`);
+
+const result = joined;
 
 console.log("--- 샘플(P7-01 Q1) ---");
 console.log(render(flat.find((f) => f.pid === "p7-pat-01")).join("\n"));

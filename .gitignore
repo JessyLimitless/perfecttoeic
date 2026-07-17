@@ -39,3 +39,6 @@ next-env.d.ts
 /*.mp4
 
 /JP.png
+
+# 패턴학습 책자 PDF (scripts/build-pattern-pdf.mjs로 재생성)
+패턴학습_책자.pdf
