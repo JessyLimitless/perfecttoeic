@@ -7,6 +7,7 @@ import { audioSrc, type ListeningSet, type LcPart2Item } from "@/game/listening"
 import type { PassageSet, PassageQuestion, Part } from "@/game/types";
 import { usePracticeStore } from "@/game/store";
 import { partStudyLink } from "@/game/diagnostic";
+import SideMenu from "@/components/ui/SideMenu";
 import {
   scoreMock,
   saveMockResult,
@@ -207,6 +208,19 @@ export default function MockRunner({ mock }: { mock: MockExam }) {
           >
             모의고사 시작하기 →
           </button>
+
+          {/* 3단계 보조 — 짧게 실력만 재보고 싶을 때 */}
+          <SideMenu
+            title="가볍게 재보려면"
+            items={[
+              {
+                label: "레벨 진단",
+                href: "/diagnostic",
+                hint: "30문항 · LC+RC 미니 테스트",
+                icon: "🩺",
+              },
+            ]}
+          />
         </motion.div>
       </main>
     );

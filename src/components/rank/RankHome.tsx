@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import ResetButton from "@/components/warmup/ResetButton";
+import SideMenu from "@/components/ui/SideMenu";
 import JennyAvatar from "@/components/match/JennyAvatar";
 import { jennyChapterForGrade, MATCH_DOMAINS, type MatchDomain } from "@/game/match/jenny";
 import { useCharacter, withCharName } from "@/game/match/characters";
@@ -447,6 +448,25 @@ export default function RankHome() {
           variant="icon"
         />
       </div>
+
+      {/* 2단계(문제 대량 풀이)에서 함께 쓰는 통로 */}
+      <SideMenu
+        title="차분히 풀고 싶다면"
+        items={[
+          {
+            label: "유형별 문제풀이",
+            href: "/learn",
+            hint: "파트·유형을 골라 연습",
+            icon: "📚",
+          },
+          {
+            label: "리스닝",
+            href: "/listening",
+            hint: "Part 2·3·4 세트 학습",
+            icon: "🎧",
+          },
+        ]}
+      />
     </div>
   );
 }

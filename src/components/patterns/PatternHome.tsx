@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import SideMenu from "@/components/ui/SideMenu";
 import {
   loadPatternStats,
   patternProgress,
@@ -154,6 +155,24 @@ export default function PatternHome({ chapters }: { chapters: PatternChapter[] }
             </section>
           ))}
         </div>
+
+        {/* 1단계에서 곁들이면 좋은 것들 */}
+        <SideMenu
+          items={[
+            {
+              label: "몸풀기 · 스토리 리딩",
+              href: "/warmup",
+              hint: "쉬운 영문으로 워밍업",
+              icon: "📖",
+            },
+            {
+              label: "발음 스튜디오",
+              href: "/tts",
+              hint: "원어민 음성으로 듣기",
+              icon: "🎙",
+            },
+          ]}
+        />
       </div>
     </main>
   );

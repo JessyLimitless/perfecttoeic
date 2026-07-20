@@ -9,12 +9,13 @@ import {
   type MasteryView,
   type PartTotals,
 } from "@/game/mastery";
-import { gradeFromCoverage } from "@/game/conquest";
 import {
   loadPatternStats,
   patternProgress,
   type PatternChapter,
 } from "@/game/patterns";
+import { loadMockHistory } from "@/game/mock";
+import { buildJourney, journeyHint, type JourneyStepKey } from "@/game/journey";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -25,7 +26,7 @@ const STAGES = [
     step: "STEP 1",
     icon: "📐",
     title: "패턴 연습",
-    sub: "유형을 배운다",
+    sub: "유형을 익힌다",
     href: "/patterns",
     ring: "ring-indigo-500/20",
     text: "text-indigo-600",
@@ -37,7 +38,7 @@ const STAGES = [
     step: "STEP 2",
     icon: "🎮",
     title: "토익 게임",
-    sub: "겨루며 익힌다",
+    sub: "3,000문제를 푼다",
     href: "/rank",
     ring: "ring-rose-500/20",
     text: "text-rose-600",
@@ -48,8 +49,8 @@ const STAGES = [
     key: "real",
     step: "STEP 3",
     icon: "🎯",
-    title: "실전",
-    sub: "시험처럼 푼다",
+    title: "실전 테스트",
+    sub: "점수를 확인한다",
     href: "/mock",
     ring: "ring-amber-500/20",
     text: "text-amber-600",
@@ -69,8 +70,11 @@ export default function LandingPage() {
     /** 아직 안 푼 다음 패턴 — 목록을 거치지 않고 바로 진입 */
     nextId: string | null;
   } | null>(null);
+  const [mockAttempts, setMockAttempts] = useState(0);
 
   useEffect(() => {
+    setMockAttempts(loadMockHistory().length);
+
     // 정복도
     fetch("/api/part-totals")
       .then((r) => (r.ok ? r.json() : null))
@@ -99,16 +103,20 @@ export default function LandingPage() {
       .catch(() => setPattern(null));
   }, []);
 
-  const coverage = view?.overallCoverage ?? 0;
-  const grade = useMemo(() => gradeFromCoverage(coverage), [coverage]);
+  /** 900점 여정 — 패턴 → 게임 3,000문제 → 실전 */
+  const journey = useMemo(
+    () =>
+      buildJourney({
+        patternStudied: pattern?.studied ?? 0,
+        patternTotal: pattern?.total,
+        solvedQuestions: view?.masteredTotal ?? 0,
+        bankTotal: view?.grandTotal,
+        mockAttempts,
+      }),
+    [pattern, view, mockAttempts],
+  );
 
-  /** 박스별 한 줄 지표 */
-  const stat = (key: string) => {
-    if (key === "pattern")
-      return pattern ? `${pattern.studied} / ${pattern.total} 패턴` : "75 패턴";
-    if (key === "game") return `${grade.emoji} ${grade.label}`;
-    return view ? `${coverage}% 정복` : "6개 파트";
-  };
+  const stat = (key: string) => journey.steps[key as JourneyStepKey].stat;
 
   /** 박스 진입 — 패턴은 목록을 건너뛰고 다음 패턴으로 직행 */
   const hrefFor = (key: string, fallback: string) =>
@@ -147,19 +155,33 @@ export default function LandingPage() {
             </span>
           </div>
           <p className="mt-3 text-[15px] font-medium tracking-[-0.01em] text-neutral-400 sm:text-[16px]">
-            배우고 · 익히고 · 이긴다
+            패턴을 익히고 · 3,000문제를 풀고 · 실전으로
+          </p>
+
+          {/* 지금 해야 할 일 한 줄 — 여정의 나침반 */}
+          <p className="mt-5 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-[12.5px] font-bold text-neutral-700 shadow-sm ring-1 ring-neutral-900/[0.06]">
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
+            {journeyHint(journey)}
           </p>
         </motion.div>
 
         {/* ── 3박스 ────────────────────────────────── */}
         <div className="mt-12 grid grid-cols-1 gap-3.5 pb-24 sm:grid-cols-3 sm:gap-4">
-          {STAGES.map((s, i) => (
+          {STAGES.map((s, i) => {
+            const step = journey.steps[s.key as JourneyStepKey];
+            const isCurrent = step.state === "current";
+            const isDone = step.state === "done";
+            return (
             <motion.button
               key={s.key}
               {...rise(0.14 + i * 0.06)}
               type="button"
               onClick={() => router.push(hrefFor(s.key, s.href))}
-              className={`group relative overflow-hidden rounded-3xl bg-gradient-to-b ${s.bg} px-5 py-4 text-left ring-1 ${s.ring} shadow-sm transition hover:-translate-y-0.5 hover:shadow-md active:scale-[0.99] sm:px-7 sm:py-7`}
+              className={`group relative overflow-hidden rounded-3xl bg-gradient-to-b ${s.bg} px-5 py-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md active:scale-[0.99] sm:px-7 sm:py-7 ${
+                isCurrent
+                  ? `ring-2 ${s.ring.replace("/20", "/50")} shadow-md`
+                  : `ring-1 ${s.ring} ${isDone ? "" : "opacity-[0.92]"}`
+              }`}
             >
               {/* 모바일 = 한 줄 압축 / 데스크탑 = 세로 카드 */}
               <div className="flex items-center gap-4 sm:block">
@@ -171,6 +193,14 @@ export default function LandingPage() {
                   >
                     <span className={`h-1.5 w-1.5 rounded-full ${s.dot}`} />
                     {s.step}
+                    {isCurrent && (
+                      <span className="ml-1 rounded-full bg-neutral-900 px-2 py-0.5 text-[9.5px] font-black tracking-normal text-white">
+                        지금 여기
+                      </span>
+                    )}
+                    {isDone && (
+                      <span className="ml-1 text-[11px] text-emerald-600">✓</span>
+                    )}
                   </span>
 
                   <div className="mt-4 hidden text-[30px] leading-none sm:block">
@@ -184,14 +214,29 @@ export default function LandingPage() {
                     {s.sub}
                   </p>
 
-                  <span
-                    className={`mt-1 hidden text-[12px] font-bold tabular-nums sm:mt-5 sm:flex sm:items-center sm:justify-between ${s.text}`}
-                  >
-                    {stat(s.key)}
-                    <span className="text-[15px] transition-transform group-hover:translate-x-1">
-                      →
+                  {/* 단계 진행바 — 데스크탑 */}
+                  <div className="mt-5 hidden sm:block">
+                    <div className="h-1.5 overflow-hidden rounded-full bg-white/70 ring-1 ring-black/[0.04]">
+                      <motion.div
+                        className={`h-full rounded-full ${s.dot}`}
+                        initial={{ width: 0 }}
+                        animate={{ width: `${Math.max(step.pct, 1.5)}%` }}
+                        transition={{
+                          duration: reduce ? 0 : 0.8,
+                          ease: EASE,
+                          delay: 0.3,
+                        }}
+                      />
+                    </div>
+                    <span
+                      className={`mt-2 flex items-center justify-between text-[12px] font-bold tabular-nums ${s.text}`}
+                    >
+                      {stat(s.key)}
+                      <span className="text-[15px] transition-transform group-hover:translate-x-1">
+                        →
+                      </span>
                     </span>
-                  </span>
+                  </div>
                 </div>
 
                 {/* 모바일 우측 지표 */}
@@ -202,7 +247,8 @@ export default function LandingPage() {
                 </span>
               </div>
             </motion.button>
-          ))}
+            );
+          })}
         </div>
       </div>
     </main>
