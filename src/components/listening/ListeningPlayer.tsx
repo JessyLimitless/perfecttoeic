@@ -17,13 +17,21 @@ function AudioCard({ src, label }: { src: string; label: string }) {
   const ref = useRef<HTMLAudioElement | null>(null);
   const [playing, setPlaying] = useState(false);
   const [slow, setSlow] = useState(false);
+  /** 브라우저 자동재생 차단 시에만 노출하는 안내 */
+  const [blocked, setBlocked] = useState(false);
 
+  // 화면이 열리거나 다음 문제로 넘어가면 곧바로 재생 — 실전 긴박감
   useEffect(() => {
     setPlaying(false);
-    if (ref.current) {
-      ref.current.pause();
-      ref.current.currentTime = 0;
-    }
+    setBlocked(false);
+    const a = ref.current;
+    if (!a) return;
+    a.pause();
+    a.currentTime = 0;
+    a.playbackRate = slow ? 0.75 : 1;
+    void a.play().catch(() => setBlocked(true));
+    // slow는 아래 effect가 따로 반영 — 여기선 src 변경만 트리거
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [src]);
 
   useEffect(() => {
@@ -33,7 +41,8 @@ function AudioCard({ src, label }: { src: string; label: string }) {
   const toggle = () => {
     const a = ref.current;
     if (!a) return;
-    if (a.paused) a.play();
+    setBlocked(false);
+    if (a.paused) void a.play().catch(() => setBlocked(true));
     else a.pause();
   };
   const replay = () => {
@@ -55,7 +64,9 @@ function AudioCard({ src, label }: { src: string; label: string }) {
           {playing ? "⏸" : "▶"}
         </button>
         <div className="min-w-0 flex-1">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-white/70">Audio</p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-white/70">
+            {blocked ? "▶ 눌러 재생" : playing ? "재생 중" : "Audio"}
+          </p>
           <p className="truncate text-[14px] font-bold">{label}</p>
         </div>
         <div className="flex shrink-0 items-center gap-1.5">
@@ -81,7 +92,7 @@ function AudioCard({ src, label }: { src: string; label: string }) {
       <audio
         ref={ref}
         src={src}
-        preload="none"
+        preload="auto"
         onPlay={() => setPlaying(true)}
         onPause={() => setPlaying(false)}
         onEnded={() => setPlaying(false)}

@@ -53,6 +53,8 @@ export default function RankHome() {
   const [domain, setDomain] = useState<MatchDomain>("rc");
   const [part, setPart] = useState<number>(7);
   const [drilling, setDrilling] = useState(false);
+  /** 정복 상세 기록은 접이식 — 무대를 가리지 않게 */
+  const [recordOpen, setRecordOpen] = useState(false);
   const practiceConquest = usePracticeStore((s) => s.practiceConquest);
 
   /** RC 파트 정복 복습 드릴 시작 (안 푼·틀린 문제만 반복, 맞힌 문항 제외) */
@@ -105,8 +107,169 @@ export default function RankHome() {
   const grade = gp.grade;
   const chapter = jennyChapterForGrade(grade.id);
 
+  const domainMeta = MATCH_DOMAINS[domain];
+
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-4">
+      {/* ═══════ 대결 무대 — 상대가 먼저, 시작이 하나 ═══════ */}
+      <section className="surface-dark relative overflow-hidden px-6 py-8">
+        <div
+          aria-hidden
+          className={`pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-gradient-to-br ${grade.gradient} opacity-25 blur-3xl`}
+        />
+        <div
+          className={`pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r ${grade.gradient}`}
+        />
+
+        {/* 상대 */}
+        <div className="relative flex flex-col items-center text-center">
+          <motion.div
+            initial={{ scale: 0.86, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: "spring", stiffness: 260, damping: 20 }}
+          >
+            <JennyAvatar size={132} motionPreset="idle" glow />
+          </motion.div>
+
+          <span className="mt-4 rounded-full bg-white/10 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-[0.2em] text-white/50">
+            CH.{chapter.no} · {chapter.gradeLabel}
+          </span>
+          <h2 className="mt-2 text-[26px] font-black tracking-[-0.02em] text-white">
+            {character.name}
+          </h2>
+          <p className="mt-1 text-[13px] font-semibold text-white/50">
+            {withCharName(chapter.tagline, character.name)}
+          </p>
+
+          <p className="mt-4 max-w-sm rounded-2xl bg-white/[0.07] px-4 py-3 text-[13px] font-semibold leading-snug text-white/80 ring-1 ring-white/[0.08]">
+            “{chapter.greeting}”
+          </p>
+        </div>
+
+        {/* ── 1단계: 무엇으로 겨룰지 먼저 고른다 ── */}
+        <div className="relative mt-6">
+          <p className="mb-2 text-center text-[11px] font-black uppercase tracking-[0.16em] text-white/40">
+            어떤 파트로 겨룰까요?
+          </p>
+
+          <div className="grid grid-cols-2 gap-2">
+              {(Object.keys(MATCH_DOMAINS) as MatchDomain[]).map((d) => {
+                const meta = MATCH_DOMAINS[d];
+                const active = domain === d;
+                return (
+                  <button
+                    key={d}
+                    type="button"
+                    onClick={() => {
+                      setDomain(d);
+                      setPart(DEFAULT_PART[d]);
+                    }}
+                    className={`relative overflow-hidden rounded-2xl px-4 py-2.5 text-center transition active:scale-[0.98] ${
+                      active
+                        ? "text-white"
+                        : "bg-white/[0.06] text-white/50 ring-1 ring-white/10"
+                    }`}
+                  >
+                    {active && (
+                      <motion.span
+                        layoutId="rank-domain-pill"
+                        className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${meta.gradient}`}
+                        transition={{ type: "spring", stiffness: 360, damping: 30 }}
+                      />
+                    )}
+                    <span className="relative block text-[13px] font-black">
+                      {meta.emoji} {meta.label}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="mt-2 grid grid-cols-3 gap-2">
+              {PARTS_BY_DOMAIN[domain].map((p) => {
+                const active = part === p;
+                return (
+                  <button
+                    key={p}
+                    type="button"
+                    onClick={() => setPart(p)}
+                    className={`relative min-h-[52px] rounded-2xl text-[13.5px] font-bold transition active:scale-[0.97] ${
+                      active
+                        ? "text-white"
+                        : "bg-white/[0.06] text-white/50 ring-1 ring-white/10 hover:text-white/80"
+                    }`}
+                  >
+                    {active && (
+                      <motion.span
+                        layoutId="rank-part-pill"
+                        className={`absolute inset-0 rounded-2xl bg-gradient-to-r ${domainMeta.gradient}`}
+                        transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                      />
+                    )}
+                    <span className="relative">Part {p}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+          {/* ── 2단계: 고른 파트로 시작 ── */}
+          <button
+            type="button"
+            onClick={() =>
+              router.push(`${domainMeta.route}?ranked=1&part=${part}`)
+            }
+            className="relative mt-4 flex min-h-[62px] w-full items-center justify-center gap-2 rounded-2xl bg-white text-[17px] font-black text-neutral-900 shadow-[0_18px_40px_-16px_rgba(0,0,0,0.7)] transition hover:bg-neutral-100 active:scale-[0.98]"
+          >
+            ⚔️ {PART_LABEL[part as MasteryPart]} 대결 시작
+          </button>
+        </div>
+      </section>
+
+      {/* ═══════ 보조 — 정복 복습 ═══════ */}
+      <button
+        type="button"
+        disabled={drilling}
+        onClick={() =>
+          domain === "rc"
+            ? void startRcConquest(part)
+            : router.push(`/listening?part=${part}`)
+        }
+        className="min-h-[52px] w-full rounded-2xl bg-white text-[14px] font-bold text-emerald-700 ring-1 ring-emerald-500/25 transition hover:bg-emerald-50 active:scale-[0.98] disabled:opacity-60"
+      >
+        {drilling
+          ? "정복 복습 준비 중…"
+          : `🎯 Part ${part} 정복 복습 · 안 푼·틀린 문제`}
+      </button>
+
+      {/* ═══════ 내 기록 (접이식) ═══════ */}
+      <button
+        type="button"
+        onClick={() => setRecordOpen((v) => !v)}
+        className="flex items-center justify-between rounded-2xl bg-white px-5 py-4 ring-1 ring-neutral-900/[0.06] transition hover:ring-neutral-900/[0.12] active:scale-[0.99]"
+      >
+        <span className="flex items-center gap-2.5">
+          <span
+            className={`grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br ${grade.gradient} text-[18px] shadow`}
+          >
+            {grade.emoji}
+          </span>
+          <span className="text-left">
+            <span className="block text-[14px] font-black text-neutral-900">
+              {grade.label}
+            </span>
+            <span className="block text-[11.5px] font-semibold text-neutral-400">
+              정복도 {view.overallCoverage}% · 만점까지{" "}
+              {view.remaining.toLocaleString()}문항
+            </span>
+          </span>
+        </span>
+        <span className="text-[12px] font-bold text-neutral-400">
+          내 기록 {recordOpen ? "▴" : "▾"}
+        </span>
+      </button>
+
+      {recordOpen && (
+        <div className="flex flex-col gap-4">
       {/* ───────── 정복 등급 히어로 ───────── */}
       <section className="surface-dark relative overflow-hidden px-6 py-7">
         <div
@@ -222,120 +385,6 @@ export default function RankHome() {
         </div>
       </section>
 
-      {/* ───────── 무대 + 파트 선택 + 대결 CTA ───────── */}
-      <section className="flex flex-col gap-3">
-        <div className="grid grid-cols-2 gap-2">
-          {(Object.keys(MATCH_DOMAINS) as MatchDomain[]).map((d) => {
-            const meta = MATCH_DOMAINS[d];
-            const active = domain === d;
-            return (
-              <button
-                key={d}
-                type="button"
-                onClick={() => {
-                  setDomain(d);
-                  setPart(DEFAULT_PART[d]);
-                }}
-                className={`relative overflow-hidden rounded-2xl px-4 py-3 text-left transition active:scale-[0.98] ${
-                  active ? "text-white" : "bg-white text-neutral-600 ring-1 ring-neutral-200"
-                }`}
-              >
-                {active && (
-                  <motion.span
-                    layoutId="rank-domain-pill"
-                    className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${meta.gradient}`}
-                    transition={{ type: "spring", stiffness: 360, damping: 30 }}
-                  />
-                )}
-                <span className="relative block text-[14px] font-black">
-                  {meta.emoji} {meta.label}
-                </span>
-                <span className={`relative block text-[11px] ${active ? "text-white/75" : "text-neutral-400"}`}>
-                  {meta.sub}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-
-        <div className="grid grid-cols-3 gap-2">
-          {PARTS_BY_DOMAIN[domain].map((p) => {
-            const active = part === p;
-            return (
-              <button
-                key={p}
-                type="button"
-                onClick={() => setPart(p)}
-                className={`relative min-h-[46px] rounded-2xl text-[14px] font-bold transition active:scale-[0.97] ${
-                  active ? "text-white" : "bg-white text-neutral-500 ring-1 ring-neutral-200 hover:text-neutral-800"
-                }`}
-              >
-                {active && (
-                  <motion.span
-                    layoutId="rank-part-pill"
-                    className={`absolute inset-0 rounded-2xl bg-gradient-to-r ${MATCH_DOMAINS[domain].gradient} shadow-[0_10px_24px_-12px_rgba(79,70,229,0.7)]`}
-                    transition={{ type: "spring", stiffness: 380, damping: 32 }}
-                  />
-                )}
-                <span className="relative">Part {p}</span>
-              </button>
-            );
-          })}
-        </div>
-
-        <button
-          type="button"
-          onClick={() => router.push(`${MATCH_DOMAINS[domain].route}?ranked=1&part=${part}`)}
-          className="btn-dark min-h-[58px] w-full text-[16px] font-black active:scale-[0.98]"
-        >
-          {MATCH_DOMAINS[domain].emoji} {MATCH_DOMAINS[domain].label}로 정복하기
-        </button>
-
-        {/* 정복 복습 — 안 푼·틀린 문제만 차분히 반복해 정복 확정 (맞힌 문항 제외) */}
-        <button
-          type="button"
-          disabled={drilling}
-          onClick={() =>
-            domain === "rc"
-              ? void startRcConquest(part)
-              : router.push(`/listening?part=${part}`)
-          }
-          className="min-h-[50px] w-full rounded-2xl bg-white text-[14px] font-bold text-emerald-700 ring-1 ring-emerald-500/25 transition hover:bg-emerald-50 active:scale-[0.98] disabled:opacity-60"
-        >
-          {drilling
-            ? "정복 복습 준비 중…"
-            : `🎯 Part ${part} 정복 복습 · 안 푼·틀린 문제`}
-        </button>
-
-        <p className="text-center text-[12px] leading-relaxed text-neutral-500">
-          {character.name}에게 도전하며 맞힌 문항이 그대로 정복도로 쌓입니다.
-          <br className="sm:hidden" />
-          듣기·읽기 모든 영역을 정복해야 정상에 오릅니다.
-        </p>
-      </section>
-
-      {/* ───────── 빌류킹과의 대결 (스토리) ───────── */}
-      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-rose-50 via-white to-fuchsia-50 p-5 ring-1 ring-fuchsia-900/[0.06]">
-        <div className="flex items-center gap-4">
-          <JennyAvatar size={64} motionPreset="idle" glow />
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-2">
-              <span className="rounded-full bg-fuchsia-600/10 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-[0.14em] text-fuchsia-600">
-                CH.{chapter.no}
-              </span>
-              <span className="text-[11px] font-bold text-neutral-400">{chapter.gradeLabel} 챕터</span>
-            </div>
-            <h3 className="mt-1 text-[17px] font-black tracking-[-0.01em] text-neutral-900">
-              {character.name} 대결 · {chapter.title}
-            </h3>
-            <p className="mt-0.5 text-[12.5px] text-neutral-500">{withCharName(chapter.tagline, character.name)}</p>
-          </div>
-        </div>
-        <p className="mt-3 rounded-2xl bg-white/80 px-4 py-3 text-[13px] font-semibold leading-snug text-neutral-700 ring-1 ring-fuchsia-900/[0.05]">
-          <span className="text-fuchsia-600">{character.name}</span>: “{chapter.greeting}”
-        </p>
-      </section>
-
       {/* ───────── 정복 등급 사다리 ───────── */}
       <section className="rounded-3xl bg-white p-5 ring-1 ring-neutral-900/[0.06]">
         <h3 className="mb-3 text-[15px] font-black tracking-tight text-neutral-900">정복 등급 사다리</h3>
@@ -374,6 +423,8 @@ export default function RankHome() {
           })}
         </div>
       </section>
+        </div>
+      )}
 
       {/* ───────── 푸터 ───────── */}
       <div className="flex items-center justify-between gap-3 pt-1">
