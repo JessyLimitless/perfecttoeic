@@ -38,7 +38,8 @@ import JennyAvatar from "@/components/match/JennyAvatar";
 import PlayerAvatar from "@/components/match/PlayerAvatar";
 import { Confetti, JennyCutin } from "@/components/match/JennyFx";
 import { loadIdentity } from "@/game/match/persist";
-import { saveLastMatch } from "@/game/match/lastMatch";
+import { loadLastMatch, saveLastMatch } from "@/game/match/lastMatch";
+import MatchSetupBar from "@/components/match/MatchSetupBar";
 import { ArrowLeft } from "@/components/warmup/icons";
 
 type Phase = "loading" | "matchmaking" | "countdown" | "playing" | "result";
@@ -90,8 +91,10 @@ export default function LcMatchPage() {
     const p = (pRaw === 2 || pRaw === 3 || pRaw === 4 ? pRaw : 3) as ListeningPart;
     saveLastMatch("lc", p); // 랜딩에서 바로 이 조건으로 재진입
     setPart(p);
-    const { difficulty: d } = armConquest();
-    setDifficulty(d);
+    const { difficulty: auto } = armConquest();
+    // 내가 고른 난이도가 있으면 그걸로, "자동"이면 정복 등급에 맞춘 난이도로
+    const saved = loadLastMatch().difficulty;
+    setDifficulty(saved === "AUTO" ? auto : saved);
     (async () => {
       const sets = await fetchListening();
       // 맞힌 문제 제외 — Part 2는 문항 단위, Part 3·4는 세트 전체 정복 시 제외(build.ts).
@@ -628,12 +631,16 @@ function LcResult({
         </button>
         <button
           type="button"
-          onClick={() => router.push(`/lc-match?ranked=1&part=${part}`)}
+          // 같은 라우트라 push로는 재마운트되지 않는다 → 전체 이동으로 새 판을 연다
+          onClick={() => window.location.assign(`/lc-match?ranked=1&part=${part}`)}
           className="flex min-h-[48px] items-center justify-center gap-1.5 rounded-2xl bg-gradient-to-br from-sky-500 to-cyan-600 px-4 py-3 text-[13px] font-extrabold text-white shadow-[0_10px_24px_-10px_rgba(2,132,199,0.9)] transition active:scale-[0.98]"
         >
           🔁 재대결
         </button>
       </div>
+      {/* 다음 판 조건 — 별도 화면 없이 여기서 파트·난이도를 바꾼다 */}
+      <MatchSetupBar />
+
       <button type="button" onClick={onExit} className="btn-ghost mx-auto">
         랭크 홈으로
       </button>

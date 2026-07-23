@@ -12,7 +12,7 @@ import IdentitySettings from "@/components/match/IdentitySettings";
 import Matchmaking from "@/components/match/Matchmaking";
 import { useMatchStore } from "@/game/match/matchStore";
 import { armConquest } from "@/game/conquest";
-import { saveLastMatch } from "@/game/match/lastMatch";
+import { loadLastMatch, saveLastMatch } from "@/game/match/lastMatch";
 import { PART_META, PART_ORDER } from "@/game/parts";
 import type { Difficulty, Part, PassageSet } from "@/game/types";
 
@@ -99,12 +99,14 @@ function Lobby() {
       return;
     }
     rankedArmed.current = true;
-    const { difficulty: d } = armConquest();
+    const { difficulty: auto } = armConquest();
     const pRaw = Number(sp.get("part"));
     const p = (pRaw === 5 || pRaw === 6 || pRaw === 7 ? pRaw : 7) as Part;
     saveLastMatch("rc", p); // 랜딩에서 바로 이 조건으로 재진입
     setPart(p);
-    setDifficulty(d);
+    // 내가 고른 난이도가 있으면 그걸로, "자동"이면 정복 등급에 맞춘 난이도로
+    const saved = loadLastMatch().difficulty;
+    setDifficulty(saved === "AUTO" ? auto : saved);
     setAutoStart(true);
   }, []);
   useEffect(() => {

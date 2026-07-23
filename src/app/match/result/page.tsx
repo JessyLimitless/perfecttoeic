@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import GameResultTable from "@/components/match/GameResultTable";
 import ProgressGrid from "@/components/match/ProgressGrid";
 import ProfileCard from "@/components/match/ProfileCard";
+import MatchSetupBar from "@/components/match/MatchSetupBar";
 import ResultBanner from "@/components/match/ResultBanner";
 import RematchTimer, {
   isRematchExpired,
@@ -268,16 +269,8 @@ export default function MatchResultPage() {
               </div>
             )}
 
-            {/* 다른 파트로 겨루고 싶을 때 — 랜딩은 마지막 파트로 직행하므로 여기서 바꾼다 */}
-            {!reviewing && (
-              <button
-                type="button"
-                onClick={() => router.push("/rank")}
-                className="mx-auto text-[12px] font-semibold text-teal-700/70 underline-offset-2 hover:underline"
-              >
-                다른 파트로 겨루기 · 랭크 홈 →
-              </button>
-            )}
+            {/* 다음 판 조건 — 별도 화면 없이 여기서 파트·난이도를 바꾼다 */}
+            {!reviewing && <MatchSetupBar />}
           </div>
 
           <ProgressGrid user={user} ai={ai} />
