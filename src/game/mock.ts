@@ -35,7 +35,7 @@ export const MOCK_TARGET = {
   p4Questions: 30, // Part 4 담화 (10세트 × 3)
   p5Questions: 30, // Part 5 단문 공란
   p6Questions: 16, // Part 6 장문 공란 (4세트 × 4)
-  p7Questions: 24, // Part 7 독해
+  p7Questions: 54, // Part 7 독해 (단일 29 + 이중 10 + 삼중 15) — 실전 1회분
 } as const;
 
 const byId = (a: { id: string }, b: { id: string }) => a.id.localeCompare(b.id);
