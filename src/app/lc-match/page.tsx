@@ -38,6 +38,7 @@ import JennyAvatar from "@/components/match/JennyAvatar";
 import PlayerAvatar from "@/components/match/PlayerAvatar";
 import { Confetti, JennyCutin } from "@/components/match/JennyFx";
 import { loadIdentity } from "@/game/match/persist";
+import { saveLastMatch } from "@/game/match/lastMatch";
 import { ArrowLeft } from "@/components/warmup/icons";
 
 type Phase = "loading" | "matchmaking" | "countdown" | "playing" | "result";
@@ -87,6 +88,7 @@ export default function LcMatchPage() {
     const sp = new URLSearchParams(window.location.search);
     const pRaw = Number(sp.get("part"));
     const p = (pRaw === 2 || pRaw === 3 || pRaw === 4 ? pRaw : 3) as ListeningPart;
+    saveLastMatch("lc", p); // 랜딩에서 바로 이 조건으로 재진입
     setPart(p);
     const { difficulty: d } = armConquest();
     setDifficulty(d);

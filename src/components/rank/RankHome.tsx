@@ -8,6 +8,7 @@ import SideMenu from "@/components/ui/SideMenu";
 import JennyAvatar from "@/components/match/JennyAvatar";
 import { jennyChapterForGrade, MATCH_DOMAINS, type MatchDomain } from "@/game/match/jenny";
 import { useCharacter, withCharName } from "@/game/match/characters";
+import { loadLastMatch, saveLastMatch } from "@/game/match/lastMatch";
 import {
   loadMastery,
   buildMasteryView,
@@ -89,6 +90,10 @@ export default function RankHome() {
   }, []);
 
   useEffect(() => {
+    // 마지막으로 겨룬 조건을 선택 상태로 복원 (하이드레이션 후)
+    const last = loadLastMatch();
+    setDomain(last.domain);
+    setPart(last.part);
     refresh();
     window.addEventListener("focus", refresh);
     return () => window.removeEventListener("focus", refresh);
@@ -216,9 +221,11 @@ export default function RankHome() {
           {/* ── 2단계: 고른 파트로 시작 ── */}
           <button
             type="button"
-            onClick={() =>
-              router.push(`${domainMeta.route}?ranked=1&part=${part}`)
-            }
+            onClick={() => {
+              // 다음엔 랜딩에서 바로 이 조건으로 들어가도록 기억한다
+              saveLastMatch(domain, part);
+              router.push(`${domainMeta.route}?ranked=1&part=${part}`);
+            }}
             className="relative mt-4 flex min-h-[62px] w-full items-center justify-center gap-2 rounded-2xl bg-white text-[17px] font-black text-neutral-900 shadow-[0_18px_40px_-16px_rgba(0,0,0,0.7)] transition hover:bg-neutral-100 active:scale-[0.98]"
           >
             ⚔️ {PART_LABEL[part as MasteryPart]} 대결 시작

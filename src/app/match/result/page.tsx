@@ -267,6 +267,17 @@ export default function MatchResultPage() {
                 </button>
               </div>
             )}
+
+            {/* 다른 파트로 겨루고 싶을 때 — 랜딩은 마지막 파트로 직행하므로 여기서 바꾼다 */}
+            {!reviewing && (
+              <button
+                type="button"
+                onClick={() => router.push("/rank")}
+                className="mx-auto text-[12px] font-semibold text-teal-700/70 underline-offset-2 hover:underline"
+              >
+                다른 파트로 겨루기 · 랭크 홈 →
+              </button>
+            )}
           </div>
 
           <ProgressGrid user={user} ai={ai} />

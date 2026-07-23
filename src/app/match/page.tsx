@@ -12,6 +12,7 @@ import IdentitySettings from "@/components/match/IdentitySettings";
 import Matchmaking from "@/components/match/Matchmaking";
 import { useMatchStore } from "@/game/match/matchStore";
 import { armConquest } from "@/game/conquest";
+import { saveLastMatch } from "@/game/match/lastMatch";
 import { PART_META, PART_ORDER } from "@/game/parts";
 import type { Difficulty, Part, PassageSet } from "@/game/types";
 
@@ -57,38 +58,51 @@ function Lobby() {
   const setIdentity = useMatchStore((s) => s.setIdentity);
   const [part, setPart] = useState<Part>(7);
   const [difficulty, setDifficulty] = useState<Difficulty>("MEDIUM");
-  const [loading, setLoading] = useState(false);
   // 매치메이킹 단계(로컬) — 동결 계약을 건드리지 않기 위해 status가 아닌 로컬 state로 끼운다.
   const [phase, setPhase] = useState<"idle" | "matchmaking">("idle");
   // 매치메이킹 도중 보여주기 위해 미리 받아둔 은행 (onReady에서 startMatch로 전달)
   const [bank, setBank] = useState<PassageSet[] | undefined>(undefined);
 
-  const handleStart = async () => {
-    setLoading(true);
-    const sets = await fetchBank();
-    setBank(sets ?? undefined);
-    setLoading(false);
-    // 즉시 startMatch 하지 않고 매치메이킹 연출을 먼저 띄운다.
+  // 문제은행 로딩을 매치메이킹 연출과 병렬로 — 로딩 대기 화면을 보지 않게 한다.
+  const bankPromise = useRef<Promise<PassageSet[] | null> | null>(null);
+
+  const handleStart = () => {
+    bankPromise.current = fetchBank().then((sets) => {
+      setBank(sets ?? undefined);
+      return sets;
+    });
+    // 즉시 매치메이킹 연출로 (은행은 그 사이에 도착)
     setPhase("matchmaking");
   };
 
-  // 매치메이킹 공개 직후 호출 → 그제서야 startMatch(→ countdown → playing)
-  const handleReady = () => {
-    startMatch({ part, difficulty, sets: bank });
+  // 매치메이킹 공개 직후 호출 → 은행 도착을 기다린 뒤 startMatch(→ countdown → playing)
+  const handleReady = async () => {
+    const sets = (await bankPromise.current) ?? bank ?? null;
+    startMatch({ part, difficulty, sets: sets ?? undefined });
   };
 
   // 랭크 진입(?ranked=1): pending 토큰 장전 + 내 랭크 기반 봇 난이도로 자동 개시.
   // (동결 계약을 건드리지 않고 URL 파라미터로만 확장)
   const rankedArmed = useRef(false);
   const [autoStart, setAutoStart] = useState(false);
+  /**
+   * 진입 판정 전에는 로비 폼을 그리지 않는다 — 랭크 진입은 곧장 매치메이킹으로 가므로
+   * 파트·난이도 폼이 한 번 스쳤다 사라지는 깜빡임을 없앤다.
+   * (서버/클라이언트 첫 렌더가 동일해야 하므로 마운트 후에 판정한다.)
+   */
+  const [booting, setBooting] = useState(true);
   useEffect(() => {
     if (rankedArmed.current || typeof window === "undefined") return;
     const sp = new URLSearchParams(window.location.search);
-    if (sp.get("ranked") !== "1") return;
+    if (sp.get("ranked") !== "1") {
+      setBooting(false);
+      return;
+    }
     rankedArmed.current = true;
     const { difficulty: d } = armConquest();
     const pRaw = Number(sp.get("part"));
     const p = (pRaw === 5 || pRaw === 6 || pRaw === 7 ? pRaw : 7) as Part;
+    saveLastMatch("rc", p); // 랜딩에서 바로 이 조건으로 재진입
     setPart(p);
     setDifficulty(d);
     setAutoStart(true);
@@ -103,6 +117,18 @@ function Lobby() {
   if (phase === "matchmaking") {
     return (
       <Matchmaking part={part} difficulty={difficulty} onReady={handleReady} />
+    );
+  }
+
+  // 랭크 진입이면 로비를 건너뛰고 바로 매치메이킹으로 — 그 사이 잠깐의 대기 화면
+  if (booting) {
+    return (
+      <div className="flex min-h-[50vh] items-center justify-center">
+        <span className="flex items-center gap-2 text-sm text-neutral-400">
+          <span className="h-4 w-4 animate-spin rounded-full border-2 border-indigo-300 border-t-indigo-600" />
+          대결 준비 중…
+        </span>
+      </div>
     );
   }
 
@@ -233,15 +259,14 @@ function Lobby() {
       <motion.button
         type="button"
         onClick={handleStart}
-        disabled={loading}
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.25, delay: 0.14 }}
-        whileHover={{ scale: loading ? 1 : 1.02 }}
-        whileTap={{ scale: loading ? 1 : 0.98 }}
-        className="btn-primary w-full disabled:opacity-60"
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
+        className="btn-primary w-full"
       >
-        {loading ? "방 개설 중…" : "방개설 · 대결 시작"}
+        방개설 · 대결 시작
       </motion.button>
     </div>
   );

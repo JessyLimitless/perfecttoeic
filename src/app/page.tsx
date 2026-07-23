@@ -16,6 +16,7 @@ import {
 } from "@/game/patterns";
 import { loadMockHistory } from "@/game/mock";
 import { buildJourney, journeyHint, type JourneyStepKey } from "@/game/journey";
+import { lastMatchRoute } from "@/game/match/lastMatch";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -118,11 +119,16 @@ export default function LandingPage() {
 
   const stat = (key: string) => journey.steps[key as JourneyStepKey].stat;
 
-  /** 박스 진입 — 패턴은 목록을 건너뛰고 다음 패턴으로 직행 */
-  const hrefFor = (key: string, fallback: string) =>
-    key === "pattern" && pattern?.nextId
-      ? `/patterns/${pattern.nextId}`
-      : fallback;
+  /**
+   * 박스 진입 — 중간 화면 없이 바로 본론으로.
+   * - 패턴: 목록을 건너뛰고 다음 패턴으로 직행
+   * - 게임: 마지막으로 겨룬 파트로 대결 직행 (최초엔 RC Part 7)
+   */
+  const hrefFor = (key: string, fallback: string) => {
+    if (key === "pattern" && pattern?.nextId) return `/patterns/${pattern.nextId}`;
+    if (key === "game") return lastMatchRoute();
+    return fallback;
+  };
 
   const rise = (d: number) =>
     reduce
