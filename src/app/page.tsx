@@ -18,6 +18,7 @@ import { loadMockHistory } from "@/game/mock";
 import { buildJourney, journeyHint, type JourneyStepKey } from "@/game/journey";
 import { lastMatchRoute } from "@/game/match/lastMatch";
 import MatchSetupBar from "@/components/match/MatchSetupBar";
+import ReviewNudge from "@/components/report/ReviewNudge";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -273,6 +274,9 @@ export default function LandingPage() {
             );
           })}
         </div>
+
+        {/* 복습·약점 진입 — 기록이 있을 때만 나타난다 */}
+        <ReviewNudge />
       </div>
 
       {/* 파트·난이도 설정 시트 — 여기서 고르면 다음부터 그 조건으로 바로 시작 */}

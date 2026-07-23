@@ -28,6 +28,8 @@ export interface LcBattleItem {
   /** 복습용 — Part2 응답 텍스트 */
   responses?: { en: string; ko: string }[];
   passageType?: string;
+  /** 콘텐츠 원문 category — 유형별 약점 리포트 집계용 */
+  category?: string;
 }
 
 function shuffle<T>(arr: readonly T[]): T[] {
@@ -55,6 +57,7 @@ function fromPart2(setId: string, it: NonNullable<ListeningSet["items"]>[number]
     hideChoiceText: true,
     responses: it.responses,
     passageType: "Part 2",
+    category: it.category,
   };
 }
 
@@ -77,6 +80,7 @@ function fromScriptQuestion(
     hideChoiceText: false,
     scriptLines: set.script,
     passageType: set.passageType,
+    category: q.category,
   };
 }
 

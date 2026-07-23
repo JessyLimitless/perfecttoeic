@@ -25,6 +25,7 @@ import {
   loadMastery,
   type MasteryPart,
 } from "@/game/mastery";
+import { recordReviews } from "@/game/review";
 import type { Difficulty } from "@/game/types";
 import {
   jennyReactionForGrade,
@@ -594,6 +595,18 @@ function LcResult({
     const pending = takePendingConquest();
     const beforeCount = pending ? pending.masteredBefore : masteredTotalOf(loadMastery());
     recordAnswers(entries, { coverageOnly: true });
+    // 속도전은 노출·정답 수만 누적하고 복습 스케줄은 건드리지 않는다(시간압박 실수 보호)
+    recordReviews(
+      data.history
+        .filter((h) => h.item?.key)
+        .map((h) => ({
+          part: h.item.part as MasteryPart,
+          id: h.item.key,
+          correct: h.correct,
+          category: h.item.category,
+        })),
+      { coverageOnly: true },
+    );
     const afterCount = masteredTotalOf(loadMastery());
     (async () => {
       const grand = await fetchGrandTotal();

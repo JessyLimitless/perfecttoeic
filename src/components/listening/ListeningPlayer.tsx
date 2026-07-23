@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import type { ListeningSet } from "@/game/listening";
 import { audioSrc } from "@/game/listening";
 import { recordAnswers } from "@/game/mastery";
+import { recordReviews } from "@/game/review";
 import type { MasteryPart } from "@/game/mastery";
 import { recordSetResult } from "@/game/listeningProgress";
 import { ArrowLeft } from "../warmup/icons";
@@ -142,6 +143,10 @@ function Part2View({ set }: { set: ListeningSet }) {
     if (isCorrect) setScore((s) => s + 1);
     // 파트별 정복도 기록 (item 단위, 답한 순간 1회)
     recordAnswers([{ part: 2, id: item.id, correct: isCorrect }]);
+    // 간격반복 스케줄 + 유형별 성적
+    recordReviews([
+      { part: 2, id: item.id, correct: isCorrect, category: item.category },
+    ]);
   };
   const next = () => {
     if (idx + 1 >= items.length) setDone(true);
@@ -263,6 +268,15 @@ function Part34View({ set }: { set: ListeningSet }) {
         id: q.id,
         correct: answers[i] === q.answerIndex,
         setId: set.id,
+      })),
+    );
+    // 간격반복 스케줄 + 유형별 성적
+    recordReviews(
+      questions.map((q, i) => ({
+        part: set.part as MasteryPart,
+        id: q.id,
+        correct: answers[i] === q.answerIndex,
+        category: q.category,
       })),
     );
     // 세트별 진행·최고점 기록

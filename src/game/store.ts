@@ -13,10 +13,15 @@ import { partOf } from "./parts";
 import { recordSession } from "./progress";
 import { recordAnswers, loadMastery } from "./mastery";
 import type { MasteryPart, MasteryState } from "./mastery";
+import { recordReviews, dueIdSet, loadReview } from "./review";
 import { getFallbackSets } from "@/lib/questions";
 
 /** Part 5 한 세션 문항 수 — 대결(게임)과 동일하게 짧고 굵게(5문항 뒤 종료). */
 const PART5_SESSION_LEN = 5;
+/** 약점 집중 드릴 한 세션 문항 수 — 끝나면 결과에서 정답률이 다시 갱신된다 */
+const FOCUS_SESSION_LEN = 10;
+/** 복습 드릴 한 세션 최대 문항 수 */
+const REVIEW_SESSION_LEN = 10;
 
 export type PracticeStatus = "idle" | "active" | "ended";
 
@@ -50,19 +55,83 @@ function cycleFill(pool: PassageSet[], count: number): PassageSet[] {
 }
 
 /**
- * 이미 "맞춘/정복한" 문항을 걸러 **안 푼·틀린 문제만 계속** 나오게 한다(소모적 반복 방지).
- * 모든 파트가 **문항 단위**: 맞힌(정복, streak≥1) 문항은 제외하고 **틀린(streak 0)·안 푼(미시도)**
- * 문항만 남긴다. Part 6·7도 지문(passageLines)은 그대로 두되 딸린 문제 중 정복 못한 것만 출제한다
- * (지문은 읽되 이미 맞힌 문제는 다시 안 물음). 세트의 남은 문제가 0이면 그 세트는 빠진다.
- * 결과가 비면(전부 정복) 호출부에서 전체 풀로 폴백한다.
+ * 복습 예정 문항이 든 세트를 **앞에 세워** 큐를 만든다.
+ * 풀에 포함시키기만 하면 Part 5처럼 문항이 1,000개 넘는 파트에서 복습 몇 개가
+ * 새 문항 사이에 묻혀 영영 안 나온다 — 복습은 항상 먼저 나와야 스케줄이 지켜진다.
  */
-function dropSolved(pool: PassageSet[], part: number, st: MasteryState): PassageSet[] {
+function cycleFillDueFirst(
+  pool: PassageSet[],
+  count: number,
+  due: Set<string>,
+): PassageSet[] {
+  if (pool.length === 0) return [];
+  if (due.size === 0) return cycleFill(pool, count);
+  const hot = pool.filter((s) => s.questions.some((q) => due.has(q.id)));
+  const cold = pool.filter((s) => !s.questions.some((q) => due.has(q.id)));
+  const out: PassageSet[] = shuffle(hot);
+  const rest = cold.length > 0 ? cold : pool;
+  while (out.length < count) out.push(...shuffle(rest));
+  return out.slice(0, count);
+}
+
+/**
+ * 출제 대상만 남긴다 — **안 푼 · 틀린 · 복습일이 된** 문항.
+ *
+ * 예전에는 한 번 맞힌 문항을 영구히 제외했는데, 그러면 망각곡선상 며칠 뒤 다시 틀릴 문항을
+ * 두 번 다시 만나지 못해 점수로 이어지지 않았다. 이제 맞힌 문항에는 복습 예정일이 붙고
+ * (review.ts), **그날이 지나면 다시 큐에 돌아온다**:
+ *   - 미시도 문항        → 출제 (새 문항)
+ *   - 틀린 문항(streak 0) → 출제 (즉시 복습)
+ *   - 맞혔고 복습일 도래   → 출제 (간격반복)
+ *   - 맞혔고 복습일 전     → 제외 (아직 기억하고 있음 — 시간 낭비)
+ * Part 6·7도 지문(passageLines)은 그대로 두되 출제 대상 문항만 남긴다.
+ * 결과가 비면(당장 풀 게 없음) 호출부에서 전체 풀로 폴백한다.
+ */
+function dropSettled(
+  pool: PassageSet[],
+  part: number,
+  st: MasteryState,
+  due: Set<string>,
+): PassageSet[] {
   const streaks = st.parts[part as MasteryPart]?.streaks ?? {};
   return pool
     .map((x) => ({
       ...x,
-      questions: x.questions.filter((q) => (streaks[q.id] ?? 0) === 0),
+      questions: x.questions.filter(
+        (q) => (streaks[q.id] ?? 0) === 0 || due.has(q.id),
+      ),
     }))
+    .filter((x) => x.questions.length > 0);
+}
+
+/** 이 파트에서 지금 복습 예정인 문항 ID */
+function dueFor(part: number): Set<string> {
+  return dueIdSet(part as MasteryPart, loadReview());
+}
+
+/**
+ * 세트 **안에서도** 복습 문항을 앞으로 끌어올린다 (Part 5 전용).
+ * Part 5는 한 세트가 독립 단문 10개 묶음이라 순서를 바꿔도 무방하지만,
+ * Part 6·7은 지문을 따라가는 순서 자체가 의미라 절대 건드리지 않는다.
+ */
+function hoistDue(pool: PassageSet[], part: number, due: Set<string>): PassageSet[] {
+  if (part !== 5 || due.size === 0) return pool;
+  return pool.map((s) => {
+    if (!s.questions.some((q) => due.has(q.id))) return s;
+    return {
+      ...s,
+      questions: [
+        ...s.questions.filter((q) => due.has(q.id)),
+        ...s.questions.filter((q) => !due.has(q.id)),
+      ],
+    };
+  });
+}
+
+/** 복습 예정 문항만 남긴다 (복습 전용 드릴) */
+function keepDueOnly(pool: PassageSet[], due: Set<string>): PassageSet[] {
+  return pool
+    .map((x) => ({ ...x, questions: x.questions.filter((q) => due.has(q.id)) }))
     .filter((x) => x.questions.length > 0);
 }
 
@@ -72,6 +141,8 @@ interface PoolFilter {
   type?: TypeFilter;
   /** Part 5·6 문법 분류 원문 (category 그대로 일치) */
   rawCategory?: string;
+  /** 스킬 드릴 — 한 스킬로 묶인 원문 category 여러 개 (예: 준동사 = 준동사·분사·부정사) */
+  categories?: string[];
 }
 
 /**
@@ -87,8 +158,17 @@ function buildPool(
   filter: PoolFilter,
 ): PassageSet[] {
   const byPart = sets.filter((s) => partOf(s) === part);
-  const { type, rawCategory } = filter;
+  const { type, rawCategory, categories } = filter;
 
+  if (categories && categories.length > 0) {
+    const wanted = new Set(categories);
+    return byPart
+      .map((s) => ({
+        ...s,
+        questions: s.questions.filter((q) => wanted.has((q.category ?? "").trim())),
+      }))
+      .filter((s) => s.questions.length > 0);
+  }
   if (rawCategory) {
     return byPart
       .map((s) => ({
@@ -120,13 +200,17 @@ export interface StartOptions {
   difficulty?: Difficulty | "ALL";
 }
 
-/** 약점 유형 집중 연습 옵션 (결과 화면에서 호출) */
+/** 약점 유형 집중 연습 옵션 (결과 화면·약점 리포트에서 호출) */
 export interface FocusOptions {
   part: Part;
   /** Part 7 유형 */
   type?: TypeFilter;
   /** Part 5·6 문법 분류 */
   rawCategory?: string;
+  /** 스킬 드릴 — 한 스킬로 묶인 category 여러 개 */
+  categories?: string[];
+  /** 은행을 직접 넘길 때 (리포트 화면처럼 source가 비어 있는 진입점) */
+  sets?: PassageSet[];
 }
 
 interface PracticeState {
@@ -167,6 +251,8 @@ interface PracticeState {
   practiceFocus: (opts: FocusOptions) => void;
   /** 정복 복습 드릴 — 아직 정복 못한(안 푼·틀린) 문항만 뽑아 반복 (RC 5·6·7) */
   practiceConquest: (opts: { part: Part; sets?: PassageSet[] }) => void;
+  /** 간격반복 복습 드릴 — 복습일이 된 문항만 (RC 5·6·7). 풀 게 없으면 false 반환 */
+  practiceReview: (opts: { part: Part; sets?: PassageSet[] }) => boolean;
   answer: (choice: ChoiceIndex) => void;
   next: () => void;
   end: () => void;
@@ -204,9 +290,10 @@ export const usePracticeStore = create<PracticeState>((set, get) => ({
       sourceSets && sourceSets.length > 0 ? sourceSets : getFallbackSets();
     // 선택한 파트·유형으로 문항을 필터링한 학습 풀
     const rawPool = buildPool(source, part, { type });
-    // 맞힌 문항은 다시 안 낸다 — 안 푼·틀린 문제만 계속. 전부 정복하면 전체 복습 폴백.
-    const filtered = dropSolved(rawPool, part, loadMastery());
-    const pool = filtered.length > 0 ? filtered : rawPool;
+    // 안 푼·틀린 문항 + 복습일이 된 문항만 출제. 당장 풀 게 없으면 전체 폴백.
+    const due = dueFor(part);
+    const filtered = dropSettled(rawPool, part, loadMastery(), due);
+    const pool = hoistDue(filtered.length > 0 ? filtered : rawPool, part, due);
     // Part 6·7은 "한 지문 = 한 세션": 지문 하나만 뽑아 풀고 종료. Part 5는 5문항 뒤 종료(게임 길이).
     const singlePassage = part === 6 || part === 7;
     set({
@@ -219,26 +306,36 @@ export const usePracticeStore = create<PracticeState>((set, get) => ({
       singlePassage,
       sessionLimit: part === 5 ? PART5_SESSION_LEN : null,
       pool,
-      queue: cycleFill(pool, singlePassage ? 1 : INITIAL_POOL_SIZE),
+      // 복습 예정 문항을 앞세워 스케줄이 실제로 지켜지게 한다
+      queue: cycleFillDueFirst(pool, singlePassage ? 1 : INITIAL_POOL_SIZE, due),
     });
   },
 
-  practiceFocus: ({ part, type, rawCategory }) => {
-    // 보관해 둔 전체 은행에서 약점 유형만 다시 추려 새 세션을 연다
+  practiceFocus: ({ part, type, rawCategory, categories, sets: sourceSets }) => {
+    // 보관해 둔 전체 은행(또는 넘겨받은 은행)에서 약점 유형만 다시 추려 새 세션을 연다
     const s = get();
-    const source = s.source.length > 0 ? s.source : getFallbackSets();
-    const rawPool = buildPool(source, part, { type, rawCategory });
+    const source =
+      sourceSets && sourceSets.length > 0
+        ? sourceSets
+        : s.source.length > 0
+          ? s.source
+          : getFallbackSets();
+    const rawPool = buildPool(source, part, { type, rawCategory, categories });
     if (rawPool.length === 0) return; // 풀 게 없으면 무시
-    // 맞힌 문항 제외 — 안 푼·틀린 문제만. 전부 정복 시 전체 복습 폴백.
-    const filtered = dropSolved(rawPool, part, loadMastery());
-    const pool = filtered.length > 0 ? filtered : rawPool;
+    // 안 푼·틀린·복습일 도래 문항만. 당장 풀 게 없으면 전체 폴백.
+    const due = dueFor(part);
+    const filtered = dropSettled(rawPool, part, loadMastery(), due);
+    const pool = hoistDue(filtered.length > 0 ? filtered : rawPool, part, due);
     set({
       status: "active",
+      source,
       part,
-      typeFilter: rawCategory ? "ALL" : (type ?? "ALL"),
+      typeFilter: rawCategory || categories ? "ALL" : (type ?? "ALL"),
       ...FRESH,
+      // 약점 드릴은 끝이 있어야 결과(=재진단)로 이어진다 — 무한 반복은 피로만 준다
+      sessionLimit: FOCUS_SESSION_LEN,
       pool,
-      queue: cycleFill(pool, INITIAL_POOL_SIZE),
+      queue: cycleFillDueFirst(pool, INITIAL_POOL_SIZE, due),
     });
   },
 
@@ -254,12 +351,14 @@ export const usePracticeStore = create<PracticeState>((set, get) => ({
     // 그리고 지문 하나 풀면 바로 반영(singlePassage). Part 5는 문항 단위(독립 단문).
     const singlePassage = part === 6 || part === 7;
     const byPart = source.filter((x) => partOf(x) === part);
-    // 맞힌 문항은 제외 — 안 푼·틀린 문제만 반복(문항 단위). 지문은 함께 보되 정복한 문제는 안 물음.
-    let pool = dropSolved(byPart, part, loadMastery());
+    // 안 푼·틀린·복습일 도래 문항만 반복(문항 단위). 지문은 함께 보되 정복한 문제는 안 물음.
+    const due = dueFor(part);
+    let pool = dropSettled(byPart, part, loadMastery(), due);
     // 남은 문항이 없으면(전부 정복) 전체 복습으로 폴백
     const conquest = pool.length > 0;
     if (!conquest) pool = byPart;
     if (pool.length === 0) return; // 그 파트 콘텐츠 자체가 없음
+    pool = hoistDue(pool, part, due);
     set({
       status: "active",
       source,
@@ -271,8 +370,40 @@ export const usePracticeStore = create<PracticeState>((set, get) => ({
       sessionLimit: part === 5 ? PART5_SESSION_LEN : null,
       pool,
       // Part 6·7은 지문 하나만(바로 반영), Part 5는 5문항 뒤 종료(게임 길이)
-      queue: cycleFill(pool, singlePassage ? 1 : INITIAL_POOL_SIZE),
+      queue: cycleFillDueFirst(pool, singlePassage ? 1 : INITIAL_POOL_SIZE, due),
     });
+  },
+
+  practiceReview: ({ part, sets: sourceSets }) => {
+    const s = get();
+    const source =
+      sourceSets && sourceSets.length > 0
+        ? sourceSets
+        : s.source.length > 0
+          ? s.source
+          : getFallbackSets();
+    const due = dueFor(part);
+    if (due.size === 0) return false;
+    const pool = keepDueOnly(
+      source.filter((x) => partOf(x) === part),
+      due,
+    );
+    if (pool.length === 0) return false;
+    const dueHere = pool.reduce((n, x) => n + x.questions.length, 0);
+    set({
+      status: "active",
+      source,
+      part,
+      typeFilter: "ALL",
+      ...FRESH,
+      conquest: true,
+      // 복습은 여러 지문에서 한 문항씩 끌어오므로 단일 지문 세션이 아니다
+      singlePassage: false,
+      sessionLimit: Math.min(dueHere, REVIEW_SESSION_LEN),
+      pool,
+      queue: cycleFill(pool, INITIAL_POOL_SIZE),
+    });
+    return true;
   },
 
   answer: (choice) => {
@@ -361,6 +492,15 @@ export const usePracticeStore = create<PracticeState>((set, get) => ({
         id: r.question.id,
         correct: r.isCorrect,
         setId: r.setId,
+      })),
+    );
+    // 간격반복 스케줄 + 유형별 성적 누적 — 맞힌 문항은 복습일을 받아 나중에 다시 나온다
+    recordReviews(
+      s.history.map((r) => ({
+        part: r.part as MasteryPart,
+        id: r.question.id,
+        correct: r.isCorrect,
+        category: r.question.category,
       })),
     );
     set({ status: "ended" });

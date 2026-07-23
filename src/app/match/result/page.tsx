@@ -24,6 +24,7 @@ import {
   loadMastery,
   type MasteryPart,
 } from "@/game/mastery";
+import { recordReviews } from "@/game/review";
 import { takePendingConquest, gradeFromCoverage, type GradeMeta } from "@/game/conquest";
 import type { PassageSet } from "@/game/types";
 
@@ -95,6 +96,18 @@ export default function MatchResultPage() {
     const pending = takePendingConquest();
     const beforeCount = pending ? pending.masteredBefore : masteredTotalOf(loadMastery());
     recordAnswers(entries, { coverageOnly: true });
+    // 속도전은 노출·정답 수만 누적하고 복습 스케줄은 건드리지 않는다(시간압박 실수 보호)
+    recordReviews(
+      userHistory
+        .filter((r) => r.question?.id)
+        .map((r) => ({
+          part: part as MasteryPart,
+          id: r.question.id,
+          correct: r.isCorrect,
+          category: r.question.category,
+        })),
+      { coverageOnly: true },
+    );
     const afterCount = masteredTotalOf(loadMastery());
     (async () => {
       const grand = await fetchGrandTotal();
