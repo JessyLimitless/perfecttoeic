@@ -8,6 +8,7 @@ import { PART_META } from "@/game/parts";
 import type { Difficulty, Part } from "@/game/types";
 import PlayerAvatar from "./PlayerAvatar";
 import JennyAvatar from "./JennyAvatar";
+import MatchSetupBar from "./MatchSetupBar";
 import { jennyChapterForGrade } from "@/game/match/jenny";
 import { useCharacter, withCharName } from "@/game/match/characters";
 import { gradeFromCoverage, type GradeId } from "@/game/conquest";
@@ -64,13 +65,17 @@ export default function Matchmaking({
   const chapter = jennyChapterForGrade(gradeId);
   const character = useCharacter();
 
+  /** 조건(파트·난이도) 바꾸기 패널 — 열려 있는 동안엔 자동 시작을 멈춘다 */
+  const [setupOpen, setSetupOpen] = useState(false);
+
   useEffect(() => {
+    if (setupOpen) return; // 조건 고르는 중엔 시작 대기
     const timers: ReturnType<typeof setTimeout>[] = [];
     // 1.8초 탐색 빌드업 → 공개 → 0.95초 후 onReady
     timers.push(setTimeout(() => setPhase("revealed"), 1800));
     timers.push(setTimeout(() => onReadyRef.current(), 2750));
     return () => timers.forEach(clearTimeout);
-  }, []);
+  }, [setupOpen]);
 
   const revealed = phase === "revealed";
 
@@ -264,6 +269,30 @@ export default function Matchmaking({
               </motion.div>
             )}
           </AnimatePresence>
+        </div>
+
+        {/* 조건 바꾸기 — 시작 직전 이 자리에서 파트·난이도를 고른다 */}
+        <div className="mt-6">
+          {setupOpen ? (
+            <div className="space-y-2">
+              <MatchSetupBar title="파트 · 난이도" onStartLabel="시작" />
+              <button
+                type="button"
+                onClick={() => setSetupOpen(false)}
+                className="w-full rounded-xl py-2 text-[12.5px] font-semibold text-white/60 hover:text-white"
+              >
+                그대로 진행
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setSetupOpen(true)}
+              className="mx-auto block rounded-full bg-white/10 px-4 py-2 text-[12px] font-bold text-white/70 ring-1 ring-white/15 transition hover:bg-white/15 hover:text-white"
+            >
+              ⚙ 파트 · 난이도 바꾸기
+            </button>
+          )}
         </div>
       </div>
     </motion.div>

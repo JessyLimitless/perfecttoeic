@@ -17,6 +17,7 @@ import {
 import { loadMockHistory } from "@/game/mock";
 import { buildJourney, journeyHint, type JourneyStepKey } from "@/game/journey";
 import { lastMatchRoute } from "@/game/match/lastMatch";
+import MatchSetupBar from "@/components/match/MatchSetupBar";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -72,6 +73,8 @@ export default function LandingPage() {
     nextId: string | null;
   } | null>(null);
   const [mockAttempts, setMockAttempts] = useState(0);
+  /** 대결 조건(파트·난이도) 설정 시트 */
+  const [setupOpen, setSetupOpen] = useState(false);
 
   useEffect(() => {
     setMockAttempts(loadMockHistory().length);
@@ -178,12 +181,25 @@ export default function LandingPage() {
             const isCurrent = step.state === "current";
             const isDone = step.state === "done";
             return (
-            <motion.button
-              key={s.key}
-              {...rise(0.14 + i * 0.06)}
+            <motion.div key={s.key} {...rise(0.14 + i * 0.06)} className="relative">
+            {/* 게임 박스만 — 파트·난이도 설정(탭하면 바로 시작, ⚙는 조건 변경) */}
+            {s.key === "game" && (
+              <button
+                type="button"
+                aria-label="파트·난이도 설정"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSetupOpen(true);
+                }}
+                className="absolute right-2.5 top-2.5 z-10 grid h-9 w-9 place-items-center rounded-full bg-white/80 text-[15px] text-neutral-500 shadow-sm ring-1 ring-neutral-900/[0.06] transition hover:bg-white hover:text-neutral-900"
+              >
+                ⚙
+              </button>
+            )}
+            <button
               type="button"
               onClick={() => router.push(hrefFor(s.key, s.href))}
-              className={`group relative overflow-hidden rounded-3xl bg-gradient-to-b ${s.bg} px-5 py-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md active:scale-[0.99] sm:px-7 sm:py-7 ${
+              className={`group relative block w-full overflow-hidden rounded-3xl bg-gradient-to-b ${s.bg} px-5 py-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md active:scale-[0.99] sm:px-7 sm:py-7 ${
                 isCurrent
                   ? `ring-2 ${s.ring.replace("/20", "/50")} shadow-md`
                   : `ring-1 ${s.ring} ${isDone ? "" : "opacity-[0.92]"}`
@@ -252,11 +268,34 @@ export default function LandingPage() {
                   {stat(s.key)}
                 </span>
               </div>
-            </motion.button>
+            </button>
+            </motion.div>
             );
           })}
         </div>
       </div>
+
+      {/* 파트·난이도 설정 시트 — 여기서 고르면 다음부터 그 조건으로 바로 시작 */}
+      {setupOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-end justify-center bg-neutral-950/50 px-4 pb-6 backdrop-blur-sm sm:items-center"
+          onClick={() => setSetupOpen(false)}
+        >
+          <div
+            className="w-full max-w-sm"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <MatchSetupBar title="대결 조건" onStartLabel="대결 시작" />
+            <button
+              type="button"
+              onClick={() => setSetupOpen(false)}
+              className="mt-2 w-full rounded-xl bg-white py-2.5 text-[13px] font-bold text-neutral-700 shadow-sm ring-1 ring-neutral-900/10"
+            >
+              닫기
+            </button>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

@@ -161,14 +161,17 @@ function LcMatchmaking({
 }) {
   const character = useCharacter();
   const [revealed, setRevealed] = useState(false);
+  /** 조건(파트·난이도) 바꾸기 패널 — 열려 있는 동안엔 자동 시작을 멈춘다 */
+  const [setupOpen, setSetupOpen] = useState(false);
   useEffect(() => {
+    if (setupOpen) return; // 조건 고르는 중엔 시작 대기
     const t1 = setTimeout(() => setRevealed(true), 1600);
     const t2 = setTimeout(() => onReady(), 3000);
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
     };
-  }, [onReady]);
+  }, [onReady, setupOpen]);
 
   return (
     <main className="container-narrow flex min-h-dvh flex-col items-center justify-center gap-6 pb-safe">
@@ -223,6 +226,30 @@ function LcMatchmaking({
         )}
       </div>
       <p className="text-[12px] font-medium text-neutral-400">난이도 {difficulty} · 10문항 속도전</p>
+
+      {/* 조건 바꾸기 — 시작 직전 이 자리에서 파트·난이도를 고른다 */}
+      <div className="w-full">
+        {setupOpen ? (
+          <div className="space-y-2">
+            <MatchSetupBar title="파트 · 난이도" onStartLabel="시작" />
+            <button
+              type="button"
+              onClick={() => setSetupOpen(false)}
+              className="w-full rounded-xl py-2 text-[12.5px] font-semibold text-neutral-400 hover:text-neutral-700"
+            >
+              그대로 진행
+            </button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => setSetupOpen(true)}
+            className="mx-auto block rounded-full bg-white px-4 py-2 text-[12px] font-bold text-neutral-500 ring-1 ring-neutral-900/10 transition hover:text-neutral-900"
+          >
+            ⚙ 파트 · 난이도 바꾸기
+          </button>
+        )}
+      </div>
     </main>
   );
 }

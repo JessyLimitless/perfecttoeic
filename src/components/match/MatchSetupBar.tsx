@@ -33,7 +33,7 @@ const DIFFS: { value: MatchDifficulty; label: string }[] = [
 
 export default function MatchSetupBar({
   title = "다음 대결 조건",
-  onStartLabel = "이 조건으로 대결",
+  onStartLabel = "대결 시작",
   beforeStart,
 }: {
   title?: string;
@@ -128,8 +128,8 @@ export default function MatchSetupBar({
         }}
         className="mt-2.5 min-h-[46px] w-full rounded-xl bg-neutral-900 text-[14px] font-black text-white transition hover:bg-neutral-800 active:scale-[0.98]"
       >
-        ⚔️ Part {part} · {DIFFS.find((d) => d.value === difficulty)?.label}{" "}
-        {onStartLabel}
+        ⚔️ Part {part} · 난이도 {DIFFS.find((d) => d.value === difficulty)?.label}{" "}
+        · {onStartLabel}
       </button>
     </div>
   );
