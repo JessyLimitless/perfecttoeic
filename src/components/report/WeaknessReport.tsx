@@ -90,7 +90,7 @@ const GROUPS: { id: string; label: string; hint: string; match: (s: Skill) => bo
 
 /** 정답률 → 색 (약할수록 붉게) */
 function toneOf(acc: number | null): { bar: string; text: string; ring: string } {
-  if (acc == null) return { bar: "bg-slate-300", text: "text-slate-400", ring: "ring-slate-200" };
+  if (acc == null) return { bar: "bg-neutral-300", text: "text-neutral-400", ring: "ring-neutral-200" };
   if (acc < 60) return { bar: "bg-rose-500", text: "text-rose-600", ring: "ring-rose-200" };
   if (acc < 75) return { bar: "bg-amber-500", text: "text-amber-600", ring: "ring-amber-200" };
   if (acc < 90) return { bar: "bg-sky-500", text: "text-sky-600", ring: "ring-sky-200" };
@@ -262,10 +262,10 @@ export default function WeaknessReport() {
       {/* ── 약점 TOP 3 ───────────────────────────────────────── */}
       {report.empty ? (
         <section className="card-elevated px-6 py-8 text-center">
-          <p className="text-[15px] font-bold text-slate-800">아직 진단할 데이터가 부족해</p>
-          <p className="mx-auto mt-2 max-w-md text-[13px] leading-relaxed text-slate-500">
+          <p className="text-[15px] font-bold text-neutral-800">아직 진단할 데이터가 부족해</p>
+          <p className="mx-auto mt-2 max-w-md text-[13px] leading-relaxed text-neutral-500">
             유형별로 최소 {MIN_SAMPLE}문항은 풀어야 정답률을 신뢰할 수 있어. 지금까지{" "}
-            <strong className="text-slate-700">{report.totalSeen}문항</strong> 풀었어 — 조금만 더
+            <strong className="text-neutral-700">{report.totalSeen}문항</strong> 풀었어 — 조금만 더
             풀면 약점이 드러나.
           </p>
           <button
@@ -278,20 +278,20 @@ export default function WeaknessReport() {
         </section>
       ) : top3.length === 0 ? (
         <section className="card-elevated px-6 py-8 text-center">
-          <p className="text-[15px] font-black text-slate-900">
+          <p className="text-[15px] font-black text-neutral-900">
             지금은 뚜렷한 약점이 없어 👏
           </p>
-          <p className="mx-auto mt-2 max-w-md text-[13px] leading-relaxed text-slate-500">
+          <p className="mx-auto mt-2 max-w-md text-[13px] leading-relaxed text-neutral-500">
             진단된 유형이 전부 정답률 {WEAK_THRESHOLD}% 이상이야. 아래 표에서 상대적으로 낮은
             유형을 골라 더 풀거나, 안 풀어본 유형을 열어봐.
           </p>
         </section>
       ) : (
         <section className="card-elevated overflow-hidden px-6 py-7 sm:px-8">
-          <h3 className="text-[17px] font-black tracking-tight text-slate-900">
+          <h3 className="text-[17px] font-black tracking-tight text-neutral-900">
             지금 가장 약한 유형
           </h3>
-          <p className="mt-1 text-[13px] text-slate-500">
+          <p className="mt-1 text-[13px] text-neutral-500">
             정답률 {WEAK_THRESHOLD}% 미만인 유형이야. 탭하면 그 유형만 모아서 풀 수 있어.
           </p>
           <div className="mt-5 grid gap-3 sm:grid-cols-3">
@@ -309,28 +309,28 @@ export default function WeaknessReport() {
                   className={`group rounded-2xl bg-white p-4 text-left ring-1 ${tone.ring} transition hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-50`}
                 >
                   <div className="flex items-start justify-between gap-2">
-                    <span className="text-[11px] font-bold text-slate-400">
+                    <span className="text-[11px] font-bold text-neutral-400">
                       #{i + 1} 약점
                     </span>
                     <span className={`text-[22px] font-black ${tone.text}`}>
                       {stat.accuracy}%
                     </span>
                   </div>
-                  <p className="mt-1.5 text-[14px] font-black leading-snug text-slate-900">
+                  <p className="mt-1.5 text-[14px] font-black leading-snug text-neutral-900">
                     {stat.skill.label}
                   </p>
-                  <p className="mt-1 text-[12px] leading-relaxed text-slate-500">
+                  <p className="mt-1 text-[12px] leading-relaxed text-neutral-500">
                     {stat.skill.desc}
                   </p>
-                  <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
+                  <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-neutral-100">
                     <div
                       className={`h-full rounded-full ${tone.bar}`}
                       style={{ width: `${stat.accuracy ?? 0}%` }}
                     />
                   </div>
-                  <p className="mt-2.5 text-[12px] font-bold text-slate-600">
+                  <p className="mt-2.5 text-[12px] font-bold text-neutral-600">
                     {stat.seen}문항 중 {stat.seen - stat.correct}개 오답
-                    <span className="ml-1 font-semibold text-slate-400 transition group-hover:text-slate-600">
+                    <span className="ml-1 font-semibold text-neutral-400 transition group-hover:text-neutral-600">
                       · 집중 드릴 →
                     </span>
                   </p>
@@ -345,8 +345,8 @@ export default function WeaknessReport() {
       {groups.map((g) => (
         <section key={g.id} className="card-elevated px-5 py-6 sm:px-7">
           <div className="flex items-baseline justify-between gap-3">
-            <h3 className="text-[15px] font-black tracking-tight text-slate-900">{g.label}</h3>
-            <span className="text-[12px] text-slate-400">{g.hint}</span>
+            <h3 className="text-[15px] font-black tracking-tight text-neutral-900">{g.label}</h3>
+            <span className="text-[12px] text-neutral-400">{g.hint}</span>
           </div>
           <div className="mt-4 space-y-1.5">
             {g.rows.map((stat) => (
@@ -400,11 +400,11 @@ function SkillRow({
       type="button"
       disabled={busy}
       onClick={onDrill}
-      className="group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition hover:bg-slate-50 disabled:opacity-50"
+      className="group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition hover:bg-neutral-50 disabled:opacity-50"
     >
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
-          <span className="truncate text-[13.5px] font-bold text-slate-800">
+          <span className="truncate text-[13.5px] font-bold text-neutral-800">
             {stat.skill.label}
           </span>
           {stat.due > 0 && (
@@ -413,14 +413,14 @@ function SkillRow({
             </span>
           )}
           {!untouched && !stat.enough && (
-            <span className="shrink-0 rounded-full bg-slate-100 px-2 py-0.5 text-[10.5px] font-bold text-slate-500">
+            <span className="shrink-0 rounded-full bg-neutral-100 px-2 py-0.5 text-[10.5px] font-bold text-neutral-500">
               표본 부족
             </span>
           )}
         </div>
-        <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
+        <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-neutral-100">
           <div
-            className={`h-full rounded-full ${untouched ? "bg-slate-200" : tone.bar}`}
+            className={`h-full rounded-full ${untouched ? "bg-neutral-200" : tone.bar}`}
             style={{ width: `${untouched ? 0 : (stat.accuracy ?? 0)}%` }}
           />
         </div>
@@ -428,17 +428,17 @@ function SkillRow({
 
       <div className="w-24 shrink-0 text-right">
         {untouched ? (
-          <span className="text-[12px] font-semibold text-slate-300">미응시</span>
+          <span className="text-[12px] font-semibold text-neutral-300">미응시</span>
         ) : (
           <>
             <span className={`text-[15px] font-black ${tone.text}`}>{stat.accuracy}%</span>
-            <span className="ml-1 text-[11px] font-semibold text-slate-400">
+            <span className="ml-1 text-[11px] font-semibold text-neutral-400">
               {stat.correct}/{stat.seen}
             </span>
           </>
         )}
       </div>
-      <span className="shrink-0 text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-slate-500">
+      <span className="shrink-0 text-neutral-300 transition group-hover:translate-x-0.5 group-hover:text-neutral-500">
         →
       </span>
     </button>

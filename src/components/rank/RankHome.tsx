@@ -369,7 +369,7 @@ export default function RankHome() {
                 <div
                   className={`h-full rounded-full bg-gradient-to-r ${
                     p.conquered
-                      ? "from-amber-400 to-yellow-500"
+                      ? "from-amber-400 to-amber-600"
                       : p.domain === "LC"
                         ? "from-cyan-400 to-sky-500"
                         : "from-violet-400 to-fuchsia-500"

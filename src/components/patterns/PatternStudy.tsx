@@ -121,7 +121,7 @@ export default function PatternStudy({
 
   return (
     <main className="relative min-h-dvh overflow-hidden bg-neutral-50 pb-24 text-neutral-900">
-      <div className="pointer-events-none absolute -top-24 left-1/2 -z-10 h-72 w-[36rem] max-w-[92vw] -translate-x-1/2 rounded-full bg-gradient-to-r from-indigo-300/40 via-blue-300/30 to-sky-300/40 blur-[90px]" />
+      <div className="pointer-events-none absolute -top-24 left-1/2 -z-10 h-72 w-[36rem] max-w-[92vw] -translate-x-1/2 rounded-full bg-gradient-to-r from-indigo-300/40 via-violet-300/30 to-violet-300/40 blur-[90px]" />
 
       <div
         className={`relative z-10 mx-auto px-4 pt-6 sm:pt-10 ${

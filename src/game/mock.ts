@@ -68,6 +68,27 @@ const trimListeningQ = (s: ListeningSet, n: number): ListeningSet => ({
   ...s,
   questions: (s.questions ?? []).slice(0, n),
 });
+
+/** Part 2(응답 선택)를 item 단위로 목표 개수까지 누적(마지막 세트는 잘라 정확히 맞춤). */
+function pickPart2(listen: ListeningSet[]): ListeningSet[] {
+  const p2Sets = listen.filter((s) => s.part === 2);
+  const out: ListeningSet[] = [];
+  let n = 0;
+  for (const s of p2Sets) {
+    if (n >= MOCK_TARGET.p2Items) break;
+    const items = s.items ?? [];
+    if (items.length === 0) continue;
+    const remain = MOCK_TARGET.p2Items - n;
+    if (items.length <= remain) {
+      out.push(s);
+      n += items.length;
+    } else {
+      out.push({ ...s, items: items.slice(0, remain) });
+      n += remain;
+    }
+  }
+  return out;
+}
 const trimPassageQ = (s: PassageSet, n: number): PassageSet => ({
   ...s,
   questions: s.questions.slice(0, n) as PassageQuestion[],
@@ -77,29 +98,29 @@ const trimPassageQ = (s: PassageSet, n: number): PassageSet => ({
  * 전체 은행에서 균형 잡힌 풀렝스 모의고사를 조립한다.
  * id 정렬 기반으로 앞에서부터 선택 → 결정론적(같은 은행이면 항상 같은 세트)이라
  * 세션이 중간에 끊겨도 동일하게 이어진다.
+ *
+ * `dedicatedRc`(content/mock 전용 세트)가 주어지면 **RC는 그걸 그대로**(실전 길이·난도,
+ * id 정렬로 Part 5→6→7) 사용하고 은행 조립을 건너뛴다. 없으면 은행에서 조립(폴백).
  */
-export function composeMock(bank: MockBank): MockExam {
+export function composeMock(bank: MockBank, dedicatedRc?: PassageSet[]): MockExam {
   const listen = [...bank.listening].sort(byId);
   const rc = [...bank.rc].sort(byId);
 
+  // 전용 실전 RC 1회분이 있으면 우선 사용(실전 밀도) — id 정렬로 파트 순서 보장.
+  if (dedicatedRc && dedicatedRc.length > 0) {
+    const dedicated = [...dedicatedRc].sort(byId);
+    const lc2f = pickPart2(listen);
+    const lc3f = accumQuestions(listen.filter((s) => s.part === 3), MOCK_TARGET.p3Questions, trimListeningQ);
+    const lc4f = accumQuestions(listen.filter((s) => s.part === 4), MOCK_TARGET.p4Questions, trimListeningQ);
+    return {
+      lc: [...lc2f, ...lc3f, ...lc4f],
+      rc: dedicated, // Part 5→6→7 순서(파일명 정렬)로 실전 그대로
+    };
+  }
+
   // ── LC ───────────────────────────────
   // Part 2: item 단위(각 item이 독립 오디오 클립)로 25개까지 누적
-  const p2Sets = listen.filter((s) => s.part === 2);
-  const lc2: ListeningSet[] = [];
-  let n2 = 0;
-  for (const s of p2Sets) {
-    if (n2 >= MOCK_TARGET.p2Items) break;
-    const items = s.items ?? [];
-    if (items.length === 0) continue;
-    const remain = MOCK_TARGET.p2Items - n2;
-    if (items.length <= remain) {
-      lc2.push(s);
-      n2 += items.length;
-    } else {
-      lc2.push({ ...s, items: items.slice(0, remain) });
-      n2 += remain;
-    }
-  }
+  const lc2 = pickPart2(listen);
 
   const lc3 = accumQuestions(
     listen.filter((s) => s.part === 3),

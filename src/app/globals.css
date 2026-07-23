@@ -4,6 +4,25 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─────────────────────────────────────────────────────────────
+ * 팔레트 계약 (Palette Contract) — 화면을 새로 만들 때 반드시 따를 것
+ *
+ * 화면마다 다른 색을 골라 쓰면 잘 만든 화면들의 모음이 될 뿐 하나의 앱이 되지 않는다.
+ * 색은 "예쁜 것"이 아니라 **의미**로 고른다. 아래 8개 역할 밖의 색은 쓰지 않는다.
+ *
+ *   회색(표면·텍스트)  neutral   ← slate/gray/zinc/stone 금지 (하나로 통일)
+ *   브랜드·리딩(RC)    indigo → violet
+ *   리스닝(LC)         cyan      ← sky/teal/blue를 LC 용도로 쓰지 말 것
+ *   정복·성공          emerald
+ *   약점·주의          amber     ← yellow/orange 대신
+ *   오답·위험          rose      ← red/pink 대신
+ *   복습(간격반복)      violet → fuchsia
+ *   강조 그라데이션     text-gradient / text-gradient-rose (아래 정의 사용)
+ *
+ * 예외: 몸풀기(warmup)의 모드별 컬러(읽기 인디고 / 암기 앰버·바이올렛 / 순서 푸시아)와
+ *       책 커버 색은 **의도된 정체성**이므로 유지한다.
+ * ───────────────────────────────────────────────────────────── */
+
 :root {
   color-scheme: light;
   --font-sans: "Pretendard Variable", Pretendard, -apple-system,
@@ -166,9 +185,16 @@ body {
   .tabnum {
     font-variant-numeric: tabular-nums;
   }
-  /* 모바일 하단 안전영역 (홈 인디케이터) */
+  /* 모바일 하단 안전영역 (홈 인디케이터)
+     + 좌하단 배경음악 위젯이 마지막 콘텐츠를 가리지 않도록 여유를 둔다.
+     위젯은 fixed라 문서 흐름에 자리를 차지하지 않으므로 여기서 확보해 준다. */
   .pb-safe {
-    padding-bottom: max(env(safe-area-inset-bottom), 1rem);
+    padding-bottom: calc(max(env(safe-area-inset-bottom), 1rem) + 2.5rem);
+  }
+  @media (min-width: 640px) {
+    .pb-safe {
+      padding-bottom: max(env(safe-area-inset-bottom), 1.5rem);
+    }
   }
   .min-h-dvh {
     min-height: 100dvh;

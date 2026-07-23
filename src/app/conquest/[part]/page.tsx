@@ -44,7 +44,7 @@ const DIFFS: Diff[] = ["EASY", "MEDIUM", "HARD"];
 const DIFF_META: Record<Diff, { label: string; bar: string; chip: string }> = {
   EASY: { label: "EASY", bar: "from-emerald-400 to-teal-500", chip: "text-emerald-600" },
   MEDIUM: { label: "MEDIUM", bar: "from-amber-400 to-orange-500", chip: "text-amber-600" },
-  HARD: { label: "HARD", bar: "from-rose-400 to-red-500", chip: "text-rose-600" },
+  HARD: { label: "HARD", bar: "from-rose-400 to-rose-600", chip: "text-rose-600" },
 };
 
 interface DiffStat {

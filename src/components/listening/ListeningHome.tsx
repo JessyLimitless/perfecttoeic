@@ -40,9 +40,9 @@ const STATUS_ORDER: Record<SetConquestStatus, number> = {
 };
 
 const PART_META: Record<number, { label: string; desc: string; tint: string }> = {
-  2: { label: "Part 2", desc: "질문-응답 · 오디오만 듣고 A/B/C", tint: "from-cyan-500 to-teal-500" },
-  3: { label: "Part 3", desc: "대화 · 문항 3개", tint: "from-sky-500 to-cyan-500" },
-  4: { label: "Part 4", desc: "담화 · 문항 3개", tint: "from-blue-500 to-sky-500" },
+  2: { label: "Part 2", desc: "질문-응답 · 오디오만 듣고 A/B/C", tint: "from-cyan-400 to-cyan-500" },
+  3: { label: "Part 3", desc: "대화 · 문항 3개", tint: "from-cyan-500 to-cyan-600" },
+  4: { label: "Part 4", desc: "담화 · 문항 3개", tint: "from-cyan-600 to-cyan-700" },
 };
 
 type PartFilter = 2 | 3 | 4 | "ALL";

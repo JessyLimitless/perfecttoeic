@@ -121,11 +121,22 @@ export function buildJourney(input: JourneyInput): Journey {
   return { steps, current, overall };
 }
 
-/** 지금 단계에서 해야 할 일 — 한 줄 안내 */
+/**
+ * 지금 단계에서 해야 할 일 — 한 줄 안내.
+ *
+ * 주의: `current`는 **권장 순서**이지 사용자가 실제로 있는 곳이 아니다.
+ * 이미 게임으로 수백 문제를 푼 사람에게 매번 "먼저 패턴부터"라고 하면
+ * 안내가 현실을 설명하지 못하고, 그런 안내는 곧 무시당한다.
+ * → 뒷 단계에 이미 진도가 있으면 **명령이 아니라 제안**으로 말한다.
+ */
 export function journeyHint(j: Journey): string {
   const { steps, current } = j;
   if (current === "pattern") {
     const left = steps.pattern.total - steps.pattern.done;
+    // 이미 문제를 풀고 있는 사람 → 처음부터 시작하라는 투로 말하지 않는다
+    if (steps.game.done > 0) {
+      return `패턴을 익히면 게임이 쉬워져요 · ${left}개 남음`;
+    }
     return `먼저 패턴을 익히세요 · ${left}개 남음`;
   }
   if (current === "game") {

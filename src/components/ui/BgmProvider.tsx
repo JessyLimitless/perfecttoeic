@@ -64,7 +64,7 @@ export const TRACKS: Track[] = [
     label: "노벨상 수상 연설",
     src: "/music/hankang.mp3",
     emoji: "🕯️",
-    grad: "from-rose-500 to-red-600",
+    grad: "from-rose-500 to-rose-600",
   },
 ];
 
@@ -370,10 +370,10 @@ function FloatingControl() {
           className="flex items-center gap-2 rounded-full px-2.5 py-1.5 text-left text-white transition hover:bg-white/[0.06]"
         >
           <span className="text-[15px]">{track.emoji}</span>
-          <span className="leading-tight">
+          <span className="hidden leading-tight sm:block">
             <span className="block text-[12px] font-bold">{track.label}</span>
             <span className="block text-[10px] text-white/45">
-              {muted ? "학습 중 음소거" : playing ? "재생 중" : "일시정지"}
+              {muted ? "학습 중 음소거" : playing ? "재생 중" : "정지됨"}
             </span>
           </span>
         </button>

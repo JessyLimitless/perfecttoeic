@@ -44,7 +44,7 @@ export default function PatternHome({ chapters }: { chapters: PatternChapter[] }
   return (
     <main className="relative min-h-dvh overflow-hidden bg-neutral-50 pb-24 text-neutral-900">
       {/* 배경 오라 */}
-      <div className="pointer-events-none absolute -top-24 left-1/2 -z-10 h-72 w-[36rem] max-w-[92vw] -translate-x-1/2 rounded-full bg-gradient-to-r from-indigo-300/50 via-blue-300/40 to-sky-300/50 blur-[90px]" />
+      <div className="pointer-events-none absolute -top-24 left-1/2 -z-10 h-72 w-[36rem] max-w-[92vw] -translate-x-1/2 rounded-full bg-gradient-to-r from-indigo-300/50 via-violet-300/40 to-violet-300/50 blur-[90px]" />
 
       <div className="container-app relative z-10 pt-6 sm:pt-10">
         <button

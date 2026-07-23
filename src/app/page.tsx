@@ -155,7 +155,7 @@ export default function LandingPage() {
         <div className="absolute right-[16%] top-[40px] h-[200px] w-[260px] rounded-full bg-amber-200/20 blur-[80px]" />
       </div>
 
-      <div className="container-narrow relative z-10 px-5 pt-16 sm:pt-24">
+      <div className="relative z-10 mx-auto flex w-full max-w-2xl flex-col px-5 pt-14 sm:pt-20 lg:max-w-4xl lg:min-h-dvh lg:justify-center lg:pt-0">
         {/* ── 브랜딩 ───────────────────────────────── */}
         <motion.div {...rise(0)} className="text-center">
           <div className="inline-flex items-center gap-2.5">
@@ -176,7 +176,7 @@ export default function LandingPage() {
         </motion.div>
 
         {/* ── 3박스 ────────────────────────────────── */}
-        <div className="mt-12 grid grid-cols-1 gap-3.5 pb-24 sm:grid-cols-3 sm:gap-4">
+        <div className="mt-10 grid grid-cols-1 gap-3.5 sm:mt-12 sm:grid-cols-3 sm:gap-4">
           {STAGES.map((s, i) => {
             const step = journey.steps[s.key as JourneyStepKey];
             const isCurrent = step.state === "current";
@@ -277,6 +277,8 @@ export default function LandingPage() {
 
         {/* 복습·약점 진입 — 기록이 있을 때만 나타난다 */}
         <ReviewNudge />
+
+        <div className="pb-20 lg:pb-0" />
       </div>
 
       {/* 파트·난이도 설정 시트 — 여기서 고르면 다음부터 그 조건으로 바로 시작 */}

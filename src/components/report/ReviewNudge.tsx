@@ -53,7 +53,7 @@ export default function ReviewNudge() {
         </span>
         <span className="mt-0.5 block truncate text-[12px] text-neutral-500">
           {hasDue ? (
-            <>맞힌 문제도 잊을 때가 되면 다시 나와 · 탭해서 복습</>
+            <>맞힌 문제도 잊을 때 다시 나와요</>
           ) : weakest ? (
             <>
               가장 약한 유형 <strong className="text-neutral-700">{weakest.skill.label}</strong>{" "}

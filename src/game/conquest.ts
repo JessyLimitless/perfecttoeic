@@ -34,12 +34,12 @@ export interface GradeMeta {
 
 /** 정복도(%)로 오르는 6단계 등급 — 최고 = 그랜드마스터(실전 만점 정복자) */
 export const GRADES: GradeMeta[] = [
-  { id: "ROOKIE",      index: 0, label: "루키",       emoji: "🥾", gradient: "from-slate-400 to-slate-500",   color: "#64748b", minCoverage: 0,  tagline: "출발선에 선 도전자" },
+  { id: "ROOKIE",      index: 0, label: "루키",       emoji: "🥾", gradient: "from-neutral-400 to-neutral-500",   color: "#64748b", minCoverage: 0,  tagline: "출발선에 선 도전자" },
   { id: "CHALLENGER",  index: 1, label: "챌린저",     emoji: "🎽", gradient: "from-teal-400 to-emerald-500",  color: "#10b981", minCoverage: 15, tagline: "기록을 쌓기 시작했다" },
   { id: "CONTENDER",   index: 2, label: "컨텐더",     emoji: "🏃", gradient: "from-sky-400 to-cyan-500",      color: "#06b6d4", minCoverage: 30, tagline: "본선에 오른 실력자" },
   { id: "PRO",         index: 3, label: "프로",       emoji: "⚡", gradient: "from-indigo-400 to-violet-500", color: "#6366f1", minCoverage: 50, tagline: "절반을 넘어선 프로" },
   { id: "ELITE",       index: 4, label: "엘리트",     emoji: "🔥", gradient: "from-amber-400 to-orange-500",  color: "#f59e0b", minCoverage: 75, tagline: "정상을 눈앞에 둔 엘리트" },
-  { id: "GRANDMASTER", index: 5, label: "그랜드마스터", emoji: "🏆", gradient: "from-amber-300 to-yellow-500",  color: "#eab308", minCoverage: 92, tagline: "실전 만점을 정복하는 자" },
+  { id: "GRANDMASTER", index: 5, label: "그랜드마스터", emoji: "🏆", gradient: "from-amber-300 to-amber-500",  color: "#eab308", minCoverage: 92, tagline: "실전 만점을 정복하는 자" },
 ];
 
 /** 정복도(%) → 현재 등급 */

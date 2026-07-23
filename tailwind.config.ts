@@ -9,10 +9,12 @@ const config: Config = {
   // 티어/스킨/제니 그라데이션은 데이터 파일(types.ts)의 런타임 문자열로만 쓰여
   // JIT가 못 잡고 purge된다 → 여기서 명시 생성(빈 배지·동일 스킨 방지).
   safelist: [
+    // 정복 등급 6단계 램프 (conquest.ts 런타임 문자열)
+    "from-amber-300", "to-amber-500", "from-teal-400", "to-emerald-500", "to-cyan-500", "from-indigo-400",
     // 티어 (progression + rank 공용)
     "from-amber-700", "to-orange-800",
-    "from-slate-400", "to-slate-500",
-    "from-amber-400", "to-yellow-500",
+    "from-neutral-400", "to-neutral-500",
+    "from-amber-400", "to-amber-600",
     "from-cyan-400", "to-teal-500",
     "from-sky-400", "to-indigo-500",
     "from-fuchsia-500", "to-violet-600",

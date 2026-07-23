@@ -12,7 +12,7 @@ function Avatar({ player }: { player: MatchPlayer }) {
       className={
         "flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl text-lg font-bold shadow-sm ring-1 " +
         (isAi
-          ? "bg-gradient-to-br from-slate-200 to-slate-300 text-slate-600 ring-slate-900/10"
+          ? "bg-gradient-to-br from-neutral-200 to-neutral-300 text-neutral-600 ring-neutral-900/10"
           : "bg-gradient-to-br from-teal-400 to-cyan-500 text-white ring-teal-900/10")
       }
       aria-hidden

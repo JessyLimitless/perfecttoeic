@@ -138,7 +138,7 @@ export default function MasteryBoard() {
                 <motion.div
                   className={`h-full rounded-full bg-gradient-to-r ${
                     p.conquered
-                      ? "from-amber-300 to-yellow-400"
+                      ? "from-amber-300 to-amber-500"
                       : p.domain === "LC"
                         ? "from-cyan-400 to-sky-500"
                         : "from-violet-400 to-fuchsia-500"
