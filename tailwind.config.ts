@@ -26,6 +26,8 @@ const config: Config = {
     "to-blue-600",
     // 제니 라이벌
     "from-rose-400", "to-fuchsia-500",
+    // 랜딩 3박스 "지금 여기" 링 — page.tsx가 런타임에 /20 → /50 으로 치환한다
+    "ring-indigo-500/50", "ring-rose-500/50", "ring-amber-500/50", "ring-teal-500/50",
   ],
   theme: {
     extend: {

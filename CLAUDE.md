@@ -666,3 +666,24 @@ Part 5/6 문법 라벨(전치사·접속사·동사·관계사·가정법·도�
 - **배포**: 커밋 `0e827a5` push → EC2 수동 재배포([[cloud5-manual-redeploy]], SSH). source `git pull`(→0e827a5) → `:prev` 태깅 → 이미지 빌드 → 컨테이너 교체(포트 10011) → startup `next build` 후 Ready. 실서버 `/api/mock` = RC 100(30·16·54)·LC 94·총 194 확인, `/`·`/mock`·`/report`·`/rank`·`/game`·`/learn` 전부 **200**. rollback `:prev` 확보, 임시 키 삭제.
 - **이로써 랜딩 3박스(패턴→게임→실전)가 전부 동작**. git working tree 클린.
 - **다음 후보**: 모의고사 2회분 이상(현재 1회분, RC는 전용·LC는 은행 자동조립) / Part 1(사진) 도입 / VOCA 단어장(memorize SR 엔진 재활용) / 리스닝 세트 제목이 전부 "Question-Response"라 목록 구분 어려움.
+
+### 세션 로그 — 2026-08-12 (40차: 「만점 아이엘츠」 신규 서비스 — 리스닝 수직슬라이스) ⏸️ 로컬 구현 완료 · 빌드/브라우저 검증 전 · 미커밋
+
+- **맥락**: 사용자가 루트에 IELTS PRD(`아이엘츠_피알디.md`)와 리스닝 데이터셋 3개(`DATA1.md`·`DATA2.md`·`DATA4.md` — **DATA3은 없음**, 파일 내 id도 `ielts-lis-01/03/07`로 띄엄띄엄)를 넣어두고 "만점토익에 이어 만점 아이엘츠를 메뉴로 추가" 요청. 사용자 확정: ① 첫 화면은 **상단 세그먼트 토글**(선택 전용 화면 신설 아님) ② 이번 범위는 **리스닝 수직슬라이스**(메뉴~콘텐츠~음원까지 한 영역을 끝까지).
+- **핵심 설계 — "덫(trap) 방어"**: DATA 파일들의 「S-Class Tip」(자기수정 덫·할인가 덫)이 이 서비스의 게임화 훅. IELTS 리스닝은 안 들려서가 아니라 **덫에 걸려서** 틀린다는 전제로, 문항마다 `trap` 필드를 **정식 스키마**로 올리고 채점 결과를 정답/오답이 아니라 **🛡 덫 방어 성공 / 🪤 덫에 걸림**으로 말한다. 누적 지표도 정답률이 아니라 **함정 방어율**.
+- **신규 파일 (TOEIC과 완전 분리된 사일로)**:
+  - 도메인 `src/game/ielts.ts` — 타입 + **표준 덫 8종**(`IELTS_TRAPS`: 자기수정·숫자·계산·스펠링·패러프레이즈·위치·방향·매칭·분류·오답 소거·세부정보, 미상은 DETAIL로 정규화) + 주관식 채점(`gradeGap`: correct/**typo**(레벤슈타인 1, "철자 하나 차이—실전이면 0점")/wrong) + **밴드 환산**(공식 /40 변환표를 정답률로 스케일) + 진도 localStorage `toeic-ielts-v1`(세트별 attempts·bestCorrect·trapsFaced/Defended).
+  - 로더 `src/lib/ielts-loader.ts`(`content/ielts/*.md`의 ```json 블록, 깨진 파일 조용히 건너뜀) · API `src/app/api/ielts/route.ts`(**force-dynamic**).
+  - 라우트 `src/app/ielts/page.tsx`(홈, 경량 요약만 전달) · `src/app/ielts/listening/[id]/page.tsx`.
+  - UI `src/components/ielts/{IeltsHome,IeltsListeningPlayer}.tsx` — 홈: 밴드 카드·4대 영역(리스닝만 활성, R/W/S "준비 중" 노출)·**덫 도감 8종**·세트 목록(최고점/밴드/덫 아이콘). 플레이어: **인트로(이 세트가 파놓은 덫 브리핑) → 오디오 재생하며 폼 작성(실전과 동일, 스크립트 숨김·0.75x·처음부터) → 제출 → 밴드 환산 + 함정 방어율 + 문항별 덫 판정 + 스크립트 전문(영/한 토글)**.
+  - 서비스 선택 `src/game/service.ts`(localStorage `toeic-service-v1`) — 매번 고르게 하지 않고 마지막 선택 기억.
+  - 검증 `scripts/validate-ielts.mjs` · 음원 `scripts/tts-ielts.mjs`(세트 1개 = mp3 1개, 영국·호주 주력 8목소리, 매니페스트 병합, `process.exit(0)`).
+- **콘텐츠 `content/ielts/*.md` — 6세트·60문항** (병렬 3에이전트 + 인라인): Part 1 대화 `ielts-lis-01`(렌터카)·`03`(AI 서밋 등록)·`05`(핀테크 서밋 대표단) / Part 2 독백 `02`(커뮤니티 센터)·`04`(스마트시티 이노베이션 센터)·`06`(핀테크 랩, band 7.5). **DATA1/2/4의 발췌를 버리지 않고 씨앗으로 흡수**해 각 10문항 정식 세트로 확장. 검증 결과 **오류 0 · 60/60 문항 덫 보유 · 마커 100% 일치 · id중복 0**, 덫 분포 숫자12/자기수정9/오답소거9/위치8/세부7/패러7/스펠링5/매칭3.
+- **랜딩 변경(`src/app/page.tsx`)**: 워드마크 아래 **서비스 세그먼트**(📘토익 / 📙아이엘츠, `layoutId="service-pill"`) → 탭하면 **그 자리에서 3박스가 아이엘츠용으로 교체**(STEP1 🎧리스닝 활성 / STEP2 📖리딩·STEP3 ✍️라이팅·스피킹은 "준비 중"으로 정직하게 노출), 히어로 카피·배경 블롭·힌트 한 줄(함정 방어율·추정 Band)도 서비스별 분기. `ReviewNudge`는 토익일 때만. **기존 토익 여정 로직 무손상**(STAGES/journey 그대로, 렌더만 공통 `LandingCard` 모델로 정규화).
+- **팔레트 계약 확장**: `globals.css`에 **만점 아이엘츠 = teal** 역할 명문화(토익 브랜드 indigo·LC cyan과 겹치지 않게). 아이엘츠 화면 안에서도 성공=emerald·주의=amber·오답=rose 규칙 유지. `tailwind.config.ts` safelist에 `ring-{indigo,rose,amber,teal}-500/50` 추가 — 랜딩 3박스 "지금 여기" 링이 런타임 `.replace("/20","/50")`으로 만들어져 **원래 purge되고 있던 기존 버그도 함께 수정**.
+- **검증 상태**: `validate-ielts.mjs` **오류 0 · 경고 0** · `npx tsc --noEmit` **0 에러**(초기 TS2802 3건 = Set/Map 스프레드 → indexOf/Object.entries로 교체). **음원 6/6 생성 완료**(`public/audio/ielts/ielts-lis-01~06.mp3`, 총 ~5.1MB + manifest). **프로덕션 build·브라우저 실플레이는 아직 안 함**(토큰 한계로 여기서 중단).
+- **⏭️ 다음 세션에서 이어갈 것 (순서대로)**:
+  1. 프로덕션 `npm run build` 통과 확인(**빌드 미실행 상태 — 여기부터 시작**). 디스크 부족 시 `npm cache clean --force`(과거 npm 캐시 11GB로 ENOSPC 난 적 있음).
+  2. 브라우저 실플레이 검증 — 랜딩 토글(토익↔아이엘츠 전환·선택 기억)·`/ielts`·`/ielts/listening/ielts-lis-01` 오디오 재생·주관식 입력·제출 후 밴드/덫 판정 육안 확인.
+  3. 커밋 + `git push` + **EC2 수동 재배포**([[cloud5-manual-redeploy]], 대시보드 트리거는 여전히 불발 — SSH로. `sudo chown -R ubuntu:ubuntu .git` 후 pull·**HEAD 대조 필수**).
+- **미결·후속 후보**: DATA3 파일 부재(사용자가 주면 같은 형식으로 흡수) / 루트 `DATA*.md`·`아이엘츠_피알디.md` 처리 방침 미정(콘텐츠로 흡수 완료됐으니 커밋 여부 결정 필요) / IELTS Part 3·4(학술) 세트 / Reading T/F/NG·Heading Matching / Writing Task 1·2 템플릿 / Speaking / PRD의 「Daily 60-Min Drill」·「My Vault」 / 간격반복(TOEIC `review.ts`)을 아이엘츠에도 적용할지.

@@ -19,6 +19,18 @@ import { buildJourney, journeyHint, type JourneyStepKey } from "@/game/journey";
 import { lastMatchRoute } from "@/game/match/lastMatch";
 import MatchSetupBar from "@/components/match/MatchSetupBar";
 import ReviewNudge from "@/components/report/ReviewNudge";
+import {
+  loadService,
+  saveService,
+  SERVICES,
+  type ServiceId,
+} from "@/game/service";
+import {
+  loadIelts,
+  ieltsSummary,
+  type IeltsSummary,
+  type IeltsSetSummary,
+} from "@/game/ielts";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -62,9 +74,77 @@ const STAGES = [
   },
 ] as const;
 
+/**
+ * 만점 아이엘츠 3박스 — 토익과 같은 시각 언어, 다른 여정.
+ * 아직 열지 않은 영역을 숨기지 않는다. 무엇이 준비 중인지 보이는 편이 정직하다.
+ */
+const IELTS_STAGES = [
+  {
+    key: "ielts-listening",
+    step: "STEP 1",
+    icon: "🎧",
+    title: "리스닝",
+    sub: "덫을 막아낸다",
+    href: "/ielts",
+    live: true,
+    ring: "ring-teal-500/20",
+    text: "text-teal-600",
+    bg: "from-teal-50 to-white",
+    dot: "bg-teal-500",
+  },
+  {
+    key: "ielts-reading",
+    step: "STEP 2",
+    icon: "📖",
+    title: "리딩",
+    sub: "T/F/NG를 가른다",
+    href: "/ielts",
+    live: false,
+    ring: "ring-neutral-900/[0.06]",
+    text: "text-neutral-400",
+    bg: "from-neutral-100 to-white",
+    dot: "bg-neutral-300",
+  },
+  {
+    key: "ielts-writing",
+    step: "STEP 3",
+    icon: "✍️",
+    title: "라이팅·스피킹",
+    sub: "템플릿으로 쓴다",
+    href: "/ielts",
+    live: false,
+    ring: "ring-neutral-900/[0.06]",
+    text: "text-neutral-400",
+    bg: "from-neutral-100 to-white",
+    dot: "bg-neutral-300",
+  },
+] as const;
+
+/** 두 서비스가 같은 껍데기를 쓰도록 정규화한 박스 모델 */
+interface LandingCard {
+  key: string;
+  step: string;
+  icon: string;
+  title: string;
+  sub: string;
+  href: string;
+  ring: string;
+  text: string;
+  bg: string;
+  dot: string;
+  stat: string;
+  pct: number;
+  state: "todo" | "current" | "done";
+}
+
 export default function LandingPage() {
   const router = useRouter();
   const reduce = useReducedMotion();
+
+  /** 어떤 서비스를 보고 있는가 — 마지막 선택을 기억한다 */
+  const [service, setService] = useState<ServiceId>("toeic");
+  const [ieltsSets, setIeltsSets] = useState<IeltsSetSummary[] | null>(null);
+  const [ieltsSum, setIeltsSum] = useState<IeltsSummary | null>(null);
 
   const [view, setView] = useState<MasteryView | null>(null);
   const [pattern, setPattern] = useState<{
@@ -108,6 +188,31 @@ export default function LandingPage() {
       .catch(() => setPattern(null));
   }, []);
 
+  // 서비스 선택 복원 + 만점 아이엘츠 진도
+  useEffect(() => {
+    setService(loadService());
+    fetch("/api/ielts")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        const raw = (d?.sets ?? []) as {
+          id: string;
+          questions: unknown[];
+        }[];
+        const light = raw.map((s) => ({
+          id: s.id,
+          questions: s.questions?.length ?? 0,
+        }));
+        setIeltsSets(light as unknown as IeltsSetSummary[]);
+        setIeltsSum(ieltsSummary(loadIelts(), light));
+      })
+      .catch(() => setIeltsSets([]));
+  }, []);
+
+  function pickService(id: ServiceId) {
+    setService(id);
+    saveService(id);
+  }
+
   /** 900점 여정 — 패턴 → 게임 3,000문제 → 실전 */
   const journey = useMemo(
     () =>
@@ -121,8 +226,6 @@ export default function LandingPage() {
     [pattern, view, mockAttempts],
   );
 
-  const stat = (key: string) => journey.steps[key as JourneyStepKey].stat;
-
   /**
    * 박스 진입 — 중간 화면 없이 바로 본론으로.
    * - 패턴: 목록을 건너뛰고 다음 패턴으로 직행
@@ -133,6 +236,47 @@ export default function LandingPage() {
     if (key === "game") return lastMatchRoute();
     return fallback;
   };
+
+  /** 선택된 서비스의 3박스 */
+  const cards: LandingCard[] = useMemo(() => {
+    if (service === "ielts") {
+      const studied = ieltsSum?.studied ?? 0;
+      const totalSets = ieltsSum?.totalSets ?? ieltsSets?.length ?? 0;
+      return IELTS_STAGES.map((s) => {
+        if (!s.live) {
+          return { ...s, stat: "준비 중", pct: 0, state: "todo" as const };
+        }
+        const pct = totalSets > 0 ? Math.round((studied / totalSets) * 100) : 0;
+        return {
+          ...s,
+          stat: totalSets > 0 ? `${studied} / ${totalSets} 세트` : "준비 중",
+          pct,
+          state: (studied >= totalSets && totalSets > 0
+            ? "done"
+            : "current") as LandingCard["state"],
+        };
+      });
+    }
+    return STAGES.map((s) => {
+      const step = journey.steps[s.key as JourneyStepKey];
+      return {
+        ...s,
+        href: hrefFor(s.key, s.href),
+        stat: step.stat,
+        pct: step.pct,
+        state: step.state,
+      };
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [service, journey, pattern, ieltsSum, ieltsSets]);
+
+  /** 지금 해야 할 일 한 줄 */
+  const hint =
+    service === "ielts"
+      ? ieltsSum && ieltsSum.studied > 0
+        ? `함정 방어율 ${ieltsSum.trapRate}% · 추정 Band ${ieltsSum.band.toFixed(1)}`
+        : `덫을 막는 훈련부터 시작하세요 · ${ieltsSum?.totalSets ?? ieltsSets?.length ?? 0}세트 준비됨`
+      : journeyHint(journey);
 
   const rise = (d: number) =>
     reduce
@@ -150,37 +294,84 @@ export default function LandingPage() {
         aria-hidden
         className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[420px]"
       >
-        <div className="absolute left-1/2 top-[-120px] h-[320px] w-[520px] -translate-x-1/2 rounded-full bg-indigo-200/30 blur-[90px]" />
-        <div className="absolute left-[16%] top-[40px] h-[200px] w-[260px] rounded-full bg-rose-200/20 blur-[80px]" />
-        <div className="absolute right-[16%] top-[40px] h-[200px] w-[260px] rounded-full bg-amber-200/20 blur-[80px]" />
+        {service === "ielts" ? (
+          <>
+            <div className="absolute left-1/2 top-[-120px] h-[320px] w-[520px] -translate-x-1/2 rounded-full bg-teal-200/35 blur-[90px]" />
+            <div className="absolute right-[16%] top-[40px] h-[200px] w-[260px] rounded-full bg-emerald-200/20 blur-[80px]" />
+          </>
+        ) : (
+          <>
+            <div className="absolute left-1/2 top-[-120px] h-[320px] w-[520px] -translate-x-1/2 rounded-full bg-indigo-200/30 blur-[90px]" />
+            <div className="absolute left-[16%] top-[40px] h-[200px] w-[260px] rounded-full bg-rose-200/20 blur-[80px]" />
+            <div className="absolute right-[16%] top-[40px] h-[200px] w-[260px] rounded-full bg-amber-200/20 blur-[80px]" />
+          </>
+        )}
       </div>
 
       <div className="relative z-10 mx-auto flex w-full max-w-2xl flex-col px-5 pt-14 sm:pt-20 lg:max-w-4xl lg:min-h-dvh lg:justify-center lg:pt-0">
         {/* ── 브랜딩 ───────────────────────────────── */}
         <motion.div {...rise(0)} className="text-center">
           <div className="inline-flex items-center gap-2.5">
-            <Mark />
+            <Mark service={service} />
             <span className="text-[26px] font-black tracking-[-0.04em] text-neutral-900 sm:text-[30px]">
-              퍼펙토익
+              {service === "ielts" ? "만점 아이엘츠" : "퍼펙토익"}
             </span>
           </div>
           <p className="mt-3 text-[15px] font-medium tracking-[-0.01em] text-neutral-400 sm:text-[16px]">
-            패턴을 익히고 · 3,000문제를 풀고 · 실전으로
+            {service === "ielts"
+              ? "듣고 · 덫을 막아내고 · 밴드를 올린다"
+              : "패턴을 익히고 · 3,000문제를 풀고 · 실전으로"}
           </p>
 
+          {/* 서비스 선택 — 매번 고르게 하지 않고 마지막 선택을 기억한다 */}
+          <div className="mt-5 inline-flex rounded-full bg-white p-1 shadow-sm ring-1 ring-neutral-900/[0.06]">
+            {(Object.keys(SERVICES) as ServiceId[]).map((id) => {
+              const on = service === id;
+              return (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={() => pickService(id)}
+                  aria-pressed={on}
+                  className={`relative rounded-full px-4 py-2 text-[12.5px] font-black transition sm:px-5 ${
+                    on ? "text-white" : "text-neutral-500 hover:text-neutral-800"
+                  }`}
+                >
+                  {on && (
+                    <motion.span
+                      layoutId="service-pill"
+                      transition={{ type: "spring", stiffness: 320, damping: 30 }}
+                      className={`absolute inset-0 -z-10 rounded-full ${
+                        id === "ielts"
+                          ? "bg-gradient-to-r from-teal-600 to-emerald-600"
+                          : "bg-neutral-900"
+                      }`}
+                    />
+                  )}
+                  <span className="relative">
+                    {SERVICES[id].icon} {SERVICES[id].short}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
           {/* 지금 해야 할 일 한 줄 — 여정의 나침반 */}
-          <p className="mt-5 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-[12.5px] font-bold text-neutral-700 shadow-sm ring-1 ring-neutral-900/[0.06]">
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
-            {journeyHint(journey)}
+          <p className="mt-4 flex items-center justify-center gap-2 text-[12.5px] font-bold text-neutral-500">
+            <span
+              className={`h-1.5 w-1.5 animate-pulse rounded-full ${
+                service === "ielts" ? "bg-teal-500" : "bg-emerald-500"
+              }`}
+            />
+            {hint}
           </p>
         </motion.div>
 
         {/* ── 3박스 ────────────────────────────────── */}
         <div className="mt-10 grid grid-cols-1 gap-3.5 sm:mt-12 sm:grid-cols-3 sm:gap-4">
-          {STAGES.map((s, i) => {
-            const step = journey.steps[s.key as JourneyStepKey];
-            const isCurrent = step.state === "current";
-            const isDone = step.state === "done";
+          {cards.map((s, i) => {
+            const isCurrent = s.state === "current";
+            const isDone = s.state === "done";
             return (
             <motion.div key={s.key} {...rise(0.14 + i * 0.06)} className="relative">
             {/* 게임 박스만 — 파트·난이도 설정(탭하면 바로 시작, ⚙는 조건 변경) */}
@@ -199,7 +390,7 @@ export default function LandingPage() {
             )}
             <button
               type="button"
-              onClick={() => router.push(hrefFor(s.key, s.href))}
+              onClick={() => router.push(s.href)}
               className={`group relative block w-full overflow-hidden rounded-3xl bg-gradient-to-b ${s.bg} px-5 py-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md active:scale-[0.99] sm:px-7 sm:py-7 ${
                 isCurrent
                   ? `ring-2 ${s.ring.replace("/20", "/50")} shadow-md`
@@ -243,7 +434,7 @@ export default function LandingPage() {
                       <motion.div
                         className={`h-full rounded-full ${s.dot}`}
                         initial={{ width: 0 }}
-                        animate={{ width: `${Math.max(step.pct, 1.5)}%` }}
+                        animate={{ width: `${Math.max(s.pct, 1.5)}%` }}
                         transition={{
                           duration: reduce ? 0 : 0.8,
                           ease: EASE,
@@ -254,7 +445,7 @@ export default function LandingPage() {
                     <span
                       className={`mt-2 flex items-center justify-between text-[12px] font-bold tabular-nums ${s.text}`}
                     >
-                      {stat(s.key)}
+                      {s.stat}
                       <span className="text-[15px] transition-transform group-hover:translate-x-1">
                         →
                       </span>
@@ -266,7 +457,7 @@ export default function LandingPage() {
                 <span
                   className={`shrink-0 text-right text-[11.5px] font-bold tabular-nums ${s.text} sm:hidden`}
                 >
-                  {stat(s.key)}
+                  {s.stat}
                 </span>
               </div>
             </button>
@@ -275,8 +466,8 @@ export default function LandingPage() {
           })}
         </div>
 
-        {/* 복습·약점 진입 — 기록이 있을 때만 나타난다 */}
-        <ReviewNudge />
+        {/* 복습·약점 진입 — 토익 기록이 있을 때만 나타난다 */}
+        {service === "toeic" && <ReviewNudge />}
 
         <div className="pb-20 lg:pb-0" />
       </div>
@@ -306,8 +497,20 @@ export default function LandingPage() {
   );
 }
 
-/** 워드마크 — 3단계 3색을 품은 미니멀 마크 */
-function Mark() {
+/** 워드마크 — 3단계 3색을 품은 미니멀 마크. 아이엘츠는 밴드 상승을 뜻하는 3단 계단. */
+function Mark({ service = "toeic" }: { service?: ServiceId }) {
+  if (service === "ielts") {
+    return (
+      <span
+        aria-hidden
+        className="relative inline-flex h-8 w-8 items-end justify-center gap-[3px] rounded-[10px] bg-neutral-900 px-1.5 pb-1.5 shadow-sm"
+      >
+        <span className="h-1.5 w-1.5 rounded-[2px] bg-teal-400/60" />
+        <span className="h-2.5 w-1.5 rounded-[2px] bg-teal-400/80" />
+        <span className="h-4 w-1.5 rounded-[2px] bg-emerald-400" />
+      </span>
+    );
+  }
   return (
     <span
       aria-hidden
