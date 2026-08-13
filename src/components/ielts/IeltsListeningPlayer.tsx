@@ -18,6 +18,16 @@ import {
   type IeltsTrapType,
 } from "@/game/ielts";
 import TrapIcon, { SnareIcon, ShieldIcon } from "./TrapIcon";
+import {
+  PlayIcon,
+  PauseIcon,
+  Rewind10Icon,
+  RestartIcon,
+  ChevronDownIcon,
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  ScriptIcon,
+} from "./icons";
 
 type Response = string | number | undefined;
 type Phase = "intro" | "play" | "result";
@@ -196,15 +206,15 @@ export default function IeltsListeningPlayer({ set }: { set: IeltsListeningSet }
           }}
         />
 
-        <div className="relative mx-auto w-full max-w-3xl px-5">
+        <div className="container-app relative">
           <div className="flex items-center justify-between">
             <Link
               href="/ielts"
               className="inline-flex items-center gap-1.5 text-[13px] font-bold text-white/45 transition hover:text-white"
             >
-              <span className="text-[15px]">←</span> 만점 아이엘츠
+              <ArrowLeftIcon className="h-4 w-4" /> 만점 아이엘츠
             </Link>
-            <span className="rounded-full bg-white/[0.07] px-3 py-1 text-[11.5px] font-black tabular-nums text-teal-300 ring-1 ring-white/10 backdrop-blur">
+            <span className="chip bg-white/[0.07] text-teal-300 ring-1 ring-white/10">
               Part {set.part} · Band {set.band.toFixed(1)}
             </span>
           </div>
@@ -221,7 +231,7 @@ export default function IeltsListeningPlayer({ set }: { set: IeltsListeningSet }
         </div>
       </section>
 
-      <div className="relative z-10 mx-auto -mt-16 w-full max-w-3xl px-5 pb-32">
+      <div className="container-app relative z-10 -mt-16 pb-32">
         <AnimatePresence mode="wait">
           {/* ══ 인트로 ══════════════════════════ */}
           {phase === "intro" && (
@@ -230,8 +240,9 @@ export default function IeltsListeningPlayer({ set }: { set: IeltsListeningSet }
               initial={{ opacity: 0, y: reduce ? 0 : 12 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
+              className="mx-auto max-w-2xl"
             >
-              <div className="rounded-[1.75rem] bg-white p-6 shadow-[0_2px_6px_rgba(16,24,40,0.04),0_28px_60px_-30px_rgba(16,24,40,0.4)] ring-1 ring-neutral-900/[0.06] sm:p-8">
+              <div className="card-elevated p-6 sm:p-8">
                 <div className="grid grid-cols-3 gap-2.5">
                   <Stat label="문항" value={`${set.questions.length}`} />
                   <Stat label="덫" value={`${set.questions.filter((q) => q.trap).length}`} />
@@ -277,14 +288,14 @@ export default function IeltsListeningPlayer({ set }: { set: IeltsListeningSet }
                 <button
                   type="button"
                   onClick={start}
-                  className="group mt-6 flex w-full items-center justify-center gap-2.5 rounded-2xl bg-neutral-900 py-4 text-[15px] font-black text-white shadow-[0_10px_30px_-12px_rgba(16,24,40,0.6)] transition hover:bg-neutral-800 active:scale-[0.99]"
+                  className="btn-teal group mt-6 flex w-full items-center justify-center gap-2.5 py-4 text-[15px] font-black"
                 >
                   {hasAudio === false ? (
                     "문제 풀기"
                   ) : (
                     <>
-                      <span className="grid h-7 w-7 place-items-center rounded-full bg-teal-500 text-[11px] text-neutral-950 transition group-hover:scale-110">
-                        ▶
+                      <span className="grid h-7 w-7 place-items-center rounded-full bg-white/20 transition group-hover:scale-110">
+                        <PlayIcon className="h-3 w-3 translate-x-[1px]" />
                       </span>
                       재생하고 시작
                     </>
@@ -301,17 +312,24 @@ export default function IeltsListeningPlayer({ set }: { set: IeltsListeningSet }
               initial={{ opacity: 0, y: reduce ? 0 : 12 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
+              className="lg:grid lg:grid-cols-[minmax(0,360px)_minmax(0,1fr)] lg:items-start lg:gap-6"
             >
+              {/* 좌: 오디오 + 진행 (데스크탑에서 sticky) */}
+              <div className="space-y-3 lg:sticky lg:top-6">
               {hasAudio !== false && (
-                <div className="sticky top-3 z-20 overflow-hidden rounded-2xl bg-neutral-950/95 p-3.5 shadow-[0_14px_40px_-16px_rgba(16,24,40,0.6)] ring-1 ring-white/10 backdrop-blur-xl">
+                <div className="surface-dark sticky top-3 z-20 overflow-hidden rounded-2xl p-3.5 backdrop-blur-xl lg:static lg:rounded-[1.5rem] lg:p-5">
                   <div className="flex items-center gap-3">
                     <button
                       type="button"
                       onClick={toggleAudio}
-                      className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-teal-500 text-[14px] text-neutral-950 shadow-lg shadow-teal-500/25 transition hover:bg-teal-400 active:scale-95"
+                      className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-teal-500 text-neutral-950 shadow-lg shadow-teal-500/25 transition hover:bg-teal-400 active:scale-95 lg:h-14 lg:w-14"
                       aria-label={playing ? "일시정지" : "재생"}
                     >
-                      {playing ? "❚❚" : "▶"}
+                      {playing ? (
+                        <PauseIcon className="h-4 w-4 lg:h-5 lg:w-5" />
+                      ) : (
+                        <PlayIcon className="h-4 w-4 translate-x-[1px] lg:h-5 lg:w-5" />
+                      )}
                     </button>
 
                     <div className="min-w-0 flex-1">
@@ -355,10 +373,11 @@ export default function IeltsListeningPlayer({ set }: { set: IeltsListeningSet }
                       </p>
                     </div>
 
-                    <div className="flex shrink-0 flex-col gap-1.5">
+                    {/* 모바일 — 컨트롤을 오른쪽에 접어 넣는다 */}
+                    <div className="flex shrink-0 flex-col gap-1.5 lg:hidden">
                       <div className="flex gap-1.5">
                         <PlayerChip onClick={() => nudge(-10)} label="10초 뒤로">
-                          ↺10
+                          <Rewind10Icon className="h-3.5 w-3.5" />
                         </PlayerChip>
                         <PlayerChip
                           onClick={() => setRate((r) => (r === 1 ? 0.75 : 1))}
@@ -369,14 +388,78 @@ export default function IeltsListeningPlayer({ set }: { set: IeltsListeningSet }
                         </PlayerChip>
                       </div>
                       <PlayerChip onClick={replay} label="처음부터">
-                        처음부터
+                        <RestartIcon className="h-3.5 w-3.5" />
                       </PlayerChip>
                     </div>
+                  </div>
+
+                  {/* 데스크탑 — 컨트롤을 한 줄로 넓게 */}
+                  <div className="mt-4 hidden gap-1.5 lg:flex">
+                    <PlayerChip onClick={() => nudge(-10)} label="10초 뒤로" grow>
+                      <Rewind10Icon className="h-3.5 w-3.5" /> 10초
+                    </PlayerChip>
+                    <PlayerChip
+                      onClick={() => setRate((r) => (r === 1 ? 0.75 : 1))}
+                      active={rate === 0.75}
+                      label="재생 속도"
+                      grow
+                    >
+                      {rate === 0.75 ? "0.75x" : "1.0x"}
+                    </PlayerChip>
+                    <PlayerChip onClick={replay} label="처음부터" grow>
+                      <RestartIcon className="h-3.5 w-3.5" /> 처음부터
+                    </PlayerChip>
                   </div>
                 </div>
               )}
 
-              <div className="mt-4 space-y-3">
+                {/* 데스크탑 전용 — 진행과 규칙을 곁에 둔다 */}
+                <div className="card hidden px-4 py-3.5 lg:block">
+                  <p className="label">진행</p>
+                  <p className="mt-1 text-[15px] font-black text-neutral-900">
+                    {answered} / {set.questions.length} 문항 작성
+                  </p>
+                  <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-neutral-100">
+                    <div
+                      className="h-full rounded-full bg-gradient-to-r from-teal-500 to-emerald-500 transition-all"
+                      style={{
+                        width: `${(answered / Math.max(set.questions.length, 1)) * 100}%`,
+                      }}
+                    />
+                  </div>
+                  <p className="mt-2.5 text-[11.5px] leading-relaxed text-neutral-400">
+                    제출하면 밴드·덫 판정과 스크립트가 공개됩니다.
+                  </p>
+                </div>
+
+                {/* 데스크탑 전용 — 무엇을 조심해야 하는지 듣는 내내 곁에 둔다 */}
+                <div className="card hidden px-4 py-3.5 lg:block">
+                  <p className="flex items-center gap-1.5 text-[11.5px] font-black text-neutral-900">
+                    <SnareIcon className="h-3.5 w-3.5 text-amber-600" />이 세트가 파놓은 덫
+                  </p>
+                  <div className="mt-2.5 flex flex-wrap gap-1.5">
+                    {trapKinds.map(([t, n]) => {
+                      const meta = IELTS_TRAPS[t as keyof typeof IELTS_TRAPS];
+                      return (
+                        <span
+                          key={t}
+                          className="inline-flex items-center gap-1.5 rounded-full bg-neutral-50 py-1 pl-2 pr-2.5 text-[11px] font-bold text-neutral-600 ring-1 ring-neutral-900/[0.05]"
+                        >
+                          <TrapIcon
+                            type={t as IeltsTrapType}
+                            className="h-3.5 w-3.5 text-teal-600"
+                          />
+                          {meta.label}
+                          <span className="tabular-nums text-neutral-400">{n}</span>
+                        </span>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+
+              {/* 우: 문항 */}
+              <div className="mt-4 space-y-3 lg:mt-0">
                 {set.questions.map((q, i) => (
                   <QuestionCard
                     key={q.id}
@@ -396,9 +479,10 @@ export default function IeltsListeningPlayer({ set }: { set: IeltsListeningSet }
               key="result"
               initial={{ opacity: 0, y: reduce ? 0 : 12 }}
               animate={{ opacity: 1, y: 0 }}
+              className="mx-auto max-w-3xl"
             >
               {/* 밴드 카드 */}
-              <div className="relative overflow-hidden rounded-[1.75rem] bg-neutral-900 p-6 text-white shadow-[0_20px_50px_-24px_rgba(16,24,40,0.7)] sm:p-8">
+              <div className="surface-dark relative overflow-hidden p-6 sm:p-8">
                 <div
                   aria-hidden
                   className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-teal-500/20 blur-[70px]"
@@ -472,15 +556,15 @@ export default function IeltsListeningPlayer({ set }: { set: IeltsListeningSet }
               </div>
 
               {/* 스크립트 */}
-              <div className="mt-4 overflow-hidden rounded-[1.5rem] bg-white shadow-[0_2px_6px_rgba(16,24,40,0.04),0_20px_44px_-30px_rgba(16,24,40,0.3)] ring-1 ring-neutral-900/[0.06]">
+              <div className="card mt-4 overflow-hidden">
                 <button
                   type="button"
                   onClick={() => setShowScript((v) => !v)}
                   aria-expanded={showScript}
                   className="flex w-full items-center gap-3 px-5 py-4 text-left transition hover:bg-neutral-50/60"
                 >
-                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-teal-50 text-[18px] ring-1 ring-teal-500/15">
-                    📄
+                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-teal-50 text-teal-600 ring-1 ring-teal-500/15">
+                    <ScriptIcon className="h-5 w-5" />
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="block text-[13.5px] font-black text-neutral-900">
@@ -490,13 +574,11 @@ export default function IeltsListeningPlayer({ set }: { set: IeltsListeningSet }
                       덫이 심어진 문장을 눈으로 확인하세요
                     </span>
                   </span>
-                  <span
-                    className={`shrink-0 text-[12px] font-black text-neutral-300 transition-transform ${
+                  <ChevronDownIcon
+                    className={`h-4 w-4 shrink-0 text-neutral-300 transition-transform ${
                       showScript ? "rotate-180" : ""
                     }`}
-                  >
-                    ▼
-                  </span>
+                  />
                 </button>
                 {showScript && (
                   <div className="border-t border-neutral-900/[0.06] px-5 py-4">
@@ -534,18 +616,14 @@ export default function IeltsListeningPlayer({ set }: { set: IeltsListeningSet }
               </div>
 
               <div className="mt-4 flex gap-2.5">
-                <button
-                  type="button"
-                  onClick={retry}
-                  className="flex-1 rounded-2xl bg-white py-3.5 text-[14px] font-black text-neutral-800 shadow-sm ring-1 ring-neutral-900/10 transition hover:bg-neutral-50"
-                >
+                <button type="button" onClick={retry} className="btn-ghost flex-1 bg-white py-3.5 font-black">
                   다시 풀기
                 </button>
                 <Link
                   href="/ielts"
-                  className="flex-1 rounded-2xl bg-neutral-900 py-3.5 text-center text-[14px] font-black text-white shadow-[0_10px_26px_-12px_rgba(16,24,40,0.6)] transition hover:bg-neutral-800"
+                  className="btn-teal flex flex-1 items-center justify-center gap-1.5 py-3.5 text-center font-black"
                 >
-                  다음 세트 →
+                  다음 세트 <ArrowRightIcon className="h-4 w-4" />
                 </Link>
               </div>
             </motion.section>
@@ -555,16 +633,12 @@ export default function IeltsListeningPlayer({ set }: { set: IeltsListeningSet }
 
       {/* 제출 바 */}
       {phase === "play" && (
-        <div className="fixed inset-x-0 bottom-0 z-30 border-t border-neutral-900/[0.06] bg-white/90 px-5 py-3 backdrop-blur-xl pb-safe">
-          <div className="mx-auto flex max-w-3xl items-center gap-3">
+        <div className="fixed inset-x-0 bottom-0 z-[70] border-t border-neutral-900/[0.06] bg-white py-3 shadow-[0_-8px_24px_-16px_rgba(16,24,40,0.35)] pb-safe">
+          <div className="container-app flex items-center gap-3">
             <span className="shrink-0 text-[12.5px] font-black tabular-nums text-neutral-500">
               {answered} / {set.questions.length}
             </span>
-            <button
-              type="button"
-              onClick={submit}
-              className="flex-1 rounded-2xl bg-teal-600 py-3.5 text-[15px] font-black text-white shadow-[0_10px_26px_-12px_rgba(13,148,136,0.8)] transition hover:bg-teal-700 active:scale-[0.99]"
-            >
+            <button type="button" onClick={submit} className="btn-teal flex-1 py-3.5 font-black">
               제출하고 채점
             </button>
           </div>
@@ -614,18 +688,23 @@ function PlayerChip({
   onClick,
   active,
   label,
+  grow,
 }: {
   children: React.ReactNode;
   onClick: () => void;
   active?: boolean;
   label: string;
+  /** 데스크탑 사이드바에서 한 줄을 균등하게 채운다 */
+  grow?: boolean;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
       aria-label={label}
-      className={`rounded-lg px-2 py-1 text-[10.5px] font-black tabular-nums transition ${
+      className={`inline-flex items-center justify-center gap-1.5 rounded-lg px-2 py-1.5 text-[10.5px] font-black tabular-nums transition ${
+        grow ? "flex-1" : ""
+      } ${
         active
           ? "bg-teal-500 text-neutral-950"
           : "bg-white/10 text-white/70 hover:bg-white/20 hover:text-white"
@@ -661,7 +740,7 @@ function QuestionCard({
   const filled = response !== undefined && response !== "";
   return (
     <div
-      className={`relative overflow-hidden rounded-2xl bg-white p-4 shadow-[0_1px_3px_rgba(16,24,40,0.04),0_12px_28px_-24px_rgba(16,24,40,0.3)] ring-1 transition sm:p-5 ${
+      className={`card-elevated relative overflow-hidden p-4 ring-1 transition sm:p-5 ${
         filled ? "ring-teal-500/25" : "ring-neutral-900/[0.06]"
       }`}
     >
@@ -789,7 +868,7 @@ function ReviewCard({
 
   return (
     <div
-      className={`relative overflow-hidden rounded-2xl bg-white p-4 shadow-[0_1px_3px_rgba(16,24,40,0.04),0_12px_28px_-24px_rgba(16,24,40,0.3)] ring-1 ${tone.ring} sm:p-5`}
+      className={`card-elevated relative overflow-hidden p-4 ring-1 ${tone.ring} sm:p-5`}
     >
       <span aria-hidden className={`absolute inset-y-0 left-0 w-1 ${tone.rail}`} />
       <div className="flex items-start gap-3 pl-1.5">

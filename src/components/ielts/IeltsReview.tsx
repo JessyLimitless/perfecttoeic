@@ -86,7 +86,7 @@ export function ReviewCard({
 
   return (
     <div
-      className={`relative overflow-hidden rounded-2xl bg-white p-4 shadow-[0_1px_3px_rgba(16,24,40,0.04),0_12px_28px_-24px_rgba(16,24,40,0.3)] ring-1 ${tone.ring} sm:p-5`}
+      className={`card-elevated relative overflow-hidden p-4 ring-1 ${tone.ring} sm:p-5`}
     >
       <span aria-hidden className={`absolute inset-y-0 left-0 w-1 ${tone.rail}`} />
       <div className="flex items-start gap-3 pl-1.5">

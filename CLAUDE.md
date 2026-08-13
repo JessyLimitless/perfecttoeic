@@ -687,3 +687,21 @@ Part 5/6 문법 라벨(전치사·접속사·동사·관계사·가정법·도�
   2. 브라우저 실플레이 검증 — 랜딩 토글(토익↔아이엘츠 전환·선택 기억)·`/ielts`·`/ielts/listening/ielts-lis-01` 오디오 재생·주관식 입력·제출 후 밴드/덫 판정 육안 확인.
   3. 커밋 + `git push` + **EC2 수동 재배포**([[cloud5-manual-redeploy]], 대시보드 트리거는 여전히 불발 — SSH로. `sudo chown -R ubuntu:ubuntu .git` 후 pull·**HEAD 대조 필수**).
 - **미결·후속 후보**: DATA3 파일 부재(사용자가 주면 같은 형식으로 흡수) / 루트 `DATA*.md`·`아이엘츠_피알디.md` 처리 방침 미정(콘텐츠로 흡수 완료됐으니 커밋 여부 결정 필요) / IELTS Part 3·4(학술) 세트 / Reading T/F/NG·Heading Matching / Writing Task 1·2 템플릿 / Speaking / PRD의 「Daily 60-Min Drill」·「My Vault」 / 간격반복(TOEIC `review.ts`)을 아이엘츠에도 적용할지.
+
+### 세션 로그 — 2026-08-13 (41차: 아이엘츠 리스닝 +140문항 흡수 + 아이엘츠 UI를 토익 톤앤매너로 통일) ✅ 로컬 완료·검증 · ⏸️ 미배포
+- 사용자가 루트에 **IELTS 리스닝 원본 데이터셋 14개**(산문 MD + frontmatter)를 넣어둠: `gemini-code-*.md` 5개(P2 1·P4 4) + `part2-2~5.md` + `part3-1~5.md`. 확정: **병렬 에이전트 3개**로 정식 스키마 변환.
+- **콘텐츠 +14세트·140문항** (`content/ielts/ielts-lis-13~26.md`): P2 `13~17`(50) · P3 `18~22`(50) · P4 `23~26`(40). **총 28세트·286문항**(P1 50·P2 100·P3 60·P4 50 + 리딩 26).
+  - 변환 규칙: 원본 Audio Transcript를 2~4문장 단위 `script[]`로 분할 + **전 줄 한글 번역**, 화자별 voice 키(영국·호주 주력, 세트마다 조합 변경 — P3는 지도교수+학생2 고정 매핑), **원본 정답 100% 보존**(A/B/C/D→answerIndex 검산), gap은 `answer`+`accept`(숫자↔영단어) 분해, `[BLANK]`→`______`.
+  - **덫(trap)은 대본에 실재하는 함정만 배정**(지어내지 않음). 신규 140문항 전부 trap 보유. 전체 덫 분포: 숫자·계산 56 · 세부정보 53 · 오답 소거 41 · 매칭·분류 30 · 스펠링 28 · 패러프레이즈 27 · 자기수정 22 · 위치·방향 22.
+  - `scripts/validate-ielts.mjs` **오류 0**(마커·category·voice·id중복 포함).
+- **음원**: `node scripts/tts-ielts.mjs` → 신규 **14 mp3**(세트당 1개 연속 음원), `public/audio/ielts` 총 **26클립·18MB**. 매니페스트 병합.
+- **아이엘츠 UI를 만점 토익 톤앤매너로 통일**(사용자 "아이엘츠 UI가 구리다"):
+  - **디자인 토큰 추가**(`globals.css`, 팔레트 계약 준수): **`.btn-teal`**(btn-primary와 같은 모양·그림자 문법에 teal만) + `.text-gradient-teal`. 아이엘츠 CTA 전부 이 토큰으로 교체(기존 `bg-neutral-900`/`bg-teal-600` 인라인 제거), 보조 버튼은 `.btn-ghost`.
+  - **프레임 통일**: 아이엘츠 전 화면 `max-w-3xl`/`max-w-5xl` 인라인 → **`container-app`**(토익과 동일). 홈 세트 목록은 데스크탑 **2열 그리드**.
+  - **표면 통일**: 인라인 `rounded-[1.75rem] bg-white shadow-[...]` → **`.card` / `.card-elevated` / `.surface-dark`** 토큰.
+  - **리스닝 플레이어 데스크탑 2단**(토익 `ListeningPlayer`와 같은 문법 `lg:grid-cols-[minmax(0,360px)_1fr]` + `lg:sticky`): 좌측 = 오디오 카드 + 진행 카드 + **이 세트가 파놓은 덫 브리핑**(풀이 내내 곁에), 우측 = 문항. 모바일은 오디오 패널 sticky 유지.
+  - **글리프 → SVG 아이콘**(신규 `src/components/ielts/icons.tsx`): ▶ ❚❚ ↺10 ▼ ← → 를 Play/Pause/Rewind10/Restart/ChevronDown/ArrowLeft/ArrowRight/Script 아이콘으로. (🪙 두부 사건과 같은 이유 — [[pattern-booklet-pdf]] 아님, TrapIcon.tsx 주석 참조.)
+  - **버그 2건 동시 수정**: ① `BgmProvider`의 `MUTE_PREFIXES`에 **`/ielts` 누락** → 아이엘츠 리스닝 음원 위에 배경음악이 겹쳐 재생되던 것 수정. ② 모바일에서 배경음악 위젯(z-60)이 **제출 바를 가리던** 것 → 제출 바 `z-[70]`+불투명 배경.
+- **검증**: `npx tsc --noEmit` 0 + 프로덕션 `npm run build` 통과. 프로덕션 서버(3711)+puppeteer 육안: 홈(데스크탑 2열·26세트)·리스닝 인트로(덫 브리핑)·**풀이 데스크탑 2단(좌 오디오/진행/덫 · 우 문항)**·모바일 풀이·결과(밴드 4.0·함정 방어율·덫 판정 리뷰)·리딩 2단 전부 의도대로.
+- **⏸️ 미배포·미푸시**: 커밋만 로컬. 루트 원본 데이터셋 14개(`gemini-code-*`·`part2-*`·`part3-*`)는 **흡수 완료됐으나 커밋하지 않고 그대로 둠**(처리 방침 사용자 확인 필요 — 기존 `DATA*.md`와 동일 상태).
+- **다음 후보**: push + EC2 수동 재배포([[cloud5-manual-redeploy]]) / 루트 원본 데이터셋 정리 방침 / IELTS 리딩 지문 확장(현재 2지문) / Writing·Speaking / 아이엘츠에도 간격반복(`review.ts`) 적용.

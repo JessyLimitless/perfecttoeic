@@ -68,7 +68,16 @@ export const TRACKS: Track[] = [
   },
 ];
 
-const MUTE_PREFIXES = ["/listening", "/lc-match", "/warmup", "/tts", "/diagnostic", "/mock"];
+// 음성을 듣는 화면에서는 배경음악이 방해가 된다 — 아이엘츠 리스닝도 마찬가지다
+const MUTE_PREFIXES = [
+  "/listening",
+  "/lc-match",
+  "/warmup",
+  "/tts",
+  "/diagnostic",
+  "/mock",
+  "/ielts",
+];
 const KEY = "toeic-bgm";
 const VOLUME = 0.32;
 

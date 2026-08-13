@@ -19,6 +19,7 @@ import {
 } from "@/game/ielts";
 import TrapIcon, { SnareIcon } from "./TrapIcon";
 import { ReviewCard, LETTER, type Response, type Verdict } from "./IeltsReview";
+import { ArrowLeftIcon, ArrowRightIcon } from "./icons";
 
 type Phase = "intro" | "play" | "result";
 const EASE = [0.22, 1, 0.36, 1] as const;
@@ -91,7 +92,7 @@ export default function IeltsReadingPlayer({ set }: { set: IeltsReadingSet }) {
 
   /** 지문 — 풀이 중엔 좌측 고정, 결과에선 접어둔다 */
   const passage = (
-    <div className="rounded-2xl bg-white p-5 shadow-[0_1px_3px_rgba(16,24,40,0.04),0_14px_32px_-26px_rgba(16,24,40,0.3)] ring-1 ring-neutral-900/[0.06] sm:p-6">
+    <div className="card p-5 sm:p-6">
       <div className="mb-4 flex items-center justify-between gap-3">
         <p className="text-[11px] font-black tracking-[0.1em] text-teal-600">
           READING PASSAGE {set.passageNo}
@@ -151,13 +152,13 @@ export default function IeltsReadingPlayer({ set }: { set: IeltsReadingSet }) {
               "radial-gradient(ellipse 80% 70% at 50% 0%, #000 40%, transparent 100%)",
           }}
         />
-        <div className="relative mx-auto w-full max-w-5xl px-5">
+        <div className="container-app relative">
           <div className="flex items-center justify-between">
             <Link
               href="/ielts"
               className="inline-flex items-center gap-1.5 text-[13px] font-bold text-white/45 transition hover:text-white"
             >
-              <span className="text-[15px]">←</span> 만점 아이엘츠
+              <ArrowLeftIcon className="h-4 w-4" /> 만점 아이엘츠
             </Link>
             <span className="rounded-full bg-white/[0.07] px-3 py-1 text-[11.5px] font-black tabular-nums text-teal-300 ring-1 ring-white/10 backdrop-blur">
               Reading Passage {set.passageNo} · Band {set.band.toFixed(1)}
@@ -175,7 +176,7 @@ export default function IeltsReadingPlayer({ set }: { set: IeltsReadingSet }) {
         </div>
       </section>
 
-      <div className="relative z-10 mx-auto -mt-16 w-full max-w-5xl px-5 pb-32">
+      <div className="container-app relative z-10 -mt-16 pb-32">
         <AnimatePresence mode="wait">
           {/* ══ 인트로 ══════════════════════════ */}
           {phase === "intro" && (
@@ -186,7 +187,7 @@ export default function IeltsReadingPlayer({ set }: { set: IeltsReadingSet }) {
               exit={{ opacity: 0 }}
               className="mx-auto max-w-2xl"
             >
-              <div className="rounded-[1.75rem] bg-white p-6 shadow-[0_2px_6px_rgba(16,24,40,0.04),0_28px_60px_-30px_rgba(16,24,40,0.4)] ring-1 ring-neutral-900/[0.06] sm:p-8">
+              <div className="card-elevated p-6 sm:p-8">
                 <div className="grid grid-cols-3 gap-2.5">
                   <Stat label="문항" value={`${set.questions.length}`} />
                   <Stat label="단락" value={`${set.paragraphs.length}`} />
@@ -223,7 +224,7 @@ export default function IeltsReadingPlayer({ set }: { set: IeltsReadingSet }) {
                 <button
                   type="button"
                   onClick={() => setPhase("play")}
-                  className="mt-6 w-full rounded-2xl bg-neutral-900 py-4 text-[15px] font-black text-white shadow-[0_10px_30px_-12px_rgba(16,24,40,0.6)] transition hover:bg-neutral-800 active:scale-[0.99]"
+                  className="btn-teal mt-6 w-full py-4 text-[15px] font-black"
                 >
                   지문 읽고 시작
                 </button>
@@ -344,15 +345,15 @@ export default function IeltsReadingPlayer({ set }: { set: IeltsReadingSet }) {
                 <button
                   type="button"
                   onClick={retry}
-                  className="flex-1 rounded-2xl bg-white py-3.5 text-[14px] font-black text-neutral-800 shadow-sm ring-1 ring-neutral-900/10 transition hover:bg-neutral-50"
+                  className="btn-ghost flex-1 bg-white py-3.5 font-black"
                 >
                   다시 풀기
                 </button>
                 <Link
                   href="/ielts"
-                  className="flex-1 rounded-2xl bg-neutral-900 py-3.5 text-center text-[14px] font-black text-white shadow-[0_10px_26px_-12px_rgba(16,24,40,0.6)] transition hover:bg-neutral-800"
+                  className="btn-teal flex flex-1 items-center justify-center gap-1.5 py-3.5 text-center font-black"
                 >
-                  다음 지문 →
+                  다음 지문 <ArrowRightIcon className="h-4 w-4" />
                 </Link>
               </div>
             </motion.section>
@@ -361,15 +362,15 @@ export default function IeltsReadingPlayer({ set }: { set: IeltsReadingSet }) {
       </div>
 
       {phase === "play" && (
-        <div className="fixed inset-x-0 bottom-0 z-30 border-t border-neutral-900/[0.06] bg-white/90 px-5 py-3 backdrop-blur-xl pb-safe">
-          <div className="mx-auto flex max-w-5xl items-center gap-3">
+        <div className="fixed inset-x-0 bottom-0 z-[70] border-t border-neutral-900/[0.06] bg-white py-3 shadow-[0_-8px_24px_-16px_rgba(16,24,40,0.35)] pb-safe">
+          <div className="container-app flex items-center gap-3">
             <span className="shrink-0 text-[12.5px] font-black tabular-nums text-neutral-500">
               {answered} / {set.questions.length}
             </span>
             <button
               type="button"
               onClick={submit}
-              className="flex-1 rounded-2xl bg-teal-600 py-3.5 text-[15px] font-black text-white shadow-[0_10px_26px_-12px_rgba(13,148,136,0.8)] transition hover:bg-teal-700 active:scale-[0.99]"
+              className="btn-teal flex-1 py-3.5 font-black"
             >
               제출하고 채점
             </button>
@@ -405,7 +406,7 @@ function QuestionCard({
   const filled = response !== undefined && response !== "";
   return (
     <div
-      className={`relative overflow-hidden rounded-2xl bg-white p-4 shadow-[0_1px_3px_rgba(16,24,40,0.04),0_12px_28px_-24px_rgba(16,24,40,0.3)] ring-1 transition sm:p-5 ${
+      className={`card-elevated relative overflow-hidden p-4 ring-1 transition sm:p-5 ${
         filled ? "ring-teal-500/25" : "ring-neutral-900/[0.06]"
       }`}
     >

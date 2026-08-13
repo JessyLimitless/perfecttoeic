@@ -15,6 +15,7 @@ import {
   type IeltsTrapType,
 } from "@/game/ielts";
 import TrapIcon, { SnareIcon } from "./TrapIcon";
+import { ArrowLeftIcon, ArrowRightIcon, ChevronDownIcon } from "./icons";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -100,12 +101,12 @@ export default function IeltsHome({
           }}
         />
 
-        <div className="relative mx-auto w-full max-w-3xl px-5">
+        <div className="container-app relative">
           <Link
             href="/"
             className="inline-flex items-center gap-1.5 text-[13px] font-bold text-white/45 transition hover:text-white"
           >
-            <span className="text-[15px]">←</span> 홈
+            <ArrowLeftIcon className="h-4 w-4" /> 홈
           </Link>
 
           <div className="mt-7 flex flex-col gap-8 sm:flex-row sm:items-end sm:justify-between">
@@ -169,10 +170,10 @@ export default function IeltsHome({
       </section>
 
       {/* ══ 본문 — 히어로를 파고들며 떠오른다 ═══════════════ */}
-      <div className="relative z-10 mx-auto -mt-24 w-full max-w-3xl px-5 pb-20">
+      <div className="container-app relative z-10 -mt-24 pb-20">
         {/* 4대 영역 */}
         <motion.section {...rise(0.18)}>
-          <div className="rounded-[1.75rem] bg-white p-3 shadow-[0_2px_6px_rgba(16,24,40,0.04),0_24px_50px_-28px_rgba(16,24,40,0.35)] ring-1 ring-neutral-900/[0.06] sm:p-4">
+          <div className="card-elevated p-3 sm:p-4">
             {/* 영역과 파트가 헷갈리지 않도록 표제를 명시한다 */}
             <div className="mb-2.5 flex items-baseline justify-between px-1.5">
               <p className="text-[11.5px] font-black tracking-[0.06em] text-neutral-400">
@@ -232,7 +233,7 @@ export default function IeltsHome({
 
         {/* 덫 도감 */}
         <motion.section {...rise(0.22)} className="mt-3.5">
-          <div className="overflow-hidden rounded-[1.5rem] bg-white shadow-[0_2px_6px_rgba(16,24,40,0.04),0_20px_44px_-30px_rgba(16,24,40,0.3)] ring-1 ring-neutral-900/[0.06]">
+          <div className="card overflow-hidden">
             <button
               type="button"
               onClick={() => setOpenTraps((v) => !v)}
@@ -250,13 +251,11 @@ export default function IeltsHome({
                   틀리는 이유는 늘 이 여덟 개 중 하나다
                 </span>
               </span>
-              <span
-                className={`shrink-0 text-[12px] font-black text-neutral-300 transition-transform ${
+              <ChevronDownIcon
+                className={`h-4 w-4 shrink-0 text-neutral-300 transition-transform ${
                   openTraps ? "rotate-180" : ""
                 }`}
-              >
-                ▼
-              </span>
+              />
             </button>
             <AnimatePresence initial={false}>
               {openTraps && (
@@ -310,7 +309,7 @@ export default function IeltsHome({
                 </span>
               </div>
 
-              <div className="mt-3 space-y-2.5">
+              <div className="mt-3 grid gap-2.5 lg:grid-cols-2">
                 {partSets.map((s) => {
                   const rec = progress?.sets[s.id];
                   const done = !!rec;
@@ -319,7 +318,7 @@ export default function IeltsHome({
                     <Link
                       key={s.id}
                       href={`/ielts/listening/${s.id}`}
-                      className="group relative block overflow-hidden rounded-2xl bg-white p-4 shadow-[0_1px_3px_rgba(16,24,40,0.04),0_14px_32px_-24px_rgba(16,24,40,0.3)] ring-1 ring-neutral-900/[0.06] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_3px_8px_rgba(16,24,40,0.06),0_26px_50px_-26px_rgba(16,24,40,0.4)] hover:ring-teal-500/25 sm:p-5"
+                      className="card group relative block overflow-hidden p-4 transition duration-300 hover:-translate-y-0.5 hover:ring-teal-500/25 sm:p-5"
                     >
                       <span
                         aria-hidden
@@ -380,8 +379,8 @@ export default function IeltsHome({
                               </span>
                             </span>
                           ) : (
-                            <span className="grid h-9 w-9 place-items-center rounded-full bg-neutral-50 text-[15px] text-neutral-300 ring-1 ring-neutral-900/[0.04] transition group-hover:bg-teal-600 group-hover:text-white group-hover:ring-teal-600">
-                              →
+                            <span className="grid h-9 w-9 place-items-center rounded-full bg-neutral-50 text-neutral-300 ring-1 ring-neutral-900/[0.04] transition group-hover:bg-teal-600 group-hover:text-white group-hover:ring-teal-600">
+                              <ArrowRightIcon className="h-4 w-4" />
                             </span>
                           )}
                         </span>
@@ -409,7 +408,7 @@ export default function IeltsHome({
               </span>
             </div>
 
-            <div className="mt-3 space-y-2.5">
+            <div className="mt-3 grid gap-2.5 lg:grid-cols-2">
               {reading.map((s) => {
                 const rec = progress?.sets[s.id];
                 const done = !!rec;
@@ -418,7 +417,7 @@ export default function IeltsHome({
                   <Link
                     key={s.id}
                     href={`/ielts/reading/${s.id}`}
-                    className="group relative block overflow-hidden rounded-2xl bg-white p-4 shadow-[0_1px_3px_rgba(16,24,40,0.04),0_14px_32px_-24px_rgba(16,24,40,0.3)] ring-1 ring-neutral-900/[0.06] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_3px_8px_rgba(16,24,40,0.06),0_26px_50px_-26px_rgba(16,24,40,0.4)] hover:ring-teal-500/25 sm:p-5"
+                    className="card group relative block overflow-hidden p-4 transition duration-300 hover:-translate-y-0.5 hover:ring-teal-500/25 sm:p-5"
                   >
                     <span
                       aria-hidden
@@ -475,8 +474,8 @@ export default function IeltsHome({
                             </span>
                           </span>
                         ) : (
-                          <span className="grid h-9 w-9 place-items-center rounded-full bg-neutral-50 text-[15px] text-neutral-300 ring-1 ring-neutral-900/[0.04] transition group-hover:bg-teal-600 group-hover:text-white group-hover:ring-teal-600">
-                            →
+                          <span className="grid h-9 w-9 place-items-center rounded-full bg-neutral-50 text-neutral-300 ring-1 ring-neutral-900/[0.04] transition group-hover:bg-teal-600 group-hover:text-white group-hover:ring-teal-600">
+                            <ArrowRightIcon className="h-4 w-4" />
                           </span>
                         )}
                       </span>
