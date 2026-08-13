@@ -154,6 +154,15 @@ export default function IeltsHome({ sets }: { sets: IeltsSetSummary[] }) {
         {/* 4대 영역 */}
         <motion.section {...rise(0.18)}>
           <div className="rounded-[1.75rem] bg-white p-3 shadow-[0_2px_6px_rgba(16,24,40,0.04),0_24px_50px_-28px_rgba(16,24,40,0.35)] ring-1 ring-neutral-900/[0.06] sm:p-4">
+            {/* 영역과 파트가 헷갈리지 않도록 표제를 명시한다 */}
+            <div className="mb-2.5 flex items-baseline justify-between px-1.5">
+              <p className="text-[11.5px] font-black tracking-[0.06em] text-neutral-400">
+                IELTS 4대 영역
+              </p>
+              <p className="text-[11px] font-bold text-neutral-400">
+                리스닝만 열려 있습니다
+              </p>
+            </div>
             <div className="grid grid-cols-4 gap-2">
               {SKILLS.map((s) => (
                 <div
@@ -187,7 +196,9 @@ export default function IeltsHome({ sets }: { sets: IeltsSetSummary[] }) {
                       s.live ? "text-teal-600" : "text-neutral-300"
                     }`}
                   >
-                    {s.live ? `${sets.length}세트` : "준비 중"}
+                    {s.live
+                      ? `${parts.length ? `Part 1~${Math.max(...parts)} · ` : ""}${sets.length}세트`
+                      : "준비 중"}
                   </p>
                 </div>
               ))}

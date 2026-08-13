@@ -90,10 +90,15 @@ const STAGES = [
 const IELTS_STAGES = [
   {
     key: "ielts-listening",
-    step: "STEP 1",
+    /**
+     * 토익의 STEP 1·2·3(여정 단계)을 그대로 쓰면 아이엘츠에서는 오독을 부른다.
+     * 실제로 "STEP 2 리딩 준비 중"이 "Part 2가 준비 중"으로 읽혔다.
+     * 아이엘츠의 셋은 순서가 아니라 **영역**이므로 영역명을 그대로 라벨로 쓴다.
+     */
+    step: "LISTENING",
     icon: "🎧",
     title: "리스닝",
-    sub: "덫을 막아낸다",
+    sub: "Part 1~4 · 덫을 막아낸다",
     href: "/ielts",
     live: true,
     text: "text-teal-600",
@@ -105,10 +110,10 @@ const IELTS_STAGES = [
   },
   {
     key: "ielts-reading",
-    step: "STEP 2",
+    step: "READING",
     icon: "📖",
     title: "리딩",
-    sub: "T/F/NG를 가른다",
+    sub: "아직 열지 않은 영역",
     href: "/ielts",
     live: false,
     text: "text-neutral-400",
@@ -120,10 +125,10 @@ const IELTS_STAGES = [
   },
   {
     key: "ielts-writing",
-    step: "STEP 3",
+    step: "WRITING & SPEAKING",
     icon: "✍️",
     title: "라이팅·스피킹",
-    sub: "템플릿으로 쓴다",
+    sub: "아직 열지 않은 영역",
     href: "/ielts",
     live: false,
     text: "text-neutral-400",
