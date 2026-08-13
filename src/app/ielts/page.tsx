@@ -1,6 +1,7 @@
 import { loadIeltsSets } from "@/lib/ielts-loader";
+import { loadIeltsReadingSets } from "@/lib/ielts-reading-loader";
 import { trapTypeOf, type IeltsSetSummary } from "@/game/ielts";
-import IeltsHome from "@/components/ielts/IeltsHome";
+import IeltsHome, { type ReadingSummary } from "@/components/ielts/IeltsHome";
 
 export const dynamic = "force-dynamic";
 
@@ -10,7 +11,20 @@ export const metadata = {
 };
 
 export default async function IeltsPage() {
-  const sets = await loadIeltsSets();
+  const [sets, reading] = await Promise.all([loadIeltsSets(), loadIeltsReadingSets()]);
+
+  const readingSummaries: ReadingSummary[] = reading.map((s) => ({
+    id: s.id,
+    passageNo: s.passageNo,
+    band: s.band,
+    title: s.title,
+    titleKo: s.titleKo,
+    taskType: s.taskType,
+    questions: s.questions.length,
+    traps: s.questions
+      .map((q) => trapTypeOf(q.category))
+      .filter((t, i, arr) => arr.indexOf(t) === i),
+  }));
 
   // 화면엔 문항 내용이 필요 없다 — 목록용 경량 요약만 넘긴다
   const summaries: IeltsSetSummary[] = sets.map((s) => ({
@@ -26,5 +40,5 @@ export default async function IeltsPage() {
       .filter((t, i, arr) => arr.indexOf(t) === i),
   }));
 
-  return <IeltsHome sets={summaries} />;
+  return <IeltsHome sets={summaries} reading={readingSummaries} />;
 }

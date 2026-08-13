@@ -113,15 +113,15 @@ const IELTS_STAGES = [
     step: "READING",
     icon: "📖",
     title: "리딩",
-    sub: "아직 열지 않은 영역",
+    sub: "T/F/NG · 제목 매칭",
     href: "/ielts",
-    live: false,
-    text: "text-neutral-400",
-    tint: "bg-neutral-100",
-    rail: "bg-neutral-300",
-    bar: "bg-neutral-300",
-    ringOn: "ring-neutral-900/10",
-    glow: "shadow-neutral-900/[0.04]",
+    live: true,
+    text: "text-teal-600",
+    tint: "bg-teal-50",
+    rail: "bg-teal-500",
+    bar: "bg-gradient-to-r from-teal-500 to-emerald-500",
+    ringOn: "ring-teal-500/40",
+    glow: "shadow-teal-500/[0.12]",
   },
   {
     key: "ielts-writing",
@@ -167,6 +167,8 @@ export default function LandingPage() {
   const [service, setService] = useState<ServiceId>("toeic");
   const [ieltsSets, setIeltsSets] = useState<IeltsSetSummary[] | null>(null);
   const [ieltsSum, setIeltsSum] = useState<IeltsSummary | null>(null);
+  /** 리딩은 별도 API — 학습한 지문 수 / 전체 지문 수 */
+  const [ieltsRead, setIeltsRead] = useState<{ studied: number; total: number } | null>(null);
 
   const [view, setView] = useState<MasteryView | null>(null);
   const [pattern, setPattern] = useState<{
@@ -228,6 +230,18 @@ export default function LandingPage() {
         setIeltsSum(ieltsSummary(loadIelts(), light));
       })
       .catch(() => setIeltsSets([]));
+
+    fetch("/api/ielts/reading")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        const raw = (d?.sets ?? []) as { id: string }[];
+        const p = loadIelts();
+        setIeltsRead({
+          studied: raw.filter((s) => p.sets[s.id]).length,
+          total: raw.length,
+        });
+      })
+      .catch(() => setIeltsRead(null));
   }, []);
 
   function pickService(id: ServiceId) {
@@ -268,14 +282,16 @@ export default function LandingPage() {
         if (!s.live) {
           return { ...s, stat: "준비 중", pct: 0, state: "todo" as const };
         }
-        const pct = totalSets > 0 ? Math.round((studied / totalSets) * 100) : 0;
+        // 리딩은 지문 단위, 리스닝은 세트 단위로 센다
+        const isRead = s.key === "ielts-reading";
+        const done = isRead ? (ieltsRead?.studied ?? 0) : studied;
+        const all = isRead ? (ieltsRead?.total ?? 0) : totalSets;
+        const unit = isRead ? "지문" : "세트";
         return {
           ...s,
-          stat: totalSets > 0 ? `${studied} / ${totalSets} 세트` : "준비 중",
-          pct,
-          state: (studied >= totalSets && totalSets > 0
-            ? "done"
-            : "current") as LandingCard["state"],
+          stat: all > 0 ? `${done} / ${all} ${unit}` : "준비 중",
+          pct: all > 0 ? Math.round((done / all) * 100) : 0,
+          state: (all > 0 && done >= all ? "done" : "current") as LandingCard["state"],
         };
       });
     }
@@ -290,7 +306,7 @@ export default function LandingPage() {
       };
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [service, journey, pattern, ieltsSum, ieltsSets]);
+  }, [service, journey, pattern, ieltsSum, ieltsSets, ieltsRead]);
 
   /** 지금 해야 할 일 한 줄 */
   const hint =

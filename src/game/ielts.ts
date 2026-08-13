@@ -56,6 +56,32 @@ export interface IeltsQuestion {
   category: string;
 }
 
+/** 리딩 지문 한 단락 — Heading Matching을 위해 A·B·C… 라벨을 갖는다 */
+export interface IeltsReadingParagraph {
+  /** 단락 라벨 (A, B, C …). 없으면 라벨 없는 산문 */
+  label?: string;
+  en: string;
+  ko: string;
+}
+
+/**
+ * 리딩 세트 — 리스닝과 같은 채점 엔진(gradeGap/gradeChoice)을 그대로 쓴다.
+ * 다른 점은 음원 대신 **지문**을 읽는다는 것뿐이라, 덫·밴드 체계를 공유한다.
+ */
+export interface IeltsReadingSet {
+  id: string;
+  skill: "READING";
+  /** 학술 리딩은 지문 3개(Passage 1~3)로 구성된다 */
+  passageNo: 1 | 2 | 3;
+  band: number;
+  title: string;
+  titleKo: string;
+  /** 문항 형식 라벨 (True/False/Not Given, Heading Matching …) */
+  taskType: string;
+  paragraphs: IeltsReadingParagraph[];
+  questions: IeltsQuestion[];
+}
+
 export interface IeltsListeningSet {
   id: string;
   skill: "LISTENING";
@@ -83,7 +109,10 @@ export type IeltsTrapType =
   | "MAP"
   | "MATCHING"
   | "DISTRACTOR"
-  | "DETAIL";
+  | "DETAIL"
+  /* ── 리딩 전용 덫 ── */
+  | "NOTGIVEN"
+  | "QUALIFIER";
 
 export const IELTS_TRAPS: Record<
   IeltsTrapType,
@@ -129,6 +158,16 @@ export const IELTS_TRAPS: Record<
     icon: "🎧",
     hint: "빈칸 앞뒤 단어를 신호로 삼아 대기한다.",
   },
+  NOTGIVEN: {
+    label: "진위·미언급",
+    icon: "❓",
+    hint: "FALSE는 지문이 **반대로 말한 것**, NOT GIVEN은 **아예 말하지 않은 것**. 상식으로 메우지 않는다.",
+  },
+  QUALIFIER: {
+    label: "한정어",
+    icon: "⚖️",
+    hint: "all·only·always·never 같은 한정어 하나가 진술 전체를 뒤집는다.",
+  },
 };
 
 const TRAP_ALIASES: Record<string, IeltsTrapType> = {
@@ -153,6 +192,11 @@ const TRAP_ALIASES: Record<string, IeltsTrapType> = {
   함정: "DISTRACTOR",
   세부정보: "DETAIL",
   세부: "DETAIL",
+  "진위·미언급": "NOTGIVEN",
+  미언급: "NOTGIVEN",
+  진위: "NOTGIVEN",
+  한정어: "QUALIFIER",
+  극단어: "QUALIFIER",
 };
 
 export function trapTypeOf(category: string | undefined): IeltsTrapType {

@@ -25,7 +25,8 @@ type Phase = "intro" | "play" | "result";
 /** 문항 하나의 판정 — 정답/오답이 아니라 "덫을 막았는가"로 말한다 */
 type Verdict = "correct" | "typo" | "wrong";
 
-const LETTER = ["A", "B", "C", "D"];
+// Heading Matching처럼 보기가 4개를 넘는 유형이 있어 A~J까지 둔다
+const LETTER = "ABCDEFGHIJ".split("");
 const EASE = [0.22, 1, 0.36, 1] as const;
 
 function mmss(sec: number) {

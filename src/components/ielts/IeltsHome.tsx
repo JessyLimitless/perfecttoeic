@@ -18,30 +18,49 @@ import TrapIcon, { SnareIcon } from "./TrapIcon";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
-/** PRD 4대 영역 — 지금 열린 것과 준비 중인 것을 숨기지 않고 그대로 보여준다 */
-const SKILLS = [
-  { key: "L", icon: "🎧", name: "Listening", ko: "리스닝", live: true },
-  { key: "R", icon: "📖", name: "Reading", ko: "리딩", live: false },
-  { key: "W", icon: "✍️", name: "Writing", ko: "라이팅", live: false },
-  { key: "S", icon: "🗣", name: "Speaking", ko: "스피킹", live: false },
-] as const;
+/** 리딩 세트 요약 — 리스닝의 part 대신 passageNo를 쓴다 */
+export interface ReadingSummary {
+  id: string;
+  passageNo: 1 | 2 | 3;
+  band: number;
+  title: string;
+  titleKo: string;
+  taskType: string;
+  questions: number;
+  traps: IeltsTrapType[];
+}
 
-export default function IeltsHome({ sets }: { sets: IeltsSetSummary[] }) {
+export default function IeltsHome({
+  sets,
+  reading = [],
+}: {
+  sets: IeltsSetSummary[];
+  reading?: ReadingSummary[];
+}) {
   const reduce = useReducedMotion();
   const [progress, setProgress] = useState<IeltsProgress | null>(null);
   const [summary, setSummary] = useState<IeltsSummary | null>(null);
   const [openTraps, setOpenTraps] = useState(false);
 
+  /** 밴드·방어율은 리스닝과 리딩을 합산한다 — 같은 채점 체계이므로 */
   useEffect(() => {
     const p = loadIelts();
     setProgress(p);
     setSummary(
-      ieltsSummary(
-        p,
-        sets.map((s) => ({ id: s.id, questions: s.questions })),
-      ),
+      ieltsSummary(p, [
+        ...sets.map((s) => ({ id: s.id, questions: s.questions })),
+        ...reading.map((s) => ({ id: s.id, questions: s.questions })),
+      ]),
     );
-  }, [sets]);
+  }, [sets, reading]);
+
+  /** 4대 영역 — 콘텐츠가 실제로 있는 영역만 열린 것으로 표시한다 */
+  const SKILLS = [
+    { key: "L", icon: "🎧", ko: "리스닝", count: sets.length, live: sets.length > 0 },
+    { key: "R", icon: "📖", ko: "리딩", count: reading.length, live: reading.length > 0 },
+    { key: "W", icon: "✍️", ko: "라이팅", count: 0, live: false },
+    { key: "S", icon: "🗣", ko: "스피킹", count: 0, live: false },
+  ] as const;
 
   const parts = sets
     .map((s) => s.part)
@@ -160,7 +179,10 @@ export default function IeltsHome({ sets }: { sets: IeltsSetSummary[] }) {
                 IELTS 4대 영역
               </p>
               <p className="text-[11px] font-bold text-neutral-400">
-                리스닝만 열려 있습니다
+                {SKILLS.filter((s) => s.live)
+                  .map((s) => s.ko)
+                  .join(" · ")}{" "}
+                열림
               </p>
             </div>
             <div className="grid grid-cols-4 gap-2">
@@ -196,9 +218,11 @@ export default function IeltsHome({ sets }: { sets: IeltsSetSummary[] }) {
                       s.live ? "text-teal-600" : "text-neutral-300"
                     }`}
                   >
-                    {s.live
-                      ? `${parts.length ? `Part 1~${Math.max(...parts)} · ` : ""}${sets.length}세트`
-                      : "준비 중"}
+                    {!s.live
+                      ? "준비 중"
+                      : s.key === "L"
+                        ? `${parts.length ? `Part 1~${Math.max(...parts)} · ` : ""}${s.count}세트`
+                        : `${s.count}지문`}
                   </p>
                 </div>
               ))}
@@ -370,7 +394,101 @@ export default function IeltsHome({ sets }: { sets: IeltsSetSummary[] }) {
           );
         })}
 
-        {sets.length === 0 && (
+        {/* ── 리딩 지문 ── */}
+        {reading.length > 0 && (
+          <motion.section {...rise(0.34)} className="mt-10">
+            <div className="flex items-baseline justify-between px-1">
+              <h2 className="flex items-baseline gap-2 text-[15px] font-black tracking-[-0.02em] text-neutral-900">
+                <span className="inline-flex h-[22px] items-center rounded-md bg-teal-600 px-2 text-[11px] font-black text-white">
+                  READING
+                </span>
+                학술 지문
+              </h2>
+              <span className="text-[11.5px] font-bold tabular-nums text-neutral-400">
+                {reading.length}지문
+              </span>
+            </div>
+
+            <div className="mt-3 space-y-2.5">
+              {reading.map((s) => {
+                const rec = progress?.sets[s.id];
+                const done = !!rec;
+                const band = rec ? bandFor(rec.bestCorrect, rec.total) : 0;
+                return (
+                  <Link
+                    key={s.id}
+                    href={`/ielts/reading/${s.id}`}
+                    className="group relative block overflow-hidden rounded-2xl bg-white p-4 shadow-[0_1px_3px_rgba(16,24,40,0.04),0_14px_32px_-24px_rgba(16,24,40,0.3)] ring-1 ring-neutral-900/[0.06] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_3px_8px_rgba(16,24,40,0.06),0_26px_50px_-26px_rgba(16,24,40,0.4)] hover:ring-teal-500/25 sm:p-5"
+                  >
+                    <span
+                      aria-hidden
+                      className={`absolute inset-y-0 left-0 w-1 ${
+                        done
+                          ? "bg-gradient-to-b from-teal-500 to-emerald-500"
+                          : "bg-neutral-200 group-hover:bg-teal-400"
+                      } transition-colors`}
+                    />
+                    <div className="flex items-start gap-3 pl-1.5">
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center gap-1.5">
+                          <span className="rounded-md bg-neutral-100 px-2 py-0.5 text-[10.5px] font-black tabular-nums text-neutral-600">
+                            Passage {s.passageNo}
+                          </span>
+                          <span className="rounded-md bg-teal-50 px-2 py-0.5 text-[10.5px] font-black text-teal-700 ring-1 ring-teal-500/15">
+                            {s.taskType}
+                          </span>
+                          {done && (
+                            <span className="rounded-md bg-emerald-50 px-2 py-0.5 text-[10.5px] font-black tabular-nums text-emerald-700 ring-1 ring-emerald-500/15">
+                              ✓ {rec!.bestCorrect}/{rec!.total}
+                            </span>
+                          )}
+                        </div>
+                        <h3 className="mt-2 text-[15.5px] font-black tracking-[-0.02em] text-neutral-900">
+                          {s.titleKo}
+                        </h3>
+                        <p className="mt-0.5 truncate text-[12.5px] text-neutral-400">
+                          {s.title}
+                        </p>
+                        <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
+                          {s.traps.slice(0, 5).map((t) => (
+                            <span
+                              key={t}
+                              title={IELTS_TRAPS[t].label}
+                              className="grid h-6 w-6 place-items-center rounded-lg bg-neutral-50 text-neutral-400 ring-1 ring-neutral-900/[0.04] transition group-hover:bg-teal-50 group-hover:text-teal-600"
+                            >
+                              <TrapIcon type={t} className="h-3.5 w-3.5" />
+                            </span>
+                          ))}
+                          <span className="ml-1 text-[11.5px] font-bold tabular-nums text-neutral-400">
+                            {s.questions}문항
+                          </span>
+                        </div>
+                      </div>
+                      <span className="shrink-0 self-center text-right">
+                        {done ? (
+                          <span className="flex flex-col items-end">
+                            <span className="text-[19px] font-black leading-none tabular-nums text-teal-600">
+                              {band.toFixed(1)}
+                            </span>
+                            <span className="mt-1 text-[10px] font-black tracking-[0.06em] text-neutral-300">
+                              BAND
+                            </span>
+                          </span>
+                        ) : (
+                          <span className="grid h-9 w-9 place-items-center rounded-full bg-neutral-50 text-[15px] text-neutral-300 ring-1 ring-neutral-900/[0.04] transition group-hover:bg-teal-600 group-hover:text-white group-hover:ring-teal-600">
+                            →
+                          </span>
+                        )}
+                      </span>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </motion.section>
+        )}
+
+        {sets.length === 0 && reading.length === 0 && (
           <p className="mt-10 rounded-2xl bg-white px-5 py-8 text-center text-[13.5px] font-bold text-neutral-400 ring-1 ring-neutral-900/[0.06]">
             아직 콘텐츠가 없습니다.
           </p>
