@@ -1,11 +1,11 @@
 /**
- * 서비스 선택 — 만점토익 / 만점 아이엘츠.
+ * 서비스 선택 — 만점토익 / 만점 아이엘츠 / 만점 투자자산운용사.
  *
- * 두 서비스는 콘텐츠·진도·엔진이 완전히 분리된 별개 앱이지만 **입구는 하나**다.
+ * 세 서비스는 콘텐츠·진도·엔진이 완전히 분리된 별개 앱이지만 **입구는 하나**다.
  * 첫 화면에서 매번 고르게 하면 클릭이 늘 뿐이라, 마지막 선택을 기억했다가 그대로 연다.
  */
 
-export type ServiceId = "toeic" | "ielts";
+export type ServiceId = "toeic" | "ielts" | "cim";
 
 const KEY = "toeic-service-v1";
 
@@ -15,13 +15,14 @@ export const SERVICES: Record<
 > = {
   toeic: { label: "만점토익", short: "토익", icon: "📘" },
   ielts: { label: "만점 아이엘츠", short: "아이엘츠", icon: "📙" },
+  cim: { label: "만점 투자자산운용사", short: "투운사", icon: "📗" },
 };
 
 export function loadService(): ServiceId {
   if (typeof window === "undefined") return "toeic";
   try {
     const raw = window.localStorage.getItem(KEY);
-    return raw === "ielts" ? "ielts" : "toeic";
+    return raw && raw in SERVICES ? (raw as ServiceId) : "toeic";
   } catch {
     return "toeic";
   }

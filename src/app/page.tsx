@@ -31,6 +31,14 @@ import {
   type IeltsSummary,
   type IeltsSetSummary,
 } from "@/game/ielts";
+import {
+  loadCim,
+  buildCimView,
+  CIM_PASS_RATE,
+  CIM_EXAM_TOTAL,
+  type CimQuestionRef,
+  type CimView,
+} from "@/game/cim";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -140,7 +148,57 @@ const IELTS_STAGES = [
   },
 ] as const;
 
-/** 두 서비스가 같은 껍데기를 쓰도록 정규화한 박스 모델 */
+/**
+ * 만점 투자자산운용사 3박스 — 여기서는 "단계"가 아니라 **오늘 할 일**이다.
+ * 1,000문제를 처음부터 순서대로 도는 방식으로는 붙지 않는다.
+ * 그래서 첫 칸이 진도가 아니라 복습이다.
+ */
+const CIM_STAGES = [
+  {
+    key: "cim-review",
+    step: "REVIEW",
+    icon: "🔁",
+    title: "오늘의 복습",
+    sub: "잊기 직전에 다시",
+    href: "/cim/study?mode=review",
+    text: "text-violet-600",
+    tint: "bg-violet-50",
+    rail: "bg-violet-500",
+    bar: "bg-gradient-to-r from-violet-500 to-fuchsia-500",
+    ringOn: "ring-violet-500/40",
+    glow: "shadow-violet-500/[0.12]",
+  },
+  {
+    key: "cim-fresh",
+    step: "NEW",
+    icon: "📗",
+    title: "스테이지",
+    sub: "5문항씩 한 판",
+    href: "/cim",
+    text: "text-blue-600",
+    tint: "bg-blue-50",
+    rail: "bg-blue-500",
+    bar: "bg-gradient-to-r from-blue-500 to-sky-400",
+    ringOn: "ring-blue-500/40",
+    glow: "shadow-blue-500/[0.12]",
+  },
+  {
+    key: "cim-verdict",
+    step: "VERDICT",
+    icon: "🎯",
+    title: "합격 판정",
+    sub: "지금 시험 보면",
+    href: "/cim",
+    text: "text-emerald-600",
+    tint: "bg-emerald-50",
+    rail: "bg-emerald-500",
+    bar: "bg-gradient-to-r from-emerald-500 to-teal-400",
+    ringOn: "ring-emerald-500/40",
+    glow: "shadow-emerald-500/[0.12]",
+  },
+] as const;
+
+/** 세 서비스가 같은 껍데기를 쓰도록 정규화한 박스 모델 */
 interface LandingCard {
   key: string;
   step: string;
@@ -169,6 +227,9 @@ export default function LandingPage() {
   const [ieltsSum, setIeltsSum] = useState<IeltsSummary | null>(null);
   /** 리딩은 별도 API — 학습한 지문 수 / 전체 지문 수 */
   const [ieltsRead, setIeltsRead] = useState<{ studied: number; total: number } | null>(null);
+
+  /** 투자자산운용사 — 문항 인덱스(과목만) + 로컬 학습 기록에서 파생한 판정 */
+  const [cimView, setCimView] = useState<CimView | null>(null);
 
   const [view, setView] = useState<MasteryView | null>(null);
   const [pattern, setPattern] = useState<{
@@ -242,6 +303,16 @@ export default function LandingPage() {
         });
       })
       .catch(() => setIeltsRead(null));
+
+    // 투자자산운용사 진도 — 인덱스만 받아 localStorage 기록과 합친다
+    fetch("/api/cim?index=1")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        const index = (d?.index ?? []) as CimQuestionRef[];
+        if (index.length === 0) return;
+        setCimView(buildCimView(loadCim(), index));
+      })
+      .catch(() => setCimView(null));
   }, []);
 
   function pickService(id: ServiceId) {
@@ -275,6 +346,48 @@ export default function LandingPage() {
 
   /** 선택된 서비스의 3박스 */
   const cards: LandingCard[] = useMemo(() => {
+    if (service === "cim") {
+      const v = cimView;
+      const score = v?.predictedScore ?? null;
+      // 다음에 할 일 하나만 "지금 여기"로 — 복습이 밀렸으면 언제나 복습이 먼저다
+      const focus = !v || v.due > 0 ? "cim-review" : v.fresh > 0 ? "cim-fresh" : "cim-verdict";
+      return CIM_STAGES.map((s) => {
+        if (s.key === "cim-review") {
+          return {
+            ...s,
+            stat: v ? `${v.due}문항` : "—",
+            pct: v && v.studied > 0 ? Math.round((v.due / v.studied) * 100) : 0,
+            state: (v && v.due === 0 && v.studied > 0
+              ? "done"
+              : focus === s.key
+                ? "current"
+                : "todo") as LandingCard["state"],
+          };
+        }
+        if (s.key === "cim-fresh") {
+          return {
+            ...s,
+            stat: v ? `${v.studied} / ${v.total}` : "—",
+            pct: v ? Math.round(v.confidence * 100) : 0,
+            state: (v && v.fresh === 0
+              ? "done"
+              : focus === s.key
+                ? "current"
+                : "todo") as LandingCard["state"],
+          };
+        }
+        return {
+          ...s,
+          stat: score === null ? "미응시" : `예상 ${Math.round(score)}점`,
+          pct: score === null ? 0 : Math.round(score),
+          state: (v?.predictedPass
+            ? "done"
+            : focus === s.key
+              ? "current"
+              : "todo") as LandingCard["state"],
+        };
+      });
+    }
     if (service === "ielts") {
       const studied = ieltsSum?.studied ?? 0;
       const totalSets = ieltsSum?.totalSets ?? ieltsSets?.length ?? 0;
@@ -306,17 +419,33 @@ export default function LandingPage() {
       };
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [service, journey, pattern, ieltsSum, ieltsSets, ieltsRead]);
+  }, [service, journey, pattern, ieltsSum, ieltsSets, ieltsRead, cimView]);
 
   /** 지금 해야 할 일 한 줄 */
+  const cimHint = () => {
+    if (!cimView || cimView.studied === 0) {
+      return `기출 ${cimView?.total ?? 0}문제 준비됨 · 20문항만 풀어도 합격 판정이 나와요`;
+    }
+    const score = cimView.predictedScore;
+    const head = score === null ? "판정 준비 중" : `예상 ${Math.round(score)}점`;
+    if (cimView.failing.length > 0) {
+      return `${head} · 제${cimView.failing.join("·제")}과목 과락 위험`;
+    }
+    if (cimView.due > 0) return `${head} · 오늘 복습 ${cimView.due}문항`;
+    return `${head} · 합격선 ${CIM_PASS_RATE * CIM_EXAM_TOTAL}점`;
+  };
+
   const hint =
-    service === "ielts"
-      ? ieltsSum && ieltsSum.studied > 0
-        ? `함정 방어율 ${ieltsSum.trapRate}% · 추정 Band ${ieltsSum.band.toFixed(1)}`
-        : `덫을 막는 훈련부터 시작하세요 · ${ieltsSum?.totalSets ?? ieltsSets?.length ?? 0}세트 준비됨`
-      : journeyHint(journey);
+    service === "cim"
+      ? cimHint()
+      : service === "ielts"
+        ? ieltsSum && ieltsSum.studied > 0
+          ? `함정 방어율 ${ieltsSum.trapRate}% · 추정 Band ${ieltsSum.band.toFixed(1)}`
+          : `덫을 막는 훈련부터 시작하세요 · ${ieltsSum?.totalSets ?? ieltsSets?.length ?? 0}세트 준비됨`
+        : journeyHint(journey);
 
   const isIelts = service === "ielts";
+  const isCim = service === "cim";
 
   const rise = (d: number) =>
     reduce
@@ -333,7 +462,12 @@ export default function LandingPage() {
       <section className="relative flex min-h-[56vh] flex-col justify-center overflow-hidden rounded-b-[2.5rem] bg-neutral-950 pb-32 pt-10 sm:pb-40 sm:pt-14 lg:min-h-[60vh]">
         {/* 앰비언트 — 서비스 아이덴티티를 빛으로 */}
         <div aria-hidden className="pointer-events-none absolute inset-0">
-          {isIelts ? (
+          {isCim ? (
+            <>
+              <div className="absolute left-1/2 top-[-180px] h-[420px] w-[680px] -translate-x-1/2 rounded-full bg-blue-500/25 blur-[110px]" />
+              <div className="absolute right-[8%] top-[60px] h-[260px] w-[320px] rounded-full bg-sky-500/[0.18] blur-[100px]" />
+            </>
+          ) : isIelts ? (
             <>
               <div className="absolute left-1/2 top-[-180px] h-[420px] w-[680px] -translate-x-1/2 rounded-full bg-teal-500/25 blur-[110px]" />
               <div className="absolute right-[8%] top-[60px] h-[260px] w-[320px] rounded-full bg-emerald-500/[0.18] blur-[100px]" />
@@ -399,12 +533,17 @@ export default function LandingPage() {
             <div className="flex items-center justify-center gap-3">
               <Mark service={service} />
               <h1 className="text-[38px] font-black leading-none tracking-[-0.045em] text-white sm:text-[52px]">
-                {isIelts ? "만점 아이엘츠" : "퍼펙토익"}
+                {isCim ? "만점 투자자산운용사" : isIelts ? "만점 아이엘츠" : "퍼펙토익"}
               </h1>
             </div>
 
             <p className="mx-auto mt-5 max-w-md text-balance text-[15px] font-medium leading-relaxed tracking-[-0.01em] text-white/45 sm:text-[17px]">
-              {isIelts ? (
+              {isCim ? (
+                <>
+                  한 바퀴 도는 게 아니다 ·{" "}
+                  <b className="font-black text-white/80">잊기 직전에</b> 다시 만난다
+                </>
+              ) : isIelts ? (
                 <>
                   안 들려서 틀리는 게 아니다 ·{" "}
                   <b className="font-black text-white/80">덫에 걸려서</b> 틀린다
@@ -423,7 +562,7 @@ export default function LandingPage() {
             <span className="inline-flex max-w-full items-center gap-2 rounded-full bg-white/[0.06] px-4 py-2 text-[12.5px] font-bold text-white/70 ring-1 ring-white/10 backdrop-blur">
               <span
                 className={`h-1.5 w-1.5 shrink-0 animate-pulse rounded-full ${
-                  isIelts ? "bg-teal-400" : "bg-emerald-400"
+                  isCim ? "bg-blue-400" : isIelts ? "bg-teal-400" : "bg-emerald-400"
                 }`}
               />
               <span className="truncate">{hint}</span>
@@ -568,8 +707,24 @@ export default function LandingPage() {
   );
 }
 
-/** 워드마크 — 3단계 3색을 품은 미니멀 마크. 아이엘츠는 밴드 상승을 뜻하는 3단 계단. */
+/**
+ * 워드마크 — 3단계 3색을 품은 미니멀 마크.
+ * 아이엘츠는 밴드 상승을 뜻하는 3단 계단, 투자자산운용사는 합격선을 넘는 게이지.
+ */
 function Mark({ service = "toeic" }: { service?: ServiceId }) {
+  if (service === "cim") {
+    return (
+      <span
+        aria-hidden
+        className="relative inline-flex h-11 w-11 items-center justify-center rounded-[14px] bg-white/[0.08] ring-1 ring-white/15 backdrop-blur sm:h-14 sm:w-14"
+      >
+        <span className="h-1.5 w-6 rounded-full bg-white/15 sm:w-7">
+          <span className="block h-1.5 w-[70%] rounded-full bg-gradient-to-r from-blue-400 to-sky-300" />
+        </span>
+        <span className="absolute bottom-2.5 left-1/2 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-emerald-400 sm:bottom-3" />
+      </span>
+    );
+  }
   if (service === "ielts") {
     return (
       <span

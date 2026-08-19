@@ -20,6 +20,7 @@
  *   강조 그라데이션     text-gradient / text-gradient-rose (아래 정의 사용)
  *
  *   만점 아이엘츠         teal      ← 별개 서비스의 정체성. 토익 브랜드(indigo)·LC(cyan)와 겹치지 않게
+ *   만점 투자자산운용사    blue      ← 세 번째 서비스. teal(아이엘츠)·indigo(토익)와 나란히 놓아도 구분되게
  *
  * 예외: 몸풀기(warmup)의 모드별 컬러(읽기 인디고 / 암기 앰버·바이올렛 / 순서 푸시아)와
  *       책 커버 색은 **의도된 정체성**이므로 유지한다.
@@ -151,6 +152,26 @@ body {
     box-shadow: none;
   }
 
+  /* 만점 투자자산운용사 CTA — btn-primary와 같은 문법에 색만 blue */
+  .btn-blue {
+    @apply relative rounded-2xl px-6 py-3.5 text-[15px] font-semibold text-white transition
+      active:scale-[0.99];
+    background-image: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.18) inset,
+      0 10px 28px -10px rgba(37, 99, 235, 0.6);
+  }
+  .btn-blue:hover {
+    background-image: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.18) inset,
+      0 14px 32px -10px rgba(37, 99, 235, 0.7);
+  }
+  .btn-blue:disabled {
+    @apply cursor-not-allowed opacity-40;
+    box-shadow: none;
+  }
+
   .label {
     @apply text-[11px] font-semibold uppercase tracking-[0.12em] text-neutral-400;
   }
@@ -174,6 +195,11 @@ body {
   .text-gradient-teal {
     @apply bg-clip-text text-transparent;
     background-image: linear-gradient(120deg, #0d9488 0%, #14b8a6 55%, #10b981 100%);
+  }
+  /* 만점 투자자산운용사 강조 텍스트 */
+  .text-gradient-blue {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(120deg, #1d4ed8 0%, #3b82f6 55%, #0ea5e9 100%);
   }
   /* 어두운 배경 위 밝은 그라데이션 텍스트 */
   .text-gradient-light {
