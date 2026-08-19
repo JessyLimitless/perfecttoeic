@@ -726,3 +726,17 @@ ightarrow`의 백슬래시가 **CR(0x0D)로 깨져** 줄 중간에 박힌 것(`	
 - **알려진 사소한 흠**: 인게임 헤더의 "스테이지 1 / 20" 과 "Q1–5" 사이 여백이 좁음(innerText 기준 `20Q1–5`).
 - **배포 ✅ 완료**: 커밋 `34712dc` push → EC2 수동 재배포([[cloud5-manual-redeploy]], 대시보드 건너뛰고 SSH). source `git pull`(HEAD=34712dc 대조) → `:prev` 태깅 → 이미지 빌드 → 컨테이너 교체(포트 10011) → startup 빌드 후 Ready. **실서버 검증**: `/cim`·`/cim/study?stage=1`·`/api/cim`(2세트·100문항)·`/`·`/learn`·`/rank`·`/ielts` 전부 200, 랜딩 서비스 3종(토익·아이엘츠·투운사) 노출, **실제 스테이지1 5문항 완주 → 🏆 클리어** 확인, 페이지 에러 0. rollback `:prev` 확보, 임시 키 삭제. 루트 원본 md 2개는 관례대로 미커밋.
 - **다음 후보**: 나머지 900문제 업로드 후 검증 / 과목별 약점 리포트(토익 `skills.ts` 방식) / 실전 모의고사 100문항 2시간 모드 / 오답노트 / 스테이지 연출 강화(콤보·별점) / 커밋·배포.
+
+### 세션 로그 — 2026-08-19 (43차: git 저장소 복구 + 투운사 오답노트 신설) ✅ 완료·배포됨
+
+- **⚠️ git 저장소 손상 복구(먼저 처리)**: 세션 시작 시 `git log`·`git status`가 전부 깨져 있었음(`fatal: your current branch appears to be broken`, 모든 파일이 `A`로 보임). 원인 = **`.git/refs/heads/main`·`refs/remotes/origin/main` 파일이 공백 41바이트로 0 채워짐**(Windows 비정상 종료 전형, `git fsck`가 `invalid sha1 pointer 0000…`). 커밋 객체는 전부 무사(dangling으로 보임) → **`.git/logs/HEAD`(reflog)의 마지막 값 `ba0e620`으로 두 ref 파일을 직접 재작성**해 복구(`git update-ref`는 "reference broken"이라 거부 → 파일 직접 쓰기). 복구 후 `git fsck --connectivity-only` 에러 0, working tree 정상(루트 원본 데이터 md 16개만 untracked). **재발 시 같은 방법**: reflog 마지막 SHA → `.git/refs/heads/main`에 `<sha>\n` 기록.
+- **신규 「오답노트」 `/cim/notes`**(사용자 선택): 그동안 투운사는 "틀린 문제" 모드로 **다시 푸는 것**만 있었고, 문제·내 답·해설을 나란히 놓고 **읽는 복기 경로가 없었다**. 다시 풀면 또 찍어서 맞힐 수 있지만 복기는 왜 틀렸는지를 남긴다 → 이 화면은 **채점하지 않는 읽기 전용**.
+  - `cim.ts`: `CimCard.pick`(마지막에 고른 선지) 기록 추가 — **옵셔널이라 기존 저장본 그대로 읽힘**(없으면 "내 답" 표시 생략 + 안내문). `gradeCard`/`answerCim`에 pick 인수(기존 호출 호환), 신규 `buildNotes`(정렬 3종)·`noteCounts`.
+  - **한 번 틀린 문항은 맞히기 시작한 뒤에도 노트에 남는다**(시험장에서 또 틀리는 자리라서). 대신 `settled`(잡은 오답)로 갈라 표시.
+  - UI `CimNotes.tsx`: 요약(총/못 잡음/잡은 오답 + **과목별 오답 분포 바**) · 과목 필터 · "아직 못 잡은 오답만" · 정렬(많이 틀린/최근/번호) · 전체 펼치기 · 항목 펼치면 지문(stimulus)+선지(정답 emerald·**내 답 rose**)+해설. 오답=rose 팔레트 계약 준수.
+  - 진입: `/cim` 홈 「📕 오답노트」 카드(총 오답 수·못 잡음/잡은 오답), 세션 요약의 `오답노트 (N)` 버튼, 스테이지 결과(만점 아닐 때) 복기 링크.
+  - `Rich`·`ChoiceBadge`를 `components/cim/atoms.tsx`로 분리 — 풀이 화면과 **같은 모양**으로 렌더(노트에서 본 문제를 시험장에서 알아보게).
+- **검증**: `tsc --noEmit` 0 + 프로덕션 build 통과(`/cim/notes` 라우트 생성). 프로덕션 서버(3811)+puppeteer로 **실제 스테이지 1 플레이 → 5문항 pick 전부 기록·오답 4** 확인, 홈 카드·노트 요약·펼침(내 답/정답/해설)·과목 필터·"못 잡은 오답만"(4→3)·구버전 저장본(pick 없음) 안내·**한 번도 안 틀린 문항은 노트에서 제외**·데스크탑/모바일 스크린샷 육안, 페이지 에러 0.
+- **배포**: 커밋 `b6122a1` push → EC2 수동 재배포([[cloud5-manual-redeploy]], 대시보드 건너뛰고 SSH). source `git pull`(HEAD=b6122a1 대조) → `:prev` 태깅 → 이미지 빌드 → 컨테이너 교체(포트 10011) → **Ready in 1226ms**(현재 `scripts/start.mjs`가 이미지 빌드 산출물을 재사용해 startup이 빨라짐 — 예전 ~3분 startup 빌드와 다름). 실서버 `/`·`/cim`·`/cim/notes`·`/cim/study?stage=1`·`/api/cim`·`/rank`·`/game`·`/patterns` 전부 **200**. rollback `:prev` 확보, 임시 키 삭제.
+- **알려진 스케일 한계**: 오답 여부가 localStorage에만 있어 서버에서 미리 못 거른다 → `/cim/notes`가 **전 문항을 클라이언트로 보낸다**(현재 100문항 = 85KB. 풀이 화면도 같은 방식). 1,000문제가 되면 ~850KB → 그때는 노트에 필요한 id만 먼저 받고 본문은 지연 로드하는 편이 낫다.
+- **다음 후보**: 나머지 900문제 업로드 후 검증 / 과목별 약점 리포트 / 실전 모의고사 2시간 모드 / 스테이지 연출 강화(콤보·별점) / 오답노트 인쇄·PDF 내보내기.
