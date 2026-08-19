@@ -7,6 +7,7 @@ import {
   loadCim,
   buildCimView,
   modeCounts,
+  noteCounts,
   resetCim,
   buildStageViews,
   nextStageNo,
@@ -59,6 +60,7 @@ export default function CimHome({
     () => (state ? modeCounts(state, index, subject) : null),
     [state, index, subject]
   );
+  const notes = useMemo(() => (state ? noteCounts(state, index) : null), [state, index]);
   const stageViews: CimStageView[] | null = useMemo(
     () => (state ? buildStageViews(state, stages) : null),
     [state, stages]
@@ -330,6 +332,25 @@ export default function CimHome({
             <b className="text-neutral-700">틀린 문제</b>만 모아 풉니다. 맞힌 문제는 1 · 3 · 7 · 16 ·
             35일 뒤 복습으로 돌아와요.
           </p>
+
+          {/* 오답노트 — 푸는 것 말고 읽는 것 */}
+          <Link
+            href="/cim/notes"
+            className="card mt-3 flex items-center justify-between gap-3 p-4 ring-1 ring-rose-200
+              transition hover:-translate-y-0.5 hover:shadow-lg"
+          >
+            <div className="min-w-0">
+              <p className="text-[15px] font-bold text-neutral-900">📕 오답노트</p>
+              <p className="mt-0.5 text-[12px] text-neutral-500">
+                {notes && notes.total > 0
+                  ? `아직 못 잡은 ${notes.open}문항 · 잡은 오답 ${notes.settled}문항`
+                  : "틀린 문항을 문제·내 답·해설로 복기"}
+              </p>
+            </div>
+            <span className="shrink-0 rounded-xl bg-rose-50 px-3 py-1.5 text-[13px] font-extrabold tabular-nums text-rose-600 ring-1 ring-rose-200">
+              {state === null ? "—" : notes?.total ?? 0}
+            </span>
+          </Link>
         </motion.section>
 
         {/* ── 문제집 목록 ───────────────────────────────────────── */}

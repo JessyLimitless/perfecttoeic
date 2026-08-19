@@ -186,6 +186,11 @@ export interface CimCard {
   last: boolean;
   /** 마지막 시도 시각 */
   at: number;
+  /**
+   * 마지막에 고른 선지(0~3). 오답노트에서 "내가 뭐라고 답했는지"를 보여주기 위한 것.
+   * 이 필드가 생기기 전 저장본에는 없다 → 없으면 표시를 생략한다.
+   */
+  pick?: number;
 }
 
 /** 스테이지 성적 — 최고 점수만 남긴다(재도전으로 점수가 깎이지 않게) */
@@ -237,6 +242,7 @@ export function loadCim(): CimState {
         correct: typeof c.correct === "number" ? c.correct : 0,
         last: c.last === true,
         at: typeof c.at === "number" ? c.at : 0,
+        ...(typeof c.pick === "number" && c.pick >= 0 && c.pick <= 3 ? { pick: c.pick } : {}),
       };
     }
     // 스테이지 기록이 없던 시절의 저장본도 그대로 읽힌다(빈 객체로 시작)
@@ -286,9 +292,15 @@ export function resetCim() {
  *   정답 → 박스 +1, 다음 간격만큼 뒤로
  *   오답 → 박스 0, 즉시 복습 대상 (이번 세션 안에 다시 나온다)
  */
-export function gradeCard(prev: CimCard | undefined, ok: boolean, now = Date.now()): CimCard {
+export function gradeCard(
+  prev: CimCard | undefined,
+  ok: boolean,
+  now = Date.now(),
+  pick?: number | null
+): CimCard {
   const base: CimCard = prev ?? { box: 0, due: 0, seen: 0, correct: 0, last: false, at: 0 };
   const box = ok ? Math.min(CIM_MAX_BOX, base.box + 1) : 0;
+  const keptPick = typeof pick === "number" ? pick : base.pick;
   return {
     box,
     due: now + CIM_INTERVAL_DAYS[box] * DAY,
@@ -296,6 +308,7 @@ export function gradeCard(prev: CimCard | undefined, ok: boolean, now = Date.now
     correct: base.correct + (ok ? 1 : 0),
     last: ok,
     at: now,
+    ...(typeof keptPick === "number" ? { pick: keptPick } : {}),
   };
 }
 
@@ -308,9 +321,14 @@ export interface CimAnswer {
  * 한 문항을 채점 즉시 저장한다.
  * 세션 끝에 몰아 저장하지 않는 이유: 중간에 화면을 닫아도 푼 만큼은 남아야 하기 때문이다.
  */
-export function answerCim(questionId: string, ok: boolean, now = Date.now()): CimState {
+export function answerCim(
+  questionId: string,
+  ok: boolean,
+  pick?: number | null,
+  now = Date.now()
+): CimState {
   const state = loadCim();
-  state.cards[questionId] = gradeCard(state.cards[questionId], ok, now);
+  state.cards[questionId] = gradeCard(state.cards[questionId], ok, now, pick);
   state.lastAt = now;
   saveCim(state);
   return state;
@@ -636,6 +654,121 @@ export function buildQueue(
 
   // 요청한 모드에 문항이 없으면 빈 배열을 돌려준다 — 화면이 "왜 없는지"를 설명한다.
   return picked.slice(0, size);
+}
+
+/* ────────────────────────────────────────────────────────────
+ * 오답노트
+ *
+ * 틀린 문제를 "다시 푸는 것"과 "복기하는 것"은 다른 일이다.
+ * 다시 풀면 또 찍어서 맞힐 수 있지만, 해설을 나란히 놓고 읽으면
+ * 왜 틀렸는지가 남는다. 그래서 이 화면은 채점을 하지 않는다 — 읽기 전용이다.
+ *
+ * 한 번이라도 틀린 문항은 **맞히기 시작한 뒤에도 노트에 남는다**.
+ * 지운 오답은 다시 볼 수 없고, 이 시험에서 한 번 틀린 자리는 시험장에서 또 틀리기 때문이다.
+ * 대신 `settled`(지금은 맞히는 상태)로 갈라 보여준다.
+ * ──────────────────────────────────────────────────────────── */
+
+export interface CimNote {
+  q: CimQuestion;
+  /** 누적 오답 횟수 (= seen - correct) */
+  wrong: number;
+  seen: number;
+  /** 마지막 시도를 맞혔다 — 일단 잡은 오답 */
+  settled: boolean;
+  box: number;
+  due: number;
+  /** 복습 예정일이 지났다 */
+  dueNow: boolean;
+  /** 마지막에 고른 선지 (기록 이전 저장본이면 null) */
+  pick: number | null;
+  /** 마지막 시도 시각 */
+  at: number;
+}
+
+export type CimNoteSort = "wrong" | "recent" | "no";
+
+export interface NoteOptions {
+  subject?: CimSubject | null;
+  /** true면 아직 못 잡은 오답(마지막 시도 오답)만 */
+  onlyOpen?: boolean;
+  sort?: CimNoteSort;
+  now?: number;
+}
+
+/** 한 번이라도 틀린 문항을 노트 항목으로 만든다 */
+export function buildNotes(
+  state: CimState,
+  questions: readonly CimQuestion[],
+  opts: NoteOptions = {}
+): CimNote[] {
+  const now = opts.now ?? Date.now();
+  const sort = opts.sort ?? "wrong";
+
+  const notes: CimNote[] = [];
+  for (const q of questions) {
+    if (opts.subject && q.subject !== opts.subject) continue;
+    const c = state.cards[q.id];
+    if (!c || c.seen === 0) continue;
+    const wrong = c.seen - c.correct;
+    if (wrong <= 0) continue; // 한 번도 안 틀린 문항은 노트에 없다
+    if (opts.onlyOpen && c.last) continue;
+    notes.push({
+      q,
+      wrong,
+      seen: c.seen,
+      settled: c.last,
+      box: c.box,
+      due: c.due,
+      dueNow: c.due <= now,
+      pick: typeof c.pick === "number" ? c.pick : null,
+      at: c.at,
+    });
+  }
+
+  switch (sort) {
+    case "recent":
+      notes.sort((a, b) => b.at - a.at);
+      break;
+    case "no":
+      notes.sort((a, b) => a.q.no - b.q.no);
+      break;
+    default:
+      // 아직 못 잡은 오답이 위 → 많이 틀린 순 → 최근 순
+      notes.sort(
+        (a, b) =>
+          Number(a.settled) - Number(b.settled) || b.wrong - a.wrong || b.at - a.at
+      );
+      break;
+  }
+  return notes;
+}
+
+export interface CimNoteCounts {
+  /** 한 번이라도 틀린 문항 수 */
+  total: number;
+  /** 그중 마지막 시도도 틀린 문항 */
+  open: number;
+  /** 틀렸다가 지금은 맞히는 문항 */
+  settled: number;
+  /** 과목별 총합 */
+  bySubject: Record<CimSubject, number>;
+}
+
+export function noteCounts(
+  state: CimState,
+  questions: readonly CimQuestionRef[]
+): CimNoteCounts {
+  const bySubject: Record<CimSubject, number> = { 1: 0, 2: 0, 3: 0 };
+  let total = 0;
+  let open = 0;
+  for (const q of questions) {
+    const c = state.cards[q.id];
+    if (!c || c.seen === 0 || c.seen - c.correct <= 0) continue;
+    total += 1;
+    bySubject[q.subject] += 1;
+    if (!c.last) open += 1;
+  }
+  return { total, open, settled: total - open, bySubject };
 }
 
 /** 모드별로 지금 뽑을 수 있는 문항 수 (버튼에 개수를 띄우기 위해) */
